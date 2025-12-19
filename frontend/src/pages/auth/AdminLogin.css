@@ -1,0 +1,567 @@
+/* AdminLogin.css - Professional Design */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary: #2c3e50;
+  --primary-dark: #1a252f;
+  --secondary: #3498db;
+  --accent: #e74c3c;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --light: #ecf0f1;
+  --white: #ffffff;
+  --gray: #95a5a6;
+  --dark-gray: #7f8c8d;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  --radius: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --glass: rgba(255, 255, 255, 0.1);
+  --glass-dark: rgba(0, 0, 0, 0.2);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Background Animation */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.03" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,149.3C960,160,1056,160,1152,138.7C1248,117,1344,75,1392,53.3L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') bottom center no-repeat;
+  background-size: cover;
+  z-index: 0;
+  animation: wave 20s linear infinite;
+}
+
+@keyframes wave {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Card Container */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: var(--shadow);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  animation: cardAppear 0.6s ease-out;
+}
+
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/* Header */
+.card h2 {
+  text-align: center;
+  color: var(--primary);
+  margin-bottom: 30px;
+  font-size: 2rem;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.card h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--secondary), var(--accent));
+  border-radius: 2px;
+}
+
+/* Input Fields */
+.input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: var(--primary);
+  background: #f8f9fa;
+  transition: var(--transition);
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--secondary);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  transform: translateY(-2px);
+}
+
+.input::placeholder {
+  color: var(--gray);
+}
+
+/* Button Styles */
+.btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+/* Primary Button */
+.btn[onClick*="handleLogin"],
+.btn[onClick*="verifyOtp"] {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: var(--white);
+}
+
+.btn[onClick*="handleLogin"]:hover:not(:disabled),
+.btn[onClick*="verifyOtp"]:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #141e30 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(44, 62, 80, 0.3);
+}
+
+/* Secondary Button */
+.btn[onClick*="sendOtp"] {
+  background: linear-gradient(135deg, var(--secondary) 0%, #2980b9 100%);
+  color: var(--white);
+}
+
+.btn[onClick*="sendOtp"]:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2980b9 0%, #1c5d87 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+}
+
+/* Disabled State */
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Loading Animation */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--white);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Links */
+p[onClick] {
+  color: var(--secondary);
+  text-align: center;
+  margin: 15px 0;
+  cursor: pointer;
+  transition: var(--transition);
+  font-weight: 500;
+  position: relative;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+p[onClick]:hover {
+  color: var(--primary);
+  background: rgba(52, 152, 219, 0.1);
+  transform: translateY(-2px);
+}
+
+p[onClick]::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--secondary);
+  transition: width 0.3s ease;
+}
+
+p[onClick]:hover::after {
+  width: 100%;
+}
+
+/* Step Indicators */
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.step {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ecf0f1;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+  transition: var(--transition);
+}
+
+.step.active {
+  background: var(--secondary);
+  color: var(--white);
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.step-line {
+  position: absolute;
+  top: 20px;
+  left: 50px;
+  right: 50px;
+  height: 2px;
+  background: #ecf0f1;
+  z-index: 0;
+}
+
+.step-line.active {
+  background: var(--secondary);
+}
+
+/* Form Group */
+.form-group {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-label i {
+  color: var(--secondary);
+  font-size: 1.1rem;
+}
+
+/* Password Toggle */
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--gray);
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: var(--transition);
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.password-toggle:hover {
+  color: var(--secondary);
+  background: rgba(52, 152, 219, 0.1);
+}
+
+/* OTP Input Specific */
+.input[placeholder*="OTP"] {
+  letter-spacing: 10px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 16px;
+  background: #f8f9fa;
+}
+
+/* Alert Messages */
+.alert {
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.alert-error {
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.2);
+  color: var(--accent);
+}
+
+.alert-success {
+  background: rgba(46, 204, 113, 0.1);
+  border: 1px solid rgba(46, 204, 113, 0.2);
+  color: var(--success);
+}
+
+.alert-info {
+  background: rgba(52, 152, 219, 0.1);
+  border: 1px solid rgba(52, 152, 219, 0.2);
+  color: var(--secondary);
+}
+
+/* Card Footer */
+.card-footer {
+  text-align: center;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+.card-footer a {
+  color: var(--secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.card-footer a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* Security Badge */
+.security-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: var(--dark-gray);
+  font-size: 0.85rem;
+}
+
+.security-badge i {
+  color: var(--success);
+  font-size: 1.1rem;
+}
+
+/* Animation for step transitions */
+.step-transition-enter {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.step-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.3s ease;
+}
+
+.step-transition-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.step-transition-exit-active {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card {
+    padding: 30px 25px;
+    margin: 0 15px;
+  }
+  
+  .card h2 {
+    font-size: 1.8rem;
+  }
+  
+  .input {
+    padding: 14px 18px;
+    font-size: 0.95rem;
+  }
+  
+  .btn {
+    padding: 14px;
+    font-size: 1rem;
+  }
+  
+  .step-indicator {
+    gap: 15px;
+  }
+  
+  .step {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+  
+  .card {
+    padding: 25px 20px;
+  }
+  
+  .card h2 {
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+  }
+  
+  .input[placeholder*="OTP"] {
+    font-size: 1.3rem;
+    letter-spacing: 8px;
+  }
+  
+  .security-badge {
+    flex-direction: column;
+    text-align: center;
+    gap: 5px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .card {
+    background: #1e293b;
+    color: var(--light);
+  }
+  
+  .card h2 {
+    color: var(--light);
+  }
+  
+  .input {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: var(--light);
+  }
+  
+  .input:focus {
+    background: #2d3748;
+  }
+  
+  .input::placeholder {
+    color: #a0aec0;
+  }
+  
+  .card-footer {
+    border-top-color: #4a5568;
+    color: #a0aec0;
+  }
+  
+  .security-badge {
+    background: #2d3748;
+    color: #a0aec0;
+  }
+  
+  .step {
+    background: #2d3748;
+    color: #a0aec0;
+  }
+  
+  .step-line {
+    background: #2d3748;
+  }
+}
