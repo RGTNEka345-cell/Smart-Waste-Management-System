@@ -1,0 +1,133 @@
+/* ===============================
+   Admin – Waste Types Management
+================================ */
+
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admin-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- Header ---------- */
+.admin-container h2 {
+  font-size: 28px;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.admin-container p {
+  color: #6b7280;
+  margin-bottom: 25px;
+}
+
+/* ---------- Form ---------- */
+.waste-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 15px;
+  margin-bottom: 35px;
+}
+
+.waste-form input,
+.waste-form textarea {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+  outline: none;
+  resize: none;
+}
+
+.waste-form textarea {
+  grid-column: span 2;
+}
+
+.waste-form input:focus,
+.waste-form textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.waste-form button {
+  padding: 12px 22px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.waste-form button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ---------- Table ---------- */
+.waste-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f9fafb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.waste-table thead {
+  background: #1e40af;
+  color: #ffffff;
+}
+
+.waste-table th,
+.waste-table td {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.waste-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.waste-table tbody tr:hover {
+  background: #eef2ff;
+}
+
+.waste-table tbody td {
+  color: #374151;
+}
+
+.waste-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.waste-table tbody td[colspan] {
+  text-align: center;
+  padding: 25px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .waste-form {
+    grid-template-columns: 1fr;
+  }
+
+  .waste-form textarea {
+    grid-column: span 1;
+  }
+
+  .admin-container {
+    margin: 20px;
+    padding: 22px;
+  }
+}
