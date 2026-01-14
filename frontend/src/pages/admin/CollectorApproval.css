@@ -1,0 +1,363 @@
+.approval-container {
+  padding: 30px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.approval-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2e7d32;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  padding: 50px 0;
+}
+
+.no-collectors {
+  text-align: center;
+  font-size: 18px;
+  color: #999;
+  padding: 50px 0;
+}
+
+/* Grid Layout for Collectors */
+.collectors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.collector-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.collector-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  padding: 20px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.collection-type {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.info-group {
+  margin-bottom: 15px;
+}
+
+.info-group label {
+  display: block;
+  font-weight: 600;
+  color: #2e7d32;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  letter-spacing: 0.5px;
+}
+
+.info-group p {
+  margin: 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.vehicle-photo {
+  margin: 15px 0;
+  text-align: center;
+}
+
+.vehicle-photo img {
+  max-width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+}
+
+.card-actions {
+  padding: 15px 20px;
+  background: #f9f9f9;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.details-btn,
+.approve-btn,
+.reject-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.details-btn {
+  background-color: #1976d2;
+  color: white;
+}
+
+.details-btn:hover {
+  background-color: #1565c0;
+  transform: scale(1.02);
+}
+
+.approve-btn {
+  background-color: #2e7d32;
+  color: white;
+}
+
+.approve-btn:hover {
+  background-color: #1b5e20;
+  transform: scale(1.02);
+}
+
+.reject-btn {
+  background-color: #c62828;
+  color: white;
+}
+
+.reject-btn:hover {
+  background-color: #8e0000;
+  transform: scale(1.02);
+}
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.modal-content h2 {
+  color: #2e7d32;
+  margin-top: 0;
+  margin-bottom: 25px;
+  border-bottom: 3px solid #2e7d32;
+  padding-bottom: 15px;
+}
+
+.detail-section {
+  margin-bottom: 25px;
+}
+
+.detail-section h3 {
+  color: #1976d2;
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.detail-item .label {
+  font-weight: 600;
+  color: #2e7d32;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  letter-spacing: 0.5px;
+}
+
+.detail-item .value {
+  color: #555;
+  font-size: 14px;
+  padding: 8px;
+  background: #f9f9f9;
+  border-radius: 4px;
+  border-left: 3px solid #2e7d32;
+  padding-left: 10px;
+}
+
+.modal-vehicle-photo {
+  width: 100%;
+  max-width: 400px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  margin-top: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.approve-btn-lg,
+.reject-btn-lg,
+.cancel-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.approve-btn-lg {
+  background-color: #2e7d32;
+  color: white;
+  flex: 1;
+  min-width: 120px;
+}
+
+.approve-btn-lg:hover {
+  background-color: #1b5e20;
+  transform: scale(1.02);
+}
+
+.reject-btn-lg {
+  background-color: #c62828;
+  color: white;
+  flex: 1;
+  min-width: 120px;
+}
+
+.reject-btn-lg:hover {
+  background-color: #8e0000;
+  transform: scale(1.02);
+}
+
+.cancel-btn {
+  background-color: #999;
+  color: white;
+  flex: 1;
+  min-width: 120px;
+}
+
+.cancel-btn:hover {
+  background-color: #777;
+  transform: scale(1.02);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .approval-container {
+    padding: 15px;
+  }
+
+  .collectors-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .approve-btn-lg,
+  .reject-btn-lg,
+  .cancel-btn {
+    width: 100%;
+  }
+}

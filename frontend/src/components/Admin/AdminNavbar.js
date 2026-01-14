@@ -58,8 +58,8 @@ const AdminNavbar = () => {
         </li>
 
         <li>
-          <Link className={isActive("/admin/pickups") ? "active" : ""} to="/admin/pickups">
-            <FiTruck /> Pickups
+          <Link className={isActive("/admin/collector-approvals") ? "active" : ""} to="/admin/collector-approvals">
+            <FiTruck /> Collector Approvals
           </Link>
         </li>
 

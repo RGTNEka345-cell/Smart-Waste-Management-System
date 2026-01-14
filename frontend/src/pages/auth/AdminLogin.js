@@ -73,6 +73,7 @@ const AdminLogin = () => {
 
       localStorage.setItem("adminToken", res.data.token);
       localStorage.setItem("admin", JSON.stringify(res.data.admin));
+      localStorage.setItem("adminId", res.data.admin.admin_id);
       
       setSuccess("Login successful! Redirecting...");
       

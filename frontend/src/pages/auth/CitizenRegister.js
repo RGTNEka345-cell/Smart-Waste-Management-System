@@ -333,7 +333,7 @@ const CitizenRegister = () => {
 
       if (res.data.success) {
         alert("Email verified successfully! You can now login.");
-        window.location.href = "/login";
+        window.location.href = "/login/citizen";
       } else {
         alert(res.data.message || "Invalid OTP");
         // Clear OTP on error

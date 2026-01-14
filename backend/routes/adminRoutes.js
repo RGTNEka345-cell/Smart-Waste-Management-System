@@ -4,6 +4,10 @@ const router = express.Router();
 const AdminController = require("../controllers/AdminController");
 const WasteTypeController = require("../controllers/WasteTypeController");
 const adminAuth = require("../middlewares/adminAuth");
+const {
+  getPendingCollectors,
+  approveOrRejectCollector
+} = require("../controllers/adminCollectorController");
 
 // Auth
 router.post("/admin/login", AdminController.login);
@@ -14,5 +18,9 @@ router.post("/admin/verify-otp", AdminController.verifyOtp);
 router.post("/admin/wastetypes", adminAuth, WasteTypeController.createWasteType);
 router.get("/admin/wastetypes", adminAuth, WasteTypeController.getAllWasteTypes);
 router.delete("/admin/wastetypes/:id", adminAuth, WasteTypeController.deleteWasteType);
+
+// Collector Approvals (Admin only)
+router.get("/admin/collectors/pending", adminAuth, getPendingCollectors);
+router.post("/admin/collectors/approve", adminAuth, approveOrRejectCollector);
 
 module.exports = router;

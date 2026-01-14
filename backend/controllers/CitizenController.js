@@ -257,3 +257,118 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email required" });
+    }
+
+    // Check if user exists
+    const user = await Citizen.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate OTP
+    const otpCode = generateOTP();
+    const expiresAt = getExpirationTime();
+
+    // Store OTP in database
+    await Citizen.updateOTP(email, otpCode, expiresAt);
+
+    // Send OTP email
+    const mailOptions = {
+      from: process.env.MAIL_USER,
+      to: email,
+      subject: "Password Reset Code - Smart Waste Management",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2ecc71;">Password Reset Request</h2>
+          <p>You requested to reset your password. Your verification code is:</p>
+          <div style="background: #f8f9fa; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; color: #2c3e50; letter-spacing: 5px; margin: 20px 0;">
+            ${otpCode}
+          </div>
+          <p>This code will expire in 10 minutes.</p>
+          <p>If you didn't request this, please ignore this email and your password will remain unchanged.</p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+          <p style="color: #666; font-size: 12px;">
+            Smart Waste Management System<br>
+            Cleaner Cities, Smarter Future
+          </p>
+        </div>
+      `
+    };
+
+    if (process.env.MAIL_FALLBACK === "true") {
+      console.log(`Password reset OTP for ${email}: ${otpCode}`);
+      res.json({ 
+        success: true, 
+        message: "OTP sent to email.",
+        email,
+        otp: otpCode // Only for development/testing
+      });
+    } else {
+      await transporter.sendMail(mailOptions);
+      res.json({ 
+        success: true, 
+        message: "OTP sent to your email. Please check your inbox.",
+        email
+      });
+    }
+
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword, confirmPassword } = req.body;
+
+    if (!email || !otp || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: "All fields required" });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    // Verify OTP
+    const isValidOTP = await Citizen.verifyOTPForReset(email, otp);
+    if (!isValidOTP) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // Check if user exists
+    const user = await Citizen.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await Citizen.updatePassword(email, hashedPassword);
+
+    // Clear OTP
+    await Citizen.clearOTPAfterReset(email);
+
+    res.json({ 
+      success: true, 
+      message: "Password reset successful. You can now login with your new password." 
+    });
+
+  } catch (err) {
+    console.error("Reset password error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

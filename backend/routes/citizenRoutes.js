@@ -45,6 +45,12 @@ router.post("/citizen/resend-otp", CitizenController.resendOtp);
 // POST /api/citizen/login
 router.post("/citizen/login", CitizenController.login);
 
+// POST /api/citizen/forgot-password
+router.post("/citizen/forgot-password", CitizenController.forgotPassword);
+
+// POST /api/citizen/reset-password
+router.post("/citizen/reset-password", CitizenController.resetPassword);
+
 
 module.exports = router;
 

@@ -70,3 +70,28 @@ exports.resendOTP = async (email, otpCode, expiresAt) => {
     [otpCode, expiresAt, email]
   );
 };
+
+exports.updatePassword = async (email, hashedPassword) => {
+  return db.execute(
+    "UPDATE citizens SET password = ? WHERE email = ?",
+    [hashedPassword, email]
+  );
+};
+
+exports.verifyOTPForReset = async (email, otpCode) => {
+  const [rows] = await db.execute(
+    `SELECT * FROM citizens
+     WHERE email = ? AND otp_code = ? AND otp_expires_at > NOW()`,
+    [email, otpCode]
+  );
+
+  if (rows.length === 0) return false;
+  return true;
+};
+
+exports.clearOTPAfterReset = async (email) => {
+  return db.execute(
+    "UPDATE citizens SET otp_code = NULL, otp_expires_at = NULL WHERE email = ?",
+    [email]
+  );
+};
