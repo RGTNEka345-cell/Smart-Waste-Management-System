@@ -252,3 +252,77 @@ exports.approveOrRejectCollector = async (req, res) => {
     conn.release();
   }
 };
+
+/* ---------------- GET APPROVAL HISTORY ---------------- */
+exports.getApprovalHistory = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        ca.approval_id,
+        ca.collector_id,
+        ca.admin_id,
+        ca.approval_status,
+        ca.approved_collection_type,
+        ca.assigned_radius_km,
+        ca.remarks,
+        ca.approved_at,
+        c.full_name,
+        c.email,
+        c.phone_number,
+        c.collection_type,
+        c.vehicle_number,
+        c.vehicle_photo,
+        c.home_address,
+        c.latitude,
+        c.longitude,
+        c.gender,
+        a.fullname as admin_name
+      FROM Collector_Approvals ca
+      JOIN Collectors c ON ca.collector_id = c.collector_id
+      LEFT JOIN Admins a ON ca.admin_id = a.admin_id
+      WHERE ca.approval_status = 'APPROVED'
+      ORDER BY ca.approved_at DESC
+    `);
+    
+    res.json(rows);
+  } catch (err) {
+    console.error("Get Approval History Error:", err.message);
+    res.status(500).json({ message: "Failed to load approval history" });
+  }
+};
+
+/* ---------------- GET REJECTION HISTORY ---------------- */
+exports.getRejectionHistory = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        ca.approval_id,
+        ca.collector_id,
+        ca.admin_id,
+        ca.approval_status,
+        ca.approved_collection_type,
+        ca.remarks,
+        ca.approved_at,
+        c.full_name,
+        c.email,
+        c.phone_number,
+        c.collection_type,
+        c.vehicle_number,
+        c.vehicle_photo,
+        c.home_address,
+        c.latitude,
+        c.longitude,
+        a.fullname as admin_name
+      FROM Collector_Approvals ca
+      JOIN Collectors c ON ca.collector_id = c.collector_id
+      LEFT JOIN Admins a ON ca.admin_id = a.admin_id
+      WHERE ca.approval_status = 'REJECTED'
+      ORDER BY ca.approved_at DESC
+    `);
+    
+    res.json(rows);
+  } catch (err) {
+    console.error("Get Rejection History Error:", err.message);
+    res.status(500).json({ message: "Failed to load rejection history" });
+  }
+};

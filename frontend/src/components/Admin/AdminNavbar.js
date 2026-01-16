@@ -64,6 +64,12 @@ const AdminNavbar = () => {
         </li>
 
         <li>
+          <Link className={isActive("/admin/approval-history") ? "active" : ""} to="/admin/approval-history">
+            <FiBarChart2 /> Approval History
+          </Link>
+        </li>
+
+        <li>
           <Link className={isActive("/admin/reports") ? "active" : ""} to="/admin/reports">
             <FiBarChart2 /> Reports
           </Link>

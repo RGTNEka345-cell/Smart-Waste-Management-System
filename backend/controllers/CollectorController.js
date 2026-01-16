@@ -16,91 +16,154 @@ exports.registerCollector = async (req, res) => {
     console.log('Collector register - req.body keys:', Object.keys(req.body));
     console.log('Collector register - file:', req.file ? req.file.filename : null);
 
-    // If nested details were sent as JSON strings (from frontend FormData), parse them
-    let parsedFactory = factory_details;
-    let parsedGovernment = government_details;
-    try {
-      if (typeof factory_details === 'string' && factory_details) parsedFactory = JSON.parse(factory_details);
-    } catch (e) {
-      console.warn('Failed to parse factory_details JSON:', e.message);
+    // Validate required fields
+    if (!full_name || !email || !gender || !password || 
+        !phone_number || !collection_type || !vehicle_number) {
+      return res.status(400).json({ 
+        message: "Required fields are missing" 
+      });
     }
-    try {
-      if (typeof government_details === 'string' && government_details) parsedGovernment = JSON.parse(government_details);
-    } catch (e) {
-      console.warn('Failed to parse government_details JSON:', e.message);
-    }
+
     if (!req.file) {
-      return res.status(400).json({ message: "Vehicle image required" });
+      return res.status(400).json({ 
+        message: "Vehicle image required" 
+      });
+    }
+
+    // Parse JSON strings if present
+    let parsedFactory = null;
+    let parsedGovernment = null;
+    
+    if (factory_details) {
+      try {
+        parsedFactory = typeof factory_details === 'string' 
+          ? JSON.parse(factory_details) 
+          : factory_details;
+      } catch (e) {
+        console.warn('Failed to parse factory_details:', e.message);
+      }
+    }
+
+    if (government_details) {
+      try {
+        parsedGovernment = typeof government_details === 'string'
+          ? JSON.parse(government_details)
+          : government_details;
+      } catch (e) {
+        console.warn('Failed to parse government_details:', e.message);
+      }
+    }
+
+    // Validate collection type specific details
+    if (collection_type === "factory" && !parsedFactory) {
+      return res.status(400).json({ 
+        message: "Factory details required for factory collector" 
+      });
+    }
+
+    if (collection_type === "government" && !parsedGovernment) {
+      return res.status(400).json({ 
+        message: "Government details required for government collector" 
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const collectorId = await Collector.createCollector([
+    // Prepare collector data array
+    const collectorData = [
       full_name,
       email,
       gender,
       hashedPassword,
       phone_number,
-      home_address,
+      home_address || null,
       collection_type,
       req.file.filename,
       vehicle_number
-    ]);
+    ];
 
+    console.log('Collector data to insert:', collectorData);
+
+    // Create collector using model
+    const collectorId = await Collector.createCollector(collectorData);
+    console.log('Created collector ID:', collectorId);
+
+    // Create factory details if factory collector
     if (collection_type === "factory" && parsedFactory) {
-      await Factory.createFactory([
+      const factoryData = [
         collectorId,
-        parsedFactory.factory_name,
-        parsedFactory.factory_licence_no,
-        parsedFactory.operating_hours,
-        JSON.stringify(parsedFactory.waste_types_accepted),
-        parsedFactory.factory_address,
-        parsedFactory.factory_contact,
-        parsedFactory.factory_latitude,
-        parsedFactory.factory_longitude
-      ]);
+        parsedFactory.factory_name || '',
+        parsedFactory.factory_licence_no || '',
+        parsedFactory.operating_hours || null,
+        parsedFactory.waste_types_accepted 
+          ? JSON.stringify(parsedFactory.waste_types_accepted)
+          : '[]',
+        parsedFactory.factory_address || null,
+        parsedFactory.factory_contact || null,
+        parsedFactory.factory_latitude || null,
+        parsedFactory.factory_longitude || null
+      ];
+      
+      console.log('Factory data to insert:', factoryData);
+      await Factory.createFactory(factoryData);
     }
 
+    // Create government details if government collector
     if (collection_type === "government" && parsedGovernment) {
-      await Government.createGovernment([
+      const govData = [
         collectorId,
-        parsedGovernment.service_number,
-        parsedGovernment.department_name,
-        parsedGovernment.working_area_name,
-        parsedGovernment.working_area_latitude,
-        parsedGovernment.working_area_longitude,
-        parsedGovernment.designation
-      ]);
+        parsedGovernment.service_number || '',
+        parsedGovernment.department_name || '',
+        parsedGovernment.working_area_name || null,
+        parsedGovernment.working_area_latitude || null,
+        parsedGovernment.working_area_longitude || null,
+        parsedGovernment.designation || null
+      ];
+      
+      console.log('Government data to insert:', govData);
+      await Government.createGovernment(govData);
     }
 
     res.status(201).json({
-      message: "Collector registered successfully. Await admin approval."
+      success: true,
+      message: "Collector registered successfully. Await admin approval.",
+      collectorId: collectorId
     });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Registration error details:", err);
+    
+    // Handle duplicate email error
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(400).json({ 
+        message: "Email already registered" 
+      });
+    }
+    
+    res.status(500).json({ 
+      message: "Server error during registration",
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 };
 
-/* ---------------- LOGIN COLLECTOR ---------------- */
 exports.loginCollector = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password required" });
+      return res.status(400).json({ 
+        message: "Email and password required" 
+      });
     }
 
-    // Get collector from database
-    const db = require("../config/database");
-    const [[collector]] = await db.execute(
-      "SELECT * FROM Collectors WHERE email = ?",
-      [email]
-    );
+    // Get collector from database using model
+    const collector = await Collector.findByEmail(email);
 
     if (!collector) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ 
+        message: "Invalid email or password" 
+      });
     }
 
     // Check if collector is approved
@@ -114,18 +177,23 @@ exports.loginCollector = async (req, res) => {
     // Compare passwords
     const isPasswordValid = await bcrypt.compare(password, collector.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ 
+        message: "Invalid email or password" 
+      });
     }
 
     // Return collector info (without password)
     const { password: _, ...collectorData } = collector;
     res.json({
+      success: true,
       message: "Login successful",
       collector: collectorData
     });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Login failed" });
+    console.error("Login error:", err);
+    res.status(500).json({ 
+      message: "Login failed" 
+    });
   }
 };

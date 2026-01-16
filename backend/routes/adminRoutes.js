@@ -6,7 +6,9 @@ const WasteTypeController = require("../controllers/WasteTypeController");
 const adminAuth = require("../middlewares/adminAuth");
 const {
   getPendingCollectors,
-  approveOrRejectCollector
+  approveOrRejectCollector,
+  getApprovalHistory,
+  getRejectionHistory
 } = require("../controllers/adminCollectorController");
 
 // Auth
@@ -22,5 +24,7 @@ router.delete("/admin/wastetypes/:id", adminAuth, WasteTypeController.deleteWast
 // Collector Approvals (Admin only)
 router.get("/admin/collectors/pending", adminAuth, getPendingCollectors);
 router.post("/admin/collectors/approve", adminAuth, approveOrRejectCollector);
+router.get("/admin/collectors/approved", adminAuth, getApprovalHistory);
+router.get("/admin/collectors/rejected", adminAuth, getRejectionHistory);
 
 module.exports = router;

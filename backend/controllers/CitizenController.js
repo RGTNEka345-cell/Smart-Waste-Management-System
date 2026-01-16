@@ -7,8 +7,8 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
@@ -70,7 +70,7 @@ exports.register = async (req, res) => {
 
     // Send OTP email
     const mailOptions = {
-      from: process.env.MAIL_USER,
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "Email Verification - Smart Waste Management",
       html: `
@@ -171,7 +171,7 @@ exports.resendOtp = async (req, res) => {
 
     // Send new OTP email
     const mailOptions = {
-      from: process.env.MAIL_USER,
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "New Verification Code - Smart Waste Management",
       html: `
@@ -281,7 +281,7 @@ exports.forgotPassword = async (req, res) => {
 
     // Send OTP email
     const mailOptions = {
-      from: process.env.MAIL_USER,
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "Password Reset Code - Smart Waste Management",
       html: `
