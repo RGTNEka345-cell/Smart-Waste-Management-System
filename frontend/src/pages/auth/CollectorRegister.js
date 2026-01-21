@@ -336,28 +336,28 @@ const CollectorRegister = () => {
         </section>
 
         {/* Vehicle Section */}
-        <section className="form-section">
-          <h3 className="section-title">Vehicle Information</h3>
-          <div className="file-upload-group">
-            <label className="file-upload-label">
-              <span>Vehicle Image *</span>
-              <input 
-                type="file" 
-                name="vehicle_photo" 
-                accept="image/*" 
-                onChange={handleCollectorChange} 
-                required 
-                disabled={isSubmitting}
-              />
-              <div className="file-upload-button">
-                {collector.vehicle_photo ? collector.vehicle_photo.name : "Choose File"}
-              </div>
-            </label>
-            {collector.vehicle_photo && (
-              <span className="file-selected">✓ File selected</span>
-            )}
-          </div>
-        </section>
+<section className="form-section">
+  <h3 className="section-title">Vehicle Information</h3>
+  <div className="file-upload-group">
+    <label className="file-upload-label">
+      <span>Vehicle Image * <span className="note-text">(must show numberplate clearly)</span></span>
+      <input 
+        type="file" 
+        name="vehicle_photo" 
+        accept="image/*" 
+        onChange={handleCollectorChange} 
+        required 
+        disabled={isSubmitting}
+      />
+      <div className="file-upload-button">
+        {collector.vehicle_photo ? collector.vehicle_photo.name : "Choose File"}
+      </div>
+    </label>
+    {collector.vehicle_photo && (
+      <span className="file-selected">✓ File selected</span>
+    )}
+  </div>
+</section>
 
         {/* Collector Type Section */}
         <section className="form-section">
@@ -605,24 +605,34 @@ const LocationSection = ({
     </Autocomplete>
 
     <div className="map-container">
-      <GoogleMap
-        zoom={14}
-        center={mapPosition}
-        mapContainerStyle={{ width: "100%", height: "300px" }}
-        onClick={(e) => onMapClick(e.latLng.lat(), e.latLng.lng())}
-        options={{
-          disableDefaultUI: false,
-          zoomControl: true,
-          streetViewControl: false,
-          mapTypeControl: false
-        }}
-      >
-        <Marker 
-          position={mapPosition}
-          animation={window.google?.maps?.Animation?.DROP}
-        />
-      </GoogleMap>
-    </div>
+  <GoogleMap
+    zoom={14}
+    center={mapPosition}
+    mapContainerStyle={{ width: "100%", height: "300px" }}
+    onClick={(e) => onMapClick(e.latLng.lat(), e.latLng.lng())}
+    options={{
+      disableDefaultUI: false,
+      zoomControl: true,
+      streetViewControl: false,
+      mapTypeControl: true, // Changed from false to true to show map type control
+      mapTypeControlOptions: {
+        style: window.google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+        position: window.google.maps.ControlPosition.TOP_CENTER,
+        mapTypeIds: [
+          window.google.maps.MapTypeId.ROADMAP,
+          window.google.maps.MapTypeId.SATELLITE,
+          window.google.maps.MapTypeId.HYBRID
+        ]
+      },
+      mapTypeId: window.google.maps.MapTypeId.HYBRID // Default to hybrid view
+    }}
+  >
+    <Marker 
+      position={mapPosition}
+      animation={window.google?.maps?.Animation?.DROP}
+    />
+  </GoogleMap>
+</div>
 
     <div className="coordinates-display">
       <div className="coordinate-input">

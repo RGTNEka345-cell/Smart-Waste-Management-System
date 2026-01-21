@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./CitizenLogin.css";
 
@@ -8,47 +8,56 @@ const CitizenLogin = () => {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
+
+  // pass user data
+  
   const handleLogin = async (e) => {
-    e.preventDefault();
-    
-    if (!email || !password) {
-      alert("Email and Password required");
-      return;
+  e.preventDefault();
+
+  if (!email || !password) {
+    alert("Email and Password required");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    // 👉 මෙතන තමයි API call එක
+    const res = await axios.post(
+      "http://localhost:5000/api/citizen/login",
+      { email, password }
+    );
+
+    // ✅ 👉 මෙතන තමයි SAVE කරන්න ඕන
+    localStorage.setItem(
+      "citizen",
+      JSON.stringify(res.data.citizen)
+    );
+    localStorage.setItem(
+      "citizenToken",
+      res.data.token
+    );
+
+    // (optional)
+    if (rememberMe) {
+      localStorage.setItem("citizenEmail", email);
+    } else {
+      localStorage.removeItem("citizenEmail");
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address");
-      return;
-    }
+    // 👉 redirect
+    window.location.href = "/citizen/dashboard";
 
-    try {
-      setLoading(true);
+  } catch (err) {
+    alert(err.response?.data?.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
-      // 🔹 backend endpoint eka ready nam
-      await axios.post("http://localhost:5000/api/citizen/login", {
-        email,
-        password
-      });
-
-      if (rememberMe) {
-        localStorage.setItem("citizenEmail", email);
-      } else {
-        localStorage.removeItem("citizenEmail");
-      }
-
-      alert("Login Successful");
-      window.location.href = "/citizen/dashboard"; // redirect
-    } catch (err) {
-      alert(err.response?.data?.message || "Invalid email or password");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Load remembered email on component mount
-  React.useEffect(() => {
+  useEffect(() => {
     const savedEmail = localStorage.getItem("citizenEmail");
     if (savedEmail) {
       setEmail(savedEmail);
@@ -81,7 +90,7 @@ const CitizenLogin = () => {
               type="email"
               placeholder="Enter your registered email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -96,7 +105,7 @@ const CitizenLogin = () => {
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
@@ -116,11 +125,7 @@ const CitizenLogin = () => {
             </a>
           </div>
 
-          <button 
-            type="submit" 
-            className="login-btn" 
-            disabled={loading}
-          >
+          <button type="submit" className="login-btn" disabled={loading}>
             {loading ? (
               <>
                 <span className="spinner"></span>
@@ -146,7 +151,8 @@ const CitizenLogin = () => {
         </div>
 
         <p className="register-link">
-          New to SmartWaste? <a href="/register/citizen">Create Citizen Account</a>
+          New to SmartWaste?{" "}
+          <a href="/register/citizen">Create Citizen Account</a>
         </p>
 
         <div className="login-footer">
@@ -194,7 +200,7 @@ const CitizenLogin = () => {
               </div>
             </li>
           </ul>
-          
+
           <div className="stats-panel">
             <div className="stat-item">
               <h4>50,000+</h4>

@@ -95,3 +95,36 @@ exports.clearOTPAfterReset = async (email) => {
     [email]
   );
 };
+
+
+// Additional methods for profile update
+const Citizen = {
+  findById: async (id) => {
+    const [rows] = await db.query("SELECT * FROM citizens WHERE id = ?", [id]);
+    return rows[0];
+  },
+
+  updateById: async (id, data) => {
+    const { full_name, phone, address, date_of_birth, gender, latitude, longitude, photo_url, email } = data;
+    await db.query(
+      `UPDATE citizens SET
+        full_name = ?, 
+        phone = ?, 
+        address = ?, 
+        date_of_birth = ?, 
+        gender = ?, 
+        latitude = ?, 
+        longitude = ?, 
+        photo_url = ?, 
+        email = ?
+      WHERE id = ?`,
+      [full_name, phone, address, date_of_birth, gender, latitude, longitude, photo_url, email, id]
+    );
+    const [updated] = await db.query("SELECT * FROM citizens WHERE id = ?", [id]);
+    return updated[0];
+  }
+};
+
+module.exports = Citizen;
+
+

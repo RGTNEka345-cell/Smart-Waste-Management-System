@@ -3,9 +3,10 @@ const express = require("express");
 const router = express.Router();
 const path = require('path');
 const multer = require('multer');
-
 const CitizenController = require("../controllers/CitizenController");
 const { registerValidator } = require("../middlewares/validator");
+const uploadCitizen = require("../middlewares/uploadCitizenPhoto");
+
 
 // Multer setup for optional photo upload
 const storage = multer.diskStorage({
@@ -33,6 +34,7 @@ const conditionalUpload = (req, res, next) => {
   next();
 };
 
+
 // POST /api/citizen/register
 router.post("/citizen/register", conditionalUpload, registerValidator, CitizenController.register);
 
@@ -50,6 +52,13 @@ router.post("/citizen/forgot-password", CitizenController.forgotPassword);
 
 // POST /api/citizen/reset-password
 router.post("/citizen/reset-password", CitizenController.resetPassword);
+
+// PUT /api/citizen/update-profile/:id
+router.put(
+  "/citizen/update-profile/:id",
+  uploadCitizen.single("photo"), // ✅ MUST be .single()
+  CitizenController.updateProfile // ✅ function
+);
 
 
 module.exports = router;

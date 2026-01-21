@@ -2,6 +2,7 @@
 const Citizen = require("../models/Citizen");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+const db = require("../config/database");
 
 
 const transporter = nodemailer.createTransport({
@@ -214,6 +215,7 @@ exports.resendOtp = async (req, res) => {
 
 //logincitizen
 
+// controllers/CitizenController.js
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -222,34 +224,42 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Email and password required" });
     }
 
-    // 🔍 find user
     const user = await Citizen.findByEmail(email);
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // ❗ check verified
     if (!user.is_verified) {
       return res.status(403).json({
         message: "Please verify your email before login"
       });
     }
 
-    // 🔐 compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // ✅ login success
+    // ✅ Send full citizen details
     res.json({
       success: true,
       message: "Login successful",
       citizen: {
         id: user.id,
         full_name: user.full_name,
-        email: user.email
-      }
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        date_of_birth: user.date_of_birth,
+        gender: user.gender,
+        latitude: user.latitude,
+        longitude: user.longitude,
+        photo_url: user.photo_url,
+        is_verified: user.is_verified,
+        points: user.points || 0,
+        next_collection: user.next_collection || null
+      },
+      token: "token_goes_here_if_you_use_jwt"
     });
 
   } catch (err) {
@@ -257,6 +267,7 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 exports.forgotPassword = async (req, res) => {
   try {
@@ -372,3 +383,73 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+// GET citizen by ID (optional, for future use)
+
+
+//
+
+// UPDATE citizen profile
+exports.updateProfile = async (req, res) => {
+  try {
+    const citizenId = req.params.id;
+    const {
+      full_name,
+      phone,
+      address,
+      date_of_birth,
+      gender,
+      latitude,
+      longitude,
+      email // email from frontend
+    } = req.body;
+
+    // Find existing citizen
+    const existing = await Citizen.findById(citizenId);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Citizen not found" });
+    }
+
+    let photo_url = existing.photo_url;
+    if (req.file) {
+      photo_url = `/uploads/citizens/${req.file.filename}`;
+    }
+
+    // Fix: use existing email if frontend did not send
+    const newEmail = email && email.trim() !== "" ? email : existing.email;
+
+    // Detect email change
+    const emailChanged = newEmail !== existing.email;
+
+    // Update citizen using model
+    const updatedCitizen = await Citizen.updateById(citizenId, {
+      full_name,
+      phone,
+      address,
+      date_of_birth,
+      gender,
+      latitude,
+      longitude,
+      photo_url,
+      email: newEmail // ✅ pass correct email
+    });
+
+    // Send email update message if email changed
+    let message = "Profile updated successfully!";
+    if (emailChanged) {
+      message += " ✅ Email updated.";
+      // TODO: call email sending function here if needed
+      console.log(`Email updated for ${newEmail}`); // placeholder
+    }
+
+    res.json({ success: true, message, citizen: updatedCitizen });
+
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
