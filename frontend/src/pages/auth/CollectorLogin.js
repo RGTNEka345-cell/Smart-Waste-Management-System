@@ -552,7 +552,7 @@ const CollectorLogin = () => {
         <div className="alternative-options">
           <p className="or-divider">OR</p>
           <button 
-            onClick={() => navigate("/collector/register")}
+            onClick={() => navigate("/register/collector")}
             className="alt-btn"
             disabled={isLoading}
           >
@@ -570,7 +570,11 @@ const CollectorLogin = () => {
           <p className="support-link">
             Need help? <Link to="/support">Contact Support</Link>
           </p>
+            <p className="Home-link">
+            Back to homepage <Link to="/about">Contact Support</Link>
+          </p> 
         </div>
+        
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import "./CitizenProfileUpdate.css";
+import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
 
 const CitizenProfileUpdate = () => {
   const [form, setForm] = useState({
@@ -18,13 +19,49 @@ const CitizenProfileUpdate = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [autocomplete, setAutocomplete] = useState(null);
+  const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState(false);
 
-  /* ================= Load citizen ================= */
+  // Map configuration
+  const mapContainerStyle = {
+    width: "100%",
+    height: "300px",
+    borderRadius: "12px",
+    marginTop: "10px"
+  };
+
+  const defaultCenter = {
+    lat: 6.9271, // Sri Lanka coordinates
+    lng: 79.8612
+  };
+
+  const [mapCenter, setMapCenter] = useState(defaultCenter);
+
+  // Load Google Maps script
+  useEffect(() => {
+    if (window.google && window.google.maps) {
+      setIsGoogleMapsLoaded(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyDCDq2OdTXSFuee8I7L83_0vmavC65lMCc'}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => setIsGoogleMapsLoaded(true);
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  // Load citizen data
   useEffect(() => {
     const citizen = JSON.parse(localStorage.getItem("citizen"));
     if (!citizen) return;
 
-    setForm({
+    const newForm = {
       full_name: citizen.full_name || "",
       phone: citizen.phone || "",
       address: citizen.address || "",
@@ -35,14 +72,24 @@ const CitizenProfileUpdate = () => {
       latitude: citizen.latitude || "",
       longitude: citizen.longitude || "",
       photo: null
-    });
+    };
+
+    setForm(newForm);
+
+    // Update map center if coordinates exist
+    if (citizen.latitude && citizen.longitude) {
+      setMapCenter({
+        lat: parseFloat(citizen.latitude),
+        lng: parseFloat(citizen.longitude)
+      });
+    }
 
     if (citizen.photo_url) {
       setPreviewImage(`http://localhost:5000${citizen.photo_url}`);
     }
   }, []);
 
-  /* ================= Handle input ================= */
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -65,31 +112,78 @@ const CitizenProfileUpdate = () => {
     setForm({ ...form, [name]: value });
   };
 
-  /* ================= Location ================= */
+  // Get current location
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation not supported");
+      setErrorMessage("Geolocation is not supported by your browser");
       return;
     }
 
     setLoading(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lng = pos.coords.longitude.toFixed(6);
+        
         setForm({
           ...form,
-          latitude: pos.coords.latitude.toFixed(6),
-          longitude: pos.coords.longitude.toFixed(6)
+          latitude: lat,
+          longitude: lng
         });
+        
+        setMapCenter({
+          lat: parseFloat(lat),
+          lng: parseFloat(lng)
+        });
+        
         setLoading(false);
       },
-      () => {
-        alert("Location access denied");
+      (error) => {
+        setErrorMessage(`Location access denied: ${error.message}`);
         setLoading(false);
       }
     );
   };
 
-  /* ================= Submit ================= */
+  // Handle place selection from autocomplete
+  const onPlaceChanged = () => {
+    if (!autocomplete) return;
+
+    const place = autocomplete.getPlace();
+    if (!place.geometry || !place.geometry.location) {
+      setErrorMessage("Please select a valid location from the suggestions");
+      return;
+    }
+
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    const address = place.formatted_address || "";
+
+    setForm({
+      ...form,
+      address: address,
+      latitude: lat.toFixed(6),
+      longitude: lng.toFixed(6)
+    });
+
+    setMapCenter({ lat, lng });
+  };
+
+  // Handle map click
+  const onMapClick = useCallback((e) => {
+    const lat = e.latLng.lat();
+    const lng = e.latLng.lng();
+
+    setForm({
+      ...form,
+      latitude: lat.toFixed(6),
+      longitude: lng.toFixed(6)
+    });
+
+    setMapCenter({ lat, lng });
+  }, [form]);
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
@@ -102,7 +196,7 @@ const CitizenProfileUpdate = () => {
     }
 
     if (!form.full_name.trim()) {
-      setErrorMessage("Full name required");
+      setErrorMessage("Full name is required");
       return;
     }
 
@@ -111,7 +205,9 @@ const CitizenProfileUpdate = () => {
 
       const data = new FormData();
       Object.keys(form).forEach((key) => {
-        if (form[key]) data.append(key, form[key]);
+        if (form[key] !== null && form[key] !== undefined) {
+          data.append(key, form[key]);
+        }
       });
 
       const token =
@@ -123,103 +219,260 @@ const CitizenProfileUpdate = () => {
         data,
         {
           headers: {
-            Authorization: token ? `Bearer ${token}` : ""
+            Authorization: token ? `Bearer ${token}` : "",
+            "Content-Type": "multipart/form-data"
           }
         }
       );
 
       if (res.data.success) {
         localStorage.setItem("citizen", JSON.stringify(res.data.citizen));
-        setSuccessMessage("Profile updated successfully");
+        setSuccessMessage("Profile updated successfully!");
         setForm({ ...form, photo: null });
       } else {
-        setErrorMessage("Update failed");
+        setErrorMessage(res.data.message || "Update failed");
       }
     } catch (err) {
-      setErrorMessage("Server error. Try again");
+      console.error("Update error:", err);
+      setErrorMessage(
+        err.response?.data?.message || 
+        "Server error. Please try again later."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  /* ================= UI ================= */
   return (
     <div className="profile-update-container">
-      <h2>Update My Profile</h2>
+      <div className="profile-header">
+        <h2>Update Profile</h2>
+        <p className="profile-subtitle">Update your personal information and location</p>
+      </div>
 
-      {successMessage && <p className="success-message">{successMessage}</p>}
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
+      {successMessage && (
+        <div className="success-message">{successMessage}</div>
+      )}
+      {errorMessage && (
+        <div className="error-message">{errorMessage}</div>
+      )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="photo-section">
-          <img
-            src={previewImage || "/default-user.png"}
-            alt="profile"
-            className="profile-preview-img"
-          />
-          <input type="file" name="photo" accept="image/*" onChange={handleChange} />
-
+      <form onSubmit={handleSubmit} className="profile-form">
+        {/* Photo Section */}
+        <div className="form-section">
+          <h3 className="section-title">Profile Photo</h3>
+          <div className="photo-section">
+            <div className="photo-preview-container">
+              <img
+                src={previewImage || "/default-user.png"}
+                alt="Profile Preview"
+                className="profile-preview-img"
+              />
+            </div>
+            <div className="photo-upload-controls">
+              <label className="file-upload-label">
+                Choose New Photo
+                <input 
+                  type="file" 
+                  name="photo" 
+                  accept="image/*" 
+                  onChange={handleChange}
+                  className="file-input"
+                />
+              </label>
+              <p className="file-hint">Max size: 5MB (JPEG, PNG)</p>
+            </div>
+          </div>
         </div>
 
-        <input
-          type="text"
-          name="full_name"
-          placeholder="Full Name"
-          value={form.full_name}
-          onChange={handleChange}
-        />
+        {/* Personal Information */}
+        <div className="form-section">
+          <h3 className="section-title">Personal Information</h3>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="full_name">Full Name *</label>
+              <input
+                type="text"
+                id="full_name"
+                name="full_name"
+                placeholder="Enter your full name"
+                value={form.full_name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="phone">Phone Number</label>
+              <input
+                type="text"
+                id="phone"
+                name="phone"
+                placeholder="Enter phone number"
+                value={form.phone}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
 
-        <input
-          type="text"
-          name="phone"
-          placeholder="Phone"
-          value={form.phone}
-          onChange={handleChange}
-        />
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="date_of_birth">Date of Birth</label>
+              <input
+                type="date"
+                id="date_of_birth"
+                name="date_of_birth"
+                value={form.date_of_birth}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="gender">Gender</label>
+              <select 
+                id="gender" 
+                name="gender" 
+                value={form.gender} 
+                onChange={handleChange}
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
 
-        <input
-          type="date"
-          name="date_of_birth"
-          value={form.date_of_birth}
-          onChange={handleChange}
-        />
+          <div className="form-group">
+            <label htmlFor="address">Address</label>
+            <textarea
+              id="address"
+              name="address"
+              placeholder="Enter your address"
+              value={form.address}
+              onChange={handleChange}
+              rows="3"
+            />
+          </div>
+        </div>
 
-        <select name="gender" value={form.gender} onChange={handleChange}>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
+        {/* Location Section */}
+        <div className="form-section">
+          <h3 className="section-title">Location Information</h3>
+          
+          <div className="location-controls">
+            <button 
+              type="button" 
+              onClick={getCurrentLocation}
+              className="location-btn"
+              disabled={loading}
+            >
+              <span className="btn-icon">📍</span>
+              {loading ? "Detecting..." : "Use Current Location"}
+            </button>
+          </div>
 
-        <textarea
-          name="address"
-          placeholder="Address"
-          value={form.address}
-          onChange={handleChange}
-        />
+          {/* Google Maps Section */}
+          <div className="map-section">
+            <div className="map-search-container">
+              <label htmlFor="location-search">Search Location</label>
+              {isGoogleMapsLoaded ? (
+                <Autocomplete 
+                  onLoad={(autocomplete) => setAutocomplete(autocomplete)}
+                  onPlaceChanged={onPlaceChanged}
+                >
+                  <input
+                    id="location-search"
+                    type="text"
+                    placeholder="Type an address or place name"
+                    className="map-search-input"
+                  />
+                </Autocomplete>
+              ) : (
+                <input
+                  id="location-search"
+                  type="text"
+                  placeholder="Loading map..."
+                  className="map-search-input"
+                  disabled
+                />
+              )}
+            </div>
 
-        <button type="button" onClick={getCurrentLocation}>
-          Use Current Location
-        </button>
+            <div className="map-container">
+              {isGoogleMapsLoaded ? (
+                <GoogleMap
+                  mapContainerStyle={mapContainerStyle}
+                  center={mapCenter}
+                  zoom={14}
+                  onClick={onMapClick}
+                  options={{
+                    streetViewControl: false,
+                    mapTypeControl: false,
+                    fullscreenControl: false,
+                    zoomControl: true,
+                    clickableIcons: false
+                  }}
+                >
+                  {form.latitude && form.longitude && (
+                    <Marker 
+                      position={mapCenter}
+                      icon={{
+                        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                      }}
+                    />
+                  )}
+                </GoogleMap>
+              ) : (
+                <div className="map-placeholder">
+                  Loading map...
+                </div>
+              )}
+            </div>
+          </div>
 
-        <input
-          type="number"
-          name="latitude"
-          placeholder="Latitude"
-          value={form.latitude}
-          onChange={handleChange}
-        />
+          <div className="coordinates-row">
+            <div className="form-group">
+              <label htmlFor="latitude">Latitude</label>
+              <input
+                type="number"
+                id="latitude"
+                name="latitude"
+                placeholder="Latitude"
+                value={form.latitude}
+                onChange={handleChange}
+                step="any"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="longitude">Longitude</label>
+              <input
+                type="number"
+                id="longitude"
+                name="longitude"
+                placeholder="Longitude"
+                value={form.longitude}
+                onChange={handleChange}
+                step="any"
+              />
+            </div>
+          </div>
+        </div>
 
-        <input
-          type="number"
-          name="longitude"
-          placeholder="Longitude"
-          value={form.longitude}
-          onChange={handleChange}
-        />
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Updating..." : "Update Profile"}
-        </button>
+        {/* Submit Button */}
+        <div className="form-actions">
+          <button 
+            type="submit" 
+            className="submit-btn"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <span className="spinner"></span>
+                Updating...
+              </>
+            ) : (
+              "Update Profile"
+            )}
+          </button>
+        </div>
       </form>
     </div>
   );

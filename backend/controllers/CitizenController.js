@@ -3,6 +3,7 @@ const Citizen = require("../models/Citizen");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const db = require("../config/database");
+const sendEmail = require("../utils/sendEmail");
 
 
 const transporter = nodemailer.createTransport({
@@ -390,10 +391,12 @@ exports.resetPassword = async (req, res) => {
 
 //
 
+
 // UPDATE citizen profile
 exports.updateProfile = async (req, res) => {
   try {
     const citizenId = req.params.id;
+
     const {
       full_name,
       phone,
@@ -402,27 +405,31 @@ exports.updateProfile = async (req, res) => {
       gender,
       latitude,
       longitude,
-      email // email from frontend
+      email
     } = req.body;
 
-    // Find existing citizen
+    // find citizen
     const existing = await Citizen.findById(citizenId);
     if (!existing) {
-      return res.status(404).json({ success: false, message: "Citizen not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Citizen not found"
+      });
     }
 
+    // photo
     let photo_url = existing.photo_url;
     if (req.file) {
       photo_url = `/uploads/citizens/${req.file.filename}`;
     }
 
-    // Fix: use existing email if frontend did not send
-    const newEmail = email && email.trim() !== "" ? email : existing.email;
+    // email logic
+    const newEmail =
+      email && email.trim() !== "" ? email.trim() : existing.email;
 
-    // Detect email change
     const emailChanged = newEmail !== existing.email;
 
-    // Update citizen using model
+    // update DB
     const updatedCitizen = await Citizen.updateById(citizenId, {
       full_name,
       phone,
@@ -432,24 +439,53 @@ exports.updateProfile = async (req, res) => {
       latitude,
       longitude,
       photo_url,
-      email: newEmail // ✅ pass correct email
+      email: newEmail
     });
 
-    // Send email update message if email changed
-    let message = "Profile updated successfully!";
-    if (emailChanged) {
-      message += " ✅ Email updated.";
-      // TODO: call email sending function here if needed
-      console.log(`Email updated for ${newEmail}`); // placeholder
+    // 📧 SEND EMAIL AFTER UPDATE
+    try {
+      await sendEmail({
+        to: newEmail,
+        subject: "Profile Updated Successfully",
+        html: `
+          <h2>Profile Updated</h2>
+          <p>Your profile has been updated successfully.</p>
+
+          <h4>Updated Details:</h4>
+          <ul>
+            <li><b>Name:</b> ${full_name}</li>
+            <li><b>Email:</b> ${newEmail}</li>
+            <li><b>Phone:</b> ${phone}</li>
+            <li><b>Address:</b> ${address}</li>
+            <li><b>Gender:</b> ${gender}</li>
+            <li><b>Date of Birth:</b> ${date_of_birth}</li>
+          </ul>
+
+          <p>If you did not perform this update, please contact support.</p>
+        `
+      });
+    } catch (mailError) {
+      console.error("Email send failed:", mailError.message);
     }
 
-    res.json({ success: true, message, citizen: updatedCitizen });
+    res.json({
+      success: true,
+      message: emailChanged
+        ? "Profile updated & email notification sent"
+        : "Profile updated successfully",
+      citizen: updatedCitizen
+    });
 
   } catch (error) {
     console.error("Update profile error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
+
+
 
 
 
