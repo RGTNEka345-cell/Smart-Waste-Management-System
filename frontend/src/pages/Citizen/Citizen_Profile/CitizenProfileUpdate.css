@@ -1,4 +1,4 @@
-/* CitizenProfileUpdate.css */
+/* CitizenProfileUpdate.css - UPDATED */
 :root {
   --primary-color: #2e7d32;
   --primary-light: #4caf50;
@@ -202,28 +202,34 @@
   min-height: 100px;
 }
 
-/* Location Section */
-.location-controls {
+/* Location Controls */
+.location-buttons {
+  display: flex;
+  gap: 12px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .location-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 12px 20px;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
+  flex: 1;
+  min-width: 180px;
+  justify-content: center;
 }
 
 .location-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
+  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
 }
 
 .location-btn:disabled {
@@ -231,57 +237,198 @@
   cursor: not-allowed;
 }
 
+.location-btn.secondary {
+  background: linear-gradient(135deg, #666, #444);
+}
+
+.location-btn.secondary:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
 .btn-icon {
-  font-size: 18px;
+  font-size: 16px;
 }
 
-/* Map Section */
-.map-section {
-  background: var(--background-light);
-  padding: 20px;
-  border-radius: var(--border-radius);
-  margin: 20px 0;
-}
-
+/* Map Search Container - UPDATED */
 .map-search-container {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-.map-search-container label {
+.map-search-label {
   display: block;
   margin-bottom: 8px;
   color: var(--text-color);
   font-weight: 500;
+  font-size: 14px;
 }
 
-.map-search-input {
+.map-search-hint {
+  color: var(--text-light);
+  font-weight: normal;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+/* Full Width Search Input - NEW */
+.map-search-input-full {
   width: 100%;
-  padding: 12px 16px;
+  padding: 14px 16px;
   border: 2px solid var(--border-color);
   border-radius: 8px;
   font-size: 16px;
   transition: var(--transition);
+  background: white;
+  box-sizing: border-box;
 }
 
-.map-search-input:focus {
+.map-search-input-full:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
 }
 
-.map-container {
-  position: relative;
+.map-search-input-full::placeholder {
+  color: #aaa;
+  font-size: 14px;
 }
 
-.map-placeholder {
-  height: 300px;
-  background: var(--border-color);
-  border-radius: var(--border-radius);
+.map-search-input-full:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* Remove old search wrapper styles */
+.search-input-wrapper {
+  display: none;
+}
+
+.search-btn {
+  display: none;
+}
+
+.map-hint {
+  color: var(--text-light);
+  font-size: 13px;
+  margin-top: 6px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Google Autocomplete Dropdown Styling */
+.pac-container {
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 4px;
+  font-family: inherit;
+}
+
+.pac-item {
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pac-item:hover {
+  background-color: rgba(46, 125, 50, 0.05);
+}
+
+.pac-item-query {
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pac-icon {
+  margin-top: 4px;
+}
+
+/* Map Type Indicator */
+.map-type-indicator {
+  background: rgba(46, 125, 50, 0.1);
+  color: var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Map Container */
+.map-container {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+/* Coordinates Display */
+.coordinates-display {
+  display: flex;
+  gap: 20px;
+  background: var(--background-light);
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.coordinate-item {
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+
+.coord-label {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.coord-value {
+  background: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 14px;
+  border: 1px solid var(--border-color);
+  min-width: 120px;
+  text-align: center;
+}
+
+/* Map Placeholder */
+.map-placeholder {
+  height: 300px;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  gap: 16px;
   color: var(--text-light);
-  font-size: 18px;
+  font-size: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(46, 125, 50, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.map-placeholder-hint {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  max-width: 300px;
 }
 
 /* Coordinates */
@@ -358,12 +505,6 @@
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -399,6 +540,19 @@
   .section-title {
     font-size: 18px;
   }
+  
+  .location-buttons {
+    flex-direction: column;
+  }
+  
+  .location-btn {
+    min-width: 100%;
+  }
+  
+  .map-search-input-full {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -412,5 +566,27 @@
   
   .profile-form {
     padding: 20px 16px;
+  }
+  
+  .map-search-input-full {
+    padding: 11px 12px;
+    font-size: 14px;
+  }
+  
+  .map-search-input-full::placeholder {
+    font-size: 13px;
+  }
+  
+  .map-search-label {
+    font-size: 13px;
+  }
+  
+  .coordinates-display {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .coord-value {
+    min-width: 100px;
   }
 }

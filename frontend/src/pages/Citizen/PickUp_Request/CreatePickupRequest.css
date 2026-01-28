@@ -1,0 +1,137 @@
+.pickup-container {
+  max-width: 800px;
+  margin: 30px auto;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.pickup-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin-top: 15px;
+}
+
+select, input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  resize: none;
+  height: 80px;
+}
+
+.waste-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.waste-row button {
+  background: #ff5252;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.add-btn {
+  margin-top: 15px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  margin-top: 25px;
+  width: 100%;
+  background: #1976d2;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  opacity: 0.9;
+}
+
+.info-box{
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f1f8e9;
+  border: 1px solid #c5e1a5;
+  font-size: 14px;
+}
+
+/* Special hint + errors */
+.hint {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.error-text {
+  margin-top: 8px;
+  color: #d32f2f;
+  font-size: 13px;
+}
+
+/* Make special single row look neat */
+.waste-row.single {
+  grid-template-columns: 2fr 1fr 1fr;
+}
+
+/* Photo list */
+.photo-list {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.photo-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  background: #fafafa;
+}
+
+.photo-name {
+  font-size: 13px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.photo-remove {
+  border: none;
+  background: #ff5252;
+  color: #fff;
+  border-radius: 999px;
+  padding: 4px 8px;
+  cursor: pointer;
+}

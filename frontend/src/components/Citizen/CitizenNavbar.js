@@ -44,7 +44,8 @@ const CitizenNavbar = ({ setActiveTab }) => {
     {
       id: "request",
       label: "Pickup Request",
-      icon: <FaTrashAlt />
+      icon: <FaTrashAlt />,
+      path: "/citizen/pickup-request/create"
     },
     {
       id: "dumping",
@@ -85,20 +86,25 @@ const CitizenNavbar = ({ setActiveTab }) => {
       </button>
 
       {/* Navigation Links */}
-      <div className={`nav-links ${isMenuOpen ? "active" : ""}`}>
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            className="nav-link"
-            onClick={() => {
-              setActiveTab(item.id);
-              setIsMenuOpen(false);
-            }}
-          >
-            <span className="nav-icon">{item.icon}</span>
-            <span className="nav-label">{item.label}</span>
-          </button>
-        ))}
+      {/* ✅ Navigation Links (works for both tab + route) */}
+<div className={`nav-links ${isMenuOpen ? "active" : ""}`}>
+  {navItems.map((item) => (
+    <button
+      key={item.id}
+      className="nav-link"
+      onClick={() => {
+        if (item.path) {
+          navigate(item.path); // ✅ pickup request route
+        } else {
+          setActiveTab(item.id); // ✅ old tab system
+        }
+        setIsMenuOpen(false);
+      }}
+    >
+      <span className="nav-icon">{item.icon}</span>
+      <span className="nav-label">{item.label}</span>
+    </button>
+       ))}
       </div>
 
       {/* Profile Dropdown */}

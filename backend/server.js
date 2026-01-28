@@ -49,6 +49,7 @@ try {
 app.use("/api", require("./routes/citizenRoutes"));
 app.use("/api", require("./routes/adminRoutes"));
 app.use("/api", require("./routes/collectorRoutes")); // ✅ NEW
+app.use("/api", require("./routes/pickupRequestRoutes"));
 
 /* ---------------- GLOBAL ERROR HANDLER ---------------- */
 app.use((err, req, res, next) => {

@@ -167,56 +167,11 @@ const CitizenLogin = () => {
         </div>
       </div>
 
-      <div className="login-sidepanel">
-        <div className="sidepanel-content">
-          <h3>Smart Waste Management Benefits</h3>
-          <ul className="features-list">
-            <li>
-              <span className="feature-icon">📊</span>
-              <div>
-                <strong>Real-time Tracking</strong>
-                <p>Monitor waste collection schedules and status</p>
-              </div>
-            </li>
-            <li>
-              <span className="feature-icon">🏆</span>
-              <div>
-                <strong>Reward Points</strong>
-                <p>Earn rewards for proper waste segregation</p>
-              </div>
-            </li>
-            <li>
-              <span className="feature-icon">📱</span>
-              <div>
-                <strong>Mobile Notifications</strong>
-                <p>Get alerts for collection days and changes</p>
-              </div>
-            </li>
-            <li>
-              <span className="feature-icon">🌱</span>
-              <div>
-                <strong>Eco Impact</strong>
-                <p>Track your environmental contribution</p>
-              </div>
-            </li>
-          </ul>
+      
 
-          <div className="stats-panel">
-            <div className="stat-item">
-              <h4>50,000+</h4>
-              <p>Active Citizens</p>
-            </div>
-            <div className="stat-item">
-              <h4>85%</h4>
-              <p>Recycling Rate</p>
-            </div>
-            <div className="stat-item">
-              <h4>2,500+</h4>
-              <p>Tons Diverted</p>
-            </div>
-          </div>
-        </div>
-      </div>
+          
+        
+       
     </div>
   );
 };

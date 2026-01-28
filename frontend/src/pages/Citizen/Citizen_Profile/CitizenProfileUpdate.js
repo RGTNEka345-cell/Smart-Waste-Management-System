@@ -21,13 +21,17 @@ const CitizenProfileUpdate = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [autocomplete, setAutocomplete] = useState(null);
   const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState(false);
+  const [mapType, setMapType] = useState("roadmap");
+  const [, setMap] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Map configuration
   const mapContainerStyle = {
     width: "100%",
     height: "300px",
     borderRadius: "12px",
-    marginTop: "10px"
+    marginTop: "10px",
+    border: "1px solid #e0e0e0"
   };
 
   const defaultCenter = {
@@ -39,20 +43,47 @@ const CitizenProfileUpdate = () => {
 
   // Load Google Maps script
   useEffect(() => {
-    if (window.google && window.google.maps) {
-      setIsGoogleMapsLoaded(true);
-      return;
+    const checkGoogleMaps = () => {
+      if (window.google && window.google.maps && window.google.maps.places) {
+        setIsGoogleMapsLoaded(true);
+        return true;
+      }
+      return false;
+    };
+
+    if (checkGoogleMaps()) return;
+
+    // Check if script is already loading
+    if (document.querySelector('script[src*="maps.googleapis.com"]')) {
+      const interval = setInterval(() => {
+        if (checkGoogleMaps()) {
+          setIsGoogleMapsLoaded(true);
+          clearInterval(interval);
+        }
+      }, 100);
+      return () => clearInterval(interval);
     }
 
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyDCDq2OdTXSFuee8I7L83_0vmavC65lMCc'}&libraries=places`;
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyDCDq2OdTXSFuee8I7L83_0vmavC65lMCc';
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
     script.async = true;
     script.defer = true;
-    script.onload = () => setIsGoogleMapsLoaded(true);
+    
+    script.onload = () => {
+      console.log("Google Maps loaded successfully");
+      setIsGoogleMapsLoaded(true);
+    };
+    
+    script.onerror = () => {
+      console.error("Failed to load Google Maps");
+      setErrorMessage("Failed to load Google Maps. Please check your API key.");
+    };
+
     document.head.appendChild(script);
 
     return () => {
-      document.head.removeChild(script);
+      // Don't remove script as it might be used elsewhere
     };
   }, []);
 
@@ -78,16 +109,18 @@ const CitizenProfileUpdate = () => {
 
     // Update map center if coordinates exist
     if (citizen.latitude && citizen.longitude) {
+      const lat = parseFloat(citizen.latitude);
+      const lng = parseFloat(citizen.longitude);
       setMapCenter({
-        lat: parseFloat(citizen.latitude),
-        lng: parseFloat(citizen.longitude)
+        lat: isNaN(lat) ? defaultCenter.lat : lat,
+        lng: isNaN(lng) ? defaultCenter.lng : lng
       });
     }
 
     if (citizen.photo_url) {
       setPreviewImage(`http://localhost:5000${citizen.photo_url}`);
     }
-  }, []);
+  }, [defaultCenter.lat, defaultCenter.lng]);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -107,6 +140,10 @@ const CitizenProfileUpdate = () => {
       setPreviewImage(URL.createObjectURL(file));
       setErrorMessage("");
       return;
+    }
+
+    if (name === "address") {
+      setSearchQuery(value);
     }
 
     setForm({ ...form, [name]: value });
@@ -137,40 +174,118 @@ const CitizenProfileUpdate = () => {
         });
         
         setLoading(false);
+        setSuccessMessage("Location detected successfully!");
       },
       (error) => {
-        setErrorMessage(`Location access denied: ${error.message}`);
+        console.error("Geolocation error:", error);
+        let errorMsg = "Location access denied";
+        
+        if (error.code === error.PERMISSION_DENIED) {
+          errorMsg = "Please allow location access in your browser settings";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          errorMsg = "Location information is unavailable";
+        } else if (error.code === error.TIMEOUT) {
+          errorMsg = "Location request timed out";
+        } else {
+          errorMsg = "An unknown error occurred while getting location";
+        }
+        
+        setErrorMessage(errorMsg);
         setLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
       }
     );
   };
 
   // Handle place selection from autocomplete
   const onPlaceChanged = () => {
-    if (!autocomplete) return;
-
-    const place = autocomplete.getPlace();
-    if (!place.geometry || !place.geometry.location) {
-      setErrorMessage("Please select a valid location from the suggestions");
+    if (!autocomplete) {
+      console.error("Autocomplete not initialized");
       return;
     }
 
-    const lat = place.geometry.location.lat();
-    const lng = place.geometry.location.lng();
-    const address = place.formatted_address || "";
+    try {
+      const place = autocomplete.getPlace();
+      
+      if (!place || !place.geometry || !place.geometry.location) {
+        setErrorMessage("Please select a valid location from the suggestions");
+        return;
+      }
 
-    setForm({
-      ...form,
-      address: address,
-      latitude: lat.toFixed(6),
-      longitude: lng.toFixed(6)
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      const address = place.formatted_address || place.name || "";
+
+      setForm({
+        ...form,
+        address: address,
+        latitude: lat.toFixed(6),
+        longitude: lng.toFixed(6)
+      });
+
+      setMapCenter({ lat, lng });
+      setSearchQuery(address);
+      setSuccessMessage("Location selected successfully!");
+    } catch (error) {
+      console.error("Error in onPlaceChanged:", error);
+      setErrorMessage("Failed to select location. Please try again.");
+    }
+  };
+
+  // Handle Enter key in search
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      e.preventDefault();
+      performSearch();
+    }
+  };
+
+  // Perform search
+  const performSearch = () => {
+    if (!searchQuery.trim()) {
+      setErrorMessage("Please enter a location to search");
+      return;
+    }
+
+    if (!window.google || !window.google.maps) {
+      setErrorMessage("Google Maps not loaded yet");
+      return;
+    }
+
+    setLoading(true);
+    
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ address: searchQuery }, (results, status) => {
+      setLoading(false);
+      
+      if (status === window.google.maps.GeocoderStatus.OK && results[0]) {
+        const location = results[0].geometry.location;
+        const lat = location.lat();
+        const lng = location.lng();
+        
+        setForm({
+          ...form,
+          address: results[0].formatted_address,
+          latitude: lat.toFixed(6),
+          longitude: lng.toFixed(6)
+        });
+        
+        setMapCenter({ lat, lng });
+        setSuccessMessage("Location found!");
+      } else {
+        setErrorMessage("Could not find the location. Please try a different search term.");
+      }
     });
-
-    setMapCenter({ lat, lng });
   };
 
   // Handle map click
   const onMapClick = useCallback((e) => {
+    if (!e.latLng) return;
+    
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
 
@@ -181,7 +296,31 @@ const CitizenProfileUpdate = () => {
     });
 
     setMapCenter({ lat, lng });
+    
+    // Reverse geocode to get address
+    if (window.google && window.google.maps) {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+        if (status === window.google.maps.GeocoderStatus.OK && results[0]) {
+          setForm(prev => ({
+            ...prev,
+            address: results[0].formatted_address
+          }));
+          setSearchQuery(results[0].formatted_address);
+        }
+      });
+    }
   }, [form]);
+
+  // Handle map load
+  const onMapLoad = useCallback((mapInstance) => {
+    setMap(mapInstance);
+  }, []);
+
+  // Toggle map type
+  const toggleMapType = () => {
+    setMapType(prev => prev === "roadmap" ? "satellite" : "roadmap");
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -198,6 +337,21 @@ const CitizenProfileUpdate = () => {
     if (!form.full_name.trim()) {
       setErrorMessage("Full name is required");
       return;
+    }
+
+    // Validate coordinates
+    if (form.latitude && form.longitude) {
+      const lat = parseFloat(form.latitude);
+      const lng = parseFloat(form.longitude);
+      
+      if (isNaN(lat) || lat < -90 || lat > 90) {
+        setErrorMessage("Invalid latitude value");
+        return;
+      }
+      if (isNaN(lng) || lng < -180 || lng > 180) {
+        setErrorMessage("Invalid longitude value");
+        return;
+      }
     }
 
     try {
@@ -358,39 +512,65 @@ const CitizenProfileUpdate = () => {
           <h3 className="section-title">Location Information</h3>
           
           <div className="location-controls">
-            <button 
-              type="button" 
-              onClick={getCurrentLocation}
-              className="location-btn"
-              disabled={loading}
-            >
-              <span className="btn-icon">📍</span>
-              {loading ? "Detecting..." : "Use Current Location"}
-            </button>
+            <div className="location-buttons">
+              <button 
+                type="button" 
+                onClick={getCurrentLocation}
+                className="location-btn"
+                disabled={loading}
+              >
+                <span className="btn-icon">📍</span>
+                {loading ? "Detecting..." : "Use Current Location"}
+              </button>
+              
+              <button 
+                type="button" 
+                onClick={toggleMapType}
+                className="location-btn secondary"
+                disabled={!isGoogleMapsLoaded}
+              >
+                <span className="btn-icon">
+                  {mapType === "roadmap" ? "🛰️" : "🗺️"}
+                </span>
+                {mapType === "roadmap" ? "Satellite View" : "Map View"}
+              </button>
+            </div>
           </div>
 
           {/* Google Maps Section */}
           <div className="map-section">
             <div className="map-search-container">
-              <label htmlFor="location-search">Search Location</label>
+              <label htmlFor="location-search" className="map-search-label">
+                Search Location
+                <span className="map-search-hint"> (Type and press Enter or select from suggestions)</span>
+              </label>
               {isGoogleMapsLoaded ? (
                 <Autocomplete 
-                  onLoad={(autocomplete) => setAutocomplete(autocomplete)}
+                  onLoad={(ac) => {
+                    setAutocomplete(ac);
+                  }}
                   onPlaceChanged={onPlaceChanged}
+                  options={{
+                    types: ['geocode', 'establishment'],
+                    componentRestrictions: { country: 'lk' }
+                  }}
                 >
                   <input
                     id="location-search"
                     type="text"
-                    placeholder="Type an address or place name"
-                    className="map-search-input"
+                    placeholder="Type an address or place name and press Enter"
+                    className="map-search-input-full"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={handleSearchKeyPress}
                   />
                 </Autocomplete>
               ) : (
                 <input
                   id="location-search"
                   type="text"
-                  placeholder="Loading map..."
-                  className="map-search-input"
+                  placeholder="Loading Google Maps..."
+                  className="map-search-input-full"
                   disabled
                 />
               )}
@@ -398,33 +578,53 @@ const CitizenProfileUpdate = () => {
 
             <div className="map-container">
               {isGoogleMapsLoaded ? (
-                <GoogleMap
-                  mapContainerStyle={mapContainerStyle}
-                  center={mapCenter}
-                  zoom={14}
-                  onClick={onMapClick}
-                  options={{
-                    streetViewControl: false,
-                    mapTypeControl: false,
-                    fullscreenControl: false,
-                    zoomControl: true,
-                    clickableIcons: false
-                  }}
-                >
-                  {form.latitude && form.longitude && (
-                    <Marker 
-                      position={mapCenter}
-                      icon={{
-                        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-                      }}
-                    />
-                  )}
-                </GoogleMap>
+                <>
+                  <div className="map-type-indicator">
+                    {mapType === "satellite" ? "🛰️ Satellite View" : "🗺️ Map View"}
+                  </div>
+                  <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    center={mapCenter}
+                    zoom={14}
+                    onClick={onMapClick}
+                    onLoad={onMapLoad}
+                    options={{
+                      streetViewControl: true,
+                      mapTypeControl: true,
+                      fullscreenControl: true,
+                      zoomControl: true,
+                      clickableIcons: true,
+                      mapTypeId: mapType,
+                      gestureHandling: "greedy"
+                    }}
+                  >
+                    {form.latitude && form.longitude && (
+                      <Marker 
+                        position={mapCenter}
+                        animation={window.google.maps.Animation.DROP}
+                        title="Your selected location"
+                      />
+                    )}
+                  </GoogleMap>
+                </>
               ) : (
                 <div className="map-placeholder">
-                  Loading map...
+                  <div className="loading-spinner"></div>
+                  <p>Loading Google Maps...</p>
+                  <p className="map-placeholder-hint">If map doesn't load, check your API key</p>
                 </div>
               )}
+            </div>
+
+            <div className="coordinates-display">
+              <div className="coordinate-item">
+                <span className="coord-label">Latitude:</span>
+                <span className="coord-value">{form.latitude || "Not set"}</span>
+              </div>
+              <div className="coordinate-item">
+                <span className="coord-label">Longitude:</span>
+                <span className="coord-value">{form.longitude || "Not set"}</span>
+              </div>
             </div>
           </div>
 
@@ -435,10 +635,12 @@ const CitizenProfileUpdate = () => {
                 type="number"
                 id="latitude"
                 name="latitude"
-                placeholder="Latitude"
+                placeholder="Enter latitude"
                 value={form.latitude}
                 onChange={handleChange}
                 step="any"
+                min="-90"
+                max="90"
               />
             </div>
             <div className="form-group">
@@ -447,10 +649,12 @@ const CitizenProfileUpdate = () => {
                 type="number"
                 id="longitude"
                 name="longitude"
-                placeholder="Longitude"
+                placeholder="Enter longitude"
                 value={form.longitude}
                 onChange={handleChange}
                 step="any"
+                min="-180"
+                max="180"
               />
             </div>
           </div>

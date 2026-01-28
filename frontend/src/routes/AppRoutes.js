@@ -13,6 +13,7 @@ import WasteType from "../pages/admin/wastetype/WasteType";
 import AdminCollectorApproval from "../pages/admin/CollectorData/CollectorApproval";
 import CollectorApprovalHistory from "../pages/admin/CollectorData/CollectorApprovalHistory";
 import CitizenProfileUpdate from "../pages/Citizen/Citizen_Profile/CitizenProfileUpdate";
+import CreatePickupRequest from "../pages/Citizen/PickUp_Request/CreatePickupRequest";
 
 // Collector නව components import කරන්න
 import CollectorForgotPassword from "../pages/Collector/Collector_Password/ForgotPassword";
@@ -30,6 +31,7 @@ function AppRoutes() {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/citizen/dashboard" element={<CitizenDashboard />} />
       <Route path="/citizen/profile/update" element={<CitizenProfileUpdate />} />
+      <Route path="/citizen/pickup-request/create" element={<CreatePickupRequest />}/>
 
 
       {/* Admin - No changes */}
