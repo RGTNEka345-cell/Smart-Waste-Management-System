@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./CollectorLogin.css";
+import Navbar from "../../components/HomePage/Navbar";
+import Footer from "../../components/HomePage/Footer";
 
 const CollectorLogin = () => {
   const navigate = useNavigate();
@@ -306,7 +308,10 @@ const CollectorLogin = () => {
   }, [step, loginMethod]);
 
   return (
-    <div className="collector-login-container">
+    <>
+      <Navbar />
+      <div className="page-with-navbar">
+        <div className="collector-login-container">
       <div className="login-card">
         {/* Header */}
         <div className="login-header">
@@ -576,7 +581,10 @@ const CollectorLogin = () => {
         </div>
         
       </div>
-    </div>
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 };
 

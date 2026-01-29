@@ -4,6 +4,17 @@ const VALID_REQUEST_TYPES = new Set(["NORMAL", "SPECIAL"]);
 const VALID_TARGET_TYPES = new Set(["government", "factory"]);
 const VALID_UNITS = new Set(["kg", "bag", "piece", "other"]);
 
+const getCitizenIdFromRequest = (req) => {
+  const queryId = req.query?.citizen_id;
+  const headerId = req.headers["x-citizen-id"];
+  const auth = req.headers.authorization || "";
+  const bearer = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
+
+  const pick = queryId || headerId || bearer;
+  const id = parseInt(pick, 10);
+  return Number.isInteger(id) ? id : null;
+};
+
 const parsePayload = (req) => {
   if (req.body && req.body.data) {
     return JSON.parse(req.body.data);
@@ -59,7 +70,7 @@ exports.createPickupRequest = async (req, res) => {
       `SELECT request_id, status
        FROM pickup_requests
        WHERE citizen_id = ? AND request_type = ?
-         AND status IN ('PENDING_ADMIN','APPROVED_ADMIN','ASSIGNING','ACCEPTED_BY_COLLECTOR','IN_PROGRESS')
+         AND status IN ('PENDING_ADMIN','APPROVED_ADMIN','ASSIGNING','FAILED_TO_ASSIGN','ACCEPTED_BY_COLLECTOR','IN_PROGRESS')
        LIMIT 1`,
       [citizenId, requestType]
     );
@@ -153,5 +164,130 @@ exports.createPickupRequest = async (req, res) => {
     return res.status(500).json({ message: "Failed to create pickup request" });
   } finally {
     conn.release();
+  }
+};
+
+exports.getMyPickupRequests = async (req, res) => {
+  try {
+    const citizenId = getCitizenIdFromRequest(req);
+    if (!citizenId) {
+      return res.status(400).json({ message: "citizen_id is required" });
+    }
+
+    const [rows] = await db.execute(
+      `SELECT request_id, request_type, status, requested_at
+       FROM pickup_requests
+       WHERE citizen_id = ?
+       ORDER BY requested_at DESC`,
+      [citizenId]
+    );
+
+    return res.json(rows);
+  } catch (err) {
+    console.error("Get my pickup requests error:", err.message);
+    return res.status(500).json({ message: "Failed to load pickup requests" });
+  }
+};
+
+exports.getPickupRequestDetails = async (req, res) => {
+  try {
+    const requestId = parseInt(req.params.id, 10);
+    if (!Number.isInteger(requestId)) {
+      return res.status(400).json({ message: "Invalid request id" });
+    }
+
+    const citizenId = getCitizenIdFromRequest(req);
+
+    const [reqRows] = await db.execute(
+      `SELECT *
+       FROM pickup_requests
+       WHERE request_id = ?`,
+      [requestId]
+    );
+
+    if (reqRows.length === 0) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    const request = reqRows[0];
+    if (citizenId && request.citizen_id !== citizenId) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const [items] = await db.execute(
+      `SELECT pri.item_id, pri.wastetype_id, wt.name AS wastetype_name, pri.quantity, pri.unit
+       FROM pickup_request_items pri
+       LEFT JOIN wastetypes wt ON wt.id = pri.wastetype_id
+       WHERE pri.request_id = ?`,
+      [requestId]
+    );
+
+    const [photos] = await db.execute(
+      `SELECT photo_id, photo_url, photo_type, uploaded_at
+       FROM pickup_request_photos
+       WHERE request_id = ?
+       ORDER BY uploaded_at ASC`,
+      [requestId]
+    );
+
+    return res.json({
+      request,
+      items,
+      photos,
+      collector: null
+    });
+  } catch (err) {
+    console.error("Get pickup request details error:", err.message);
+    return res.status(500).json({ message: "Failed to load pickup request" });
+  }
+};
+
+exports.cancelPickupRequest = async (req, res) => {
+  try {
+    const requestId = parseInt(req.params.id, 10);
+    if (!Number.isInteger(requestId)) {
+      return res.status(400).json({ message: "Invalid request id" });
+    }
+
+    const citizenId = getCitizenIdFromRequest(req);
+
+    const [rows] = await db.execute(
+      `SELECT request_id, citizen_id, status
+       FROM pickup_requests
+       WHERE request_id = ?`,
+      [requestId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    const request = rows[0];
+    if (citizenId && request.citizen_id !== citizenId) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const cancellable = new Set([
+      "PENDING_ADMIN",
+      "APPROVED_ADMIN",
+      "ASSIGNING",
+      "FAILED_TO_ASSIGN"
+    ]);
+
+    if (!cancellable.has(request.status)) {
+      return res.status(400).json({ message: "Request cannot be cancelled now" });
+    }
+
+    await db.execute(
+      `UPDATE pickup_requests
+       SET status = 'CANCELLED_BY_CITIZEN', cancelled_at = NOW()
+       WHERE request_id = ?`,
+      [requestId]
+    );
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("Cancel pickup request error:", err.message);
+    return res.status(500).json({ message: "Failed to cancel pickup request" });
   }
 };

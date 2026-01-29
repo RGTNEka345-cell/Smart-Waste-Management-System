@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./CitizenRegister.css";
+import Navbar from "../../components/HomePage/Navbar";
+import Footer from "../../components/HomePage/Footer";
 import { 
   FaUser, 
   FaEnvelope, 
@@ -384,96 +386,105 @@ const CitizenRegister = () => {
   /* ---------------- OTP Screen ---------------- */
   if (step === 2) {
     return (
-      <div className="register-container">
-        <div className="register-header">
-          <h1><FaUser /> Email Verification</h1>
-          <p>Verify your email to complete registration</p>
-        </div>
-
-        <div className="otp-verification-container">
-          <div className="otp-header">
-            <h2>OTP Verification</h2>
-            <p>OTP sent to <strong>{form.email}</strong></p>
-            <p className="otp-note">Check your email inbox (and spam folder)</p>
+      <>
+        <Navbar />
+        <div className="page-with-navbar">
+          <div className="register-container">
+          <div className="register-header">
+            <h1><FaUser /> Email Verification</h1>
+            <p>Verify your email to complete registration</p>
           </div>
 
-          <div className="otp-input-group">
-            {[0, 1, 2, 3, 4, 5].map((index) => (
-              <input
-                key={index}
-                id={`otp-${index}`}
-                type="text"
-                maxLength="1"
-                value={otp[index]}
-                onChange={(e) => handleOtpChange(index, e.target.value)}
-                onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                className="otp-input"
-                autoFocus={index === 0}
-              />
-            ))}
-          </div>
+          <div className="otp-verification-container">
+            <div className="otp-header">
+              <h2>OTP Verification</h2>
+              <p>OTP sent to <strong>{form.email}</strong></p>
+              <p className="otp-note">Check your email inbox (and spam folder)</p>
+            </div>
 
-          <div className="timer-display">
-            <p>Time remaining: <span className="time-left">{formatTime(timeLeft)}</span></p>
-            <p className="expiry-note">OTP expires in {formatTime(timeLeft)}</p>
-          </div>
+            <div className="otp-input-group">
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <input
+                  key={index}
+                  id={`otp-${index}`}
+                  type="text"
+                  maxLength="1"
+                  value={otp[index]}
+                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                  className="otp-input"
+                  autoFocus={index === 0}
+                />
+              ))}
+            </div>
 
-          <div className="otp-actions">
-            <button 
-              className="back-btn" 
-              onClick={() => setStep(1)}
-              disabled={loading}
-            >
-              <FaArrowLeft /> Back to Registration
-            </button>
-            
-            <button 
-              className="verify-btn" 
-              onClick={verifyOtp} 
-              disabled={loading || timeLeft === 0}
-            >
-              {loading ? (
-                <>
-                  <FaSpinner className="spinner" /> Verifying...
-                </>
-              ) : (
-                <>
-                  <FaCheckCircle /> Verify OTP
-                </>
-              )}
-            </button>
-          </div>
+            <div className="timer-display">
+              <p>Time remaining: <span className="time-left">{formatTime(timeLeft)}</span></p>
+              <p className="expiry-note">OTP expires in {formatTime(timeLeft)}</p>
+            </div>
 
-          <div className="resend-section">
-            <p>
-              Didn't receive the code? 
+            <div className="otp-actions">
               <button 
-                className={`resend-btn ${!canResend ? 'disabled' : ''}`}
-                onClick={resendOtp}
-                disabled={!canResend || loading}
+                className="back-btn" 
+                onClick={() => setStep(1)}
+                disabled={loading}
               >
-                <FaRedo /> {canResend ? 'Resend OTP' : `Resend available in ${formatTime(timeLeft)}`}
+                <FaArrowLeft /> Back to Registration
               </button>
-            </p>
+              
+              <button 
+                className="verify-btn" 
+                onClick={verifyOtp} 
+                disabled={loading || timeLeft === 0}
+              >
+                {loading ? (
+                  <>
+                    <FaSpinner className="spinner" /> Verifying...
+                  </>
+                ) : (
+                  <>
+                    <FaCheckCircle /> Verify OTP
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="resend-section">
+              <p>
+                Didn't receive the code? 
+                <button 
+                  className={`resend-btn ${!canResend ? 'disabled' : ''}`}
+                  onClick={resendOtp}
+                  disabled={!canResend || loading}
+                >
+                  <FaRedo /> {canResend ? 'Resend OTP' : `Resend available in ${formatTime(timeLeft)}`}
+                </button>
+              </p>
+            </div>
+          </div>
           </div>
         </div>
-      </div>
+        <Footer />
+      </>
     );
   }
 
   /* ---------------- Register Form ---------------- */
   return (
-    <div className="register-container">
-      <div className="register-header">
-        <h1><FaUser /> Citizen Registration</h1>
-        <p>Join our Smart Waste Management System</p>
-      </div>
+    <>
+      <Navbar />
+      <div className="page-with-navbar">
+        <div className="register-container">
+        <div className="register-header">
+          <h1><FaUser /> Citizen Registration</h1>
+          <p>Join our Smart Waste Management System</p>
+        </div>
 
-      <div className="register-form">
-        <div className="form-grid">
-          {/* Personal Information */}
-          <div className="form-section">
-            <h3><FaUser /> Personal Information</h3>
+        <div className="register-form">
+          <div className="form-grid">
+            {/* Personal Information */}
+            <div className="form-section">
+              <h3><FaUser /> Personal Information</h3>
             
             <div className="form-group">
               <label><FaUser /> Full Name *</label>
@@ -679,9 +690,12 @@ const CitizenRegister = () => {
           <p className="login-link">
             Already have an account? <a href="/login/citizen">Login here</a>
           </p>
+          </div>
+        </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

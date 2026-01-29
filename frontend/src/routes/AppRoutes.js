@@ -14,6 +14,8 @@ import AdminCollectorApproval from "../pages/admin/CollectorData/CollectorApprov
 import CollectorApprovalHistory from "../pages/admin/CollectorData/CollectorApprovalHistory";
 import CitizenProfileUpdate from "../pages/Citizen/Citizen_Profile/CitizenProfileUpdate";
 import CreatePickupRequest from "../pages/Citizen/PickUp_Request/CreatePickupRequest";
+import MyPickupRequests from "../pages/Citizen/PickUp_Request/MyPickupRequests";
+import PickupRequestDetails from "../pages/Citizen/PickUp_Request/PickupRequestDetails";
 
 // Collector නව components import කරන්න
 import CollectorForgotPassword from "../pages/Collector/Collector_Password/ForgotPassword";
@@ -32,6 +34,8 @@ function AppRoutes() {
       <Route path="/citizen/dashboard" element={<CitizenDashboard />} />
       <Route path="/citizen/profile/update" element={<CitizenProfileUpdate />} />
       <Route path="/citizen/pickup-request/create" element={<CreatePickupRequest />}/>
+      <Route path="/citizen/pickup/requests" element={<MyPickupRequests />}/>
+      <Route path="/citizen/pickup/:requestId" element={<PickupRequestDetails />}/>
 
 
       {/* Admin - No changes */}

@@ -5,35 +5,45 @@ CREATE TABLE pickup_requests (
 
   -- NORMAL = government, SPECIAL = factory
   request_type ENUM('NORMAL','SPECIAL') NOT NULL,
+
+  -- request routing type
   target_collection_type ENUM('government','factory') NOT NULL,
 
-  -- snapshot of pickup point at the time of request (citizen table change උනත් request එකට බලපාන්නේ නැති වෙන්න)
+  -- snapshot pickup location (citizen location change උනත් request එක වෙනස් නොවෙයි)
   pickup_latitude DECIMAL(10,8) NOT NULL,
   pickup_longitude DECIMAL(11,8) NOT NULL,
   pickup_address TEXT NULL,
 
   note TEXT NULL,
 
-  -- request status (system-wide)
   status ENUM(
-    'PENDING_ADMIN',        -- citizen just submitted
-    'REJECTED_ADMIN',       -- admin rejected
-    'APPROVED_ADMIN',       -- admin approved (ready to assign)
-    'ASSIGNING',            -- offering to collectors
+    'PENDING_ADMIN',
+    'REJECTED_ADMIN',
+    'APPROVED_ADMIN',
+    'ASSIGNING',
+    'FAILED_TO_ASSIGN',
     'ACCEPTED_BY_COLLECTOR',
     'IN_PROGRESS',
     'COMPLETED',
     'CANCELLED_BY_CITIZEN'
-  ) DEFAULT 'PENDING_ADMIN',
+  ) NOT NULL DEFAULT 'PENDING_ADMIN',
+
+  -- controls assignment loop (infinite loop avoid)
+  max_attempts INT NOT NULL DEFAULT 10,
+  current_attempt INT NOT NULL DEFAULT 0,
 
   requested_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  admin_decided_at DATETIME NULL,
+  accepted_at DATETIME NULL,
+  started_at DATETIME NULL,
+  completed_at DATETIME NULL,
   cancelled_at DATETIME NULL,
 
-  CONSTRAINT fk_pickuprequest_citizen
+  CONSTRAINT fk_pr_citizen
     FOREIGN KEY (citizen_id) REFERENCES citizens(id)
     ON DELETE CASCADE,
 
-  INDEX idx_pickuprequest_citizen (citizen_id),
-  INDEX idx_pickuprequest_status_time (status, requested_at),
-  INDEX idx_pickuprequest_type (target_collection_type, request_type)
+  INDEX idx_pr_status_time (status, requested_at),
+  INDEX idx_pr_citizen_time (citizen_id, requested_at),
+  INDEX idx_pr_type (target_collection_type, request_type)
 ) ENGINE=InnoDB;

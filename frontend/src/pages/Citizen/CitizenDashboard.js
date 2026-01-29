@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
-import CitizenNavbar from "../../components/Citizen/CitizenNavbar"; // ✅ navbar import
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import CitizenNavbar from "../../components/Citizen/CitizenNavbar";
 import "./CitizenDashboard.css";
 
 const CitizenDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   // Load logged-in citizen data from localStorage
   useEffect(() => {
@@ -13,6 +15,22 @@ const CitizenDashboard = () => {
       setUser(JSON.parse(storedCitizen));
     }
   }, []);
+
+  const profileCompletion = useMemo(() => {
+    if (!user) return 0;
+    const fields = [
+      user.full_name,
+      user.email,
+      user.phone,
+      user.address,
+      user.date_of_birth,
+      user.gender,
+      user.latitude,
+      user.longitude
+    ];
+    const filled = fields.filter(Boolean).length;
+    return Math.round((filled / fields.length) * 100);
+  }, [user]);
 
   if (!user) {
     return <p style={{ padding: "20px" }}>Loading citizen data...</p>;
@@ -26,36 +44,109 @@ const CitizenDashboard = () => {
       <div className="citizen-container">
         <main className="citizen-main">
 
-          {/* Top bar */}
-          <div className="top-bar">
-            <div>
-              <h1>Hello, {user.full_name} 👋</h1>
-              <p>{user.address || "-"}</p>
+          {/* Hero */}
+          <div className="hero">
+            <div className="hero-left">
+              <p className="hero-kicker">Citizen Dashboard</p>
+              <h1>Hi {user.full_name?.split(" ")[0] || "there"}, keep your city clean.</h1>
+              <p className="hero-sub">
+                Your pickup activity, rewards, and profile progress in one place.
+              </p>
+
+              <div className="hero-chips">
+                <span className="chip">📍 {user.address || "Address not set"}</span>
+                <span className="chip">✅ Active Citizen</span>
+                <span className="chip">🕒 Next: {user.next_collection || "Not scheduled"}</span>
+              </div>
             </div>
-            <div className="points">
-              🌱 Eco Points: <strong>{user.points || 0}</strong>
+
+            <div className="hero-right">
+              <div className="points-card">
+                <div className="points-title">Eco Points</div>
+                <div className="points-value">{user.points || 0}</div>
+                <div className="points-meta">Earn points by completing pickups</div>
+                <button
+                  className="ghost-btn"
+                  type="button"
+                  onClick={() => navigate("/citizen/pickup/requests")}
+                >
+                  View My Requests →
+                </button>
+              </div>
             </div>
           </div>
 
           {/* ================= CONTENT ================= */}
 
           {activeTab === "dashboard" && (
-            <div className="cards">
-              <div className="card">
-                <h3>Next Collection</h3>
-                <p>{user.next_collection || "Not scheduled"}</p>
+            <>
+              <div className="quick-actions">
+                <button
+                  className="primary-btn"
+                  onClick={() => navigate("/citizen/pickup-request/create")}
+                >
+                  + Create Pickup Request
+                </button>
+                <button
+                  className="secondary-btn"
+                  onClick={() => navigate("/citizen/pickup/requests")}
+                >
+                  My Pickup Requests
+                </button>
+                <button
+                  className="secondary-btn"
+                  onClick={() => navigate("/citizen/profile/update")}
+                >
+                  Update Profile
+                </button>
               </div>
 
-              <div className="card">
-                <h3>Total Points</h3>
-                <p>{user.points || 0} pts</p>
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <div className="stat-label">Next Collection</div>
+                  <div className="stat-value">{user.next_collection || "Not scheduled"}</div>
+                  <div className="stat-note">We’ll notify you when scheduled</div>
+                </div>
+
+                <div className="stat-card">
+                  <div className="stat-label">Citizen Status</div>
+                  <div className="stat-value">Active</div>
+                  <div className="stat-note">Account verified</div>
+                </div>
+
+                <div className="stat-card">
+                  <div className="stat-label">Total Points</div>
+                  <div className="stat-value">{user.points || 0} pts</div>
+                  <div className="stat-note">Redeemable rewards</div>
+                </div>
               </div>
 
-              <div className="card">
-                <h3>Status</h3>
-                <p>Active Citizen</p>
+              <div className="info-grid">
+                <div className="info-card">
+                  <h3>Profile Completion</h3>
+                  <div className="progress">
+                    <div className="progress-bar" style={{ width: `${profileCompletion}%` }} />
+                  </div>
+                  <p>{profileCompletion}% complete</p>
+                  <button
+                    className="link-btn"
+                    type="button"
+                    onClick={() => navigate("/citizen/profile/update")}
+                  >
+                    Complete Profile →
+                  </button>
+                </div>
+
+                <div className="info-card highlight">
+                  <h3>Quick Tips</h3>
+                  <ul className="tips">
+                    <li>Sort waste by type before pickup.</li>
+                    <li>Upload clear photos for faster approval.</li>
+                    <li>Schedule when you’re at home.</li>
+                  </ul>
+                </div>
               </div>
-            </div>
+            </>
           )}
 
           {activeTab === "request" && (

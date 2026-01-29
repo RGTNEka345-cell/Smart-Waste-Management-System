@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./CitizenLogin.css";
+import Navbar from "../../components/HomePage/Navbar";
+import Footer from "../../components/HomePage/Footer";
 
 const CitizenLogin = () => {
   const [email, setEmail] = useState("");
@@ -66,7 +68,10 @@ const CitizenLogin = () => {
   }, []);
 
   return (
-    <div className="login-container">
+    <>
+      <Navbar />
+      <div className="page-with-navbar">
+        <div className="login-container">
       <div className="login-card">
         <div className="login-header">
           <div className="logo-container">
@@ -172,7 +177,10 @@ const CitizenLogin = () => {
           
         
        
-    </div>
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 };
 

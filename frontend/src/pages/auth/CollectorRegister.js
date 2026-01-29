@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import "./CollectorRegister.css";
+import Navbar from "../../components/HomePage/Navbar";
+import Footer from "../../components/HomePage/Footer";
 import {
   GoogleMap,
   Marker,
@@ -9,6 +11,38 @@ import {
 
 const libraries = ["places"];
 const DEFAULT_LOCATION = { lat: 6.9271, lng: 79.8612 };
+
+// Initial state objects
+const initialCollectorState = {
+  full_name: "",
+  email: "",
+  phone_number: "",
+  password: "",
+  gender: "",
+  home_address: "",
+  vehicle_number: "",
+  vehicle_photo: null
+};
+
+const initialFactoryState = {
+  factory_name: "",
+  factory_licence_no: "",
+  operating_hours: "",
+  waste_types_accepted: "",
+  factory_address: "",
+  factory_contact: "",
+  factory_latitude: "",
+  factory_longitude: ""
+};
+
+const initialGovernmentState = {
+  service_number: "",
+  department_name: "",
+  working_area_name: "",
+  designation: "",
+  working_area_latitude: "",
+  working_area_longitude: ""
+};
 
 const CollectorRegister = () => {
   const { isLoaded } = useLoadScript({
@@ -21,46 +55,29 @@ const CollectorRegister = () => {
   const [selectedWasteTypes, setSelectedWasteTypes] = useState([]);
   const [mapPosition, setMapPosition] = useState(DEFAULT_LOCATION);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [vehiclePreview, setVehiclePreview] = useState("");
 
   // Refs for autocomplete
   const factoryAutoRef = useRef(null);
   const governmentAutoRef = useRef(null);
 
-  // Initial state objects
-  const initialCollectorState = {
-    full_name: "",
-    email: "",
-    phone_number: "",
-    password: "",
-    gender: "",
-    home_address: "",
-    vehicle_number: "",
-    vehicle_photo: null
-  };
-
-  const initialFactoryState = {
-    factory_name: "",
-    factory_licence_no: "",
-    operating_hours: "",
-    waste_types_accepted: "",
-    factory_address: "",
-    factory_contact: "",
-    factory_latitude: "",
-    factory_longitude: ""
-  };
-
-  const initialGovernmentState = {
-    service_number: "",
-    department_name: "",
-    working_area_name: "",
-    designation: "",
-    working_area_latitude: "",
-    working_area_longitude: ""
-  };
-
   const [collector, setCollector] = useState(initialCollectorState);
   const [factory, setFactory] = useState(initialFactoryState);
   const [government, setGovernment] = useState(initialGovernmentState);
+
+  useEffect(() => {
+    if (!collector.vehicle_photo) {
+      setVehiclePreview("");
+      return;
+    }
+
+    const url = URL.createObjectURL(collector.vehicle_photo);
+    setVehiclePreview(url);
+
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [collector.vehicle_photo]);
 
   // Fetch waste types
   useEffect(() => {
@@ -242,98 +259,107 @@ const CollectorRegister = () => {
   // Render loading state
   if (!isLoaded) {
     return (
-      <div className="collector-register-container loading">
-        <div className="loading-spinner"></div>
-        <p>Loading maps...</p>
-      </div>
+      <>
+        <Navbar />
+        <div className="page-with-navbar">
+          <div className="collector-register-container loading">
+            <div className="loading-spinner"></div>
+            <p>Loading maps...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <div className="collector-register-container">
-      <header className="form-header">
-        <h2>Collector Registration</h2>
-        <p className="form-subtitle">Register as a waste collector with the system</p>
-      </header>
+    <>
+      <Navbar />
+      <div className="page-with-navbar">
+        <div className="collector-register-container">
+          <header className="form-header">
+            <h2>Collector Registration</h2>
+            <p className="form-subtitle">Register as a waste collector with the system</p>
+          </header>
 
-      <form onSubmit={handleSubmit} className="collector-form" noValidate>
-        {/* Personal Details Section */}
-        <section className="form-section">
-          <h3 className="section-title">Personal Information</h3>
-          <div className="input-group">
-            <input 
-              name="full_name" 
-              placeholder="Full Name *" 
-              value={collector.full_name}
-              onChange={handleCollectorChange} 
-              required 
-              disabled={isSubmitting}
-            />
-            <input 
-              name="email" 
-              type="email"
-              placeholder="Email *" 
-              value={collector.email}
-              onChange={handleCollectorChange} 
-              required 
-              disabled={isSubmitting}
-            />
-          </div>
-          
-          <div className="input-group">
-            <input 
-              name="phone_number" 
-              placeholder="Phone Number *" 
-              value={collector.phone_number}
-              onChange={handleCollectorChange} 
-              required 
-              disabled={isSubmitting}
-            />
-            <input 
-              name="password" 
-              type="password" 
-              placeholder="Password *" 
-              value={collector.password}
-              onChange={handleCollectorChange} 
-              required 
-              disabled={isSubmitting}
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="collector-form" noValidate>
+            {/* Personal Details Section */}
+            <section className="form-section">
+              <h3 className="section-title">Personal Information</h3>
+              <div className="input-group">
+                <input 
+                  name="full_name" 
+                  placeholder="Full Name *" 
+                  value={collector.full_name}
+                  onChange={handleCollectorChange} 
+                  required 
+                  disabled={isSubmitting}
+                />
+                <input 
+                  name="email" 
+                  type="email"
+                  placeholder="Email *" 
+                  value={collector.email}
+                  onChange={handleCollectorChange} 
+                  required 
+                  disabled={isSubmitting}
+                />
+              </div>
+              
+              <div className="input-group">
+                <input 
+                  name="phone_number" 
+                  placeholder="Phone Number *" 
+                  value={collector.phone_number}
+                  onChange={handleCollectorChange} 
+                  required 
+                  disabled={isSubmitting}
+                />
+                <input 
+                  name="password" 
+                  type="password" 
+                  placeholder="Password *" 
+                  value={collector.password}
+                  onChange={handleCollectorChange} 
+                  required 
+                  disabled={isSubmitting}
+                />
+              </div>
 
-          <div className="input-group">
-            <select 
-              name="gender" 
-              value={collector.gender}
-              onChange={handleCollectorChange} 
-              required 
-              disabled={isSubmitting}
-            >
-              <option value="">Select Gender *</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-            
-            <input 
-              name="vehicle_number" 
-              placeholder="Vehicle Number *" 
-              value={collector.vehicle_number}
-              onChange={handleCollectorChange} 
-              required 
-              disabled={isSubmitting}
-            />
-          </div>
+              <div className="input-group">
+                <select 
+                  name="gender" 
+                  value={collector.gender}
+                  onChange={handleCollectorChange} 
+                  required 
+                  disabled={isSubmitting}
+                >
+                  <option value="">Select Gender *</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+                
+                <input 
+                  name="vehicle_number" 
+                  placeholder="Vehicle Number *" 
+                  value={collector.vehicle_number}
+                  onChange={handleCollectorChange} 
+                  required 
+                  disabled={isSubmitting}
+                />
+              </div>
 
-          <textarea 
-            name="home_address" 
-            placeholder="Home Address *" 
-            value={collector.home_address}
-            onChange={handleCollectorChange} 
-            required 
-            rows="3"
-            disabled={isSubmitting}
-          />
-        </section>
+              <textarea 
+                name="home_address" 
+                placeholder="Home Address *" 
+                value={collector.home_address}
+                onChange={handleCollectorChange} 
+                required 
+                rows="3"
+                disabled={isSubmitting}
+              />
+            </section>
 
         {/* Vehicle Section */}
 <section className="form-section">
@@ -355,6 +381,11 @@ const CollectorRegister = () => {
     </label>
     {collector.vehicle_photo && (
       <span className="file-selected">✓ File selected</span>
+    )}
+    {vehiclePreview && (
+      <div className="vehicle-preview">
+        <img src={vehiclePreview} alt="Vehicle preview" />
+      </div>
     )}
   </div>
 </section>
@@ -403,22 +434,25 @@ const CollectorRegister = () => {
         )}
 
         {/* Submit Button */}
-        <div className="form-actions">
-          <button 
-            type="submit" 
-            className="submit-btn"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <span className="spinner"></span>
-                Processing...
-              </>
-            ) : "Submit Registration"}
-          </button>
+          <div className="form-actions">
+            <button 
+              type="submit" 
+              className="submit-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="spinner"></span>
+                  Processing...
+                </>
+              ) : "Submit Registration"}
+            </button>
+          </div>
+          </form>
         </div>
-      </form>
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 };
 

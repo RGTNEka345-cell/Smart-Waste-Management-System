@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./AdminLogin.css";
+import Navbar from "../../components/HomePage/Navbar";
+import Footer from "../../components/HomePage/Footer";
 import {
   FaUserShield,
   FaEnvelope,
@@ -416,7 +418,10 @@ const AdminLogin = () => {
 
   /* ---------------- MAIN RENDER ---------------- */
   return (
-    <div className="card">
+    <>
+      <Navbar />
+      <div className="page-with-navbar">
+        <div className="card">
       <h2>
         {step === "login" && <><FaUserShield /> Admin Login</>}
         {step === "forgot" && <><FaKey /> Reset Password</>}
@@ -442,7 +447,10 @@ const AdminLogin = () => {
           Back to Homepage
         </a>
       </div>
-    </div>
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 };
 

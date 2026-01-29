@@ -1,77 +1,239 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Sora:wght@300;400;500;600;700&display=swap");
+
 /* ===== ROOT CONTAINER ===== */
 .citizen-container {
   display: flex;
   justify-content: center;
-  background: #f5f7fa;
+  background: radial-gradient(1200px 600px at 10% -10%, #e1f7f1 0%, #f7f3e9 40%, #f5f7fa 100%);
   min-height: 100vh;
-  padding-top: 80px; /* ✅ navbar height avoid overlap */
+  padding-top: 80px;
 }
 
 /* ===== MAIN AREA ===== */
 .citizen-main {
   width: 100%;
   max-width: 1200px;
-  padding: 20px;
+  padding: 24px;
+  font-family: "Sora", sans-serif;
+  color: #1f2a32;
 }
 
-/* ===== TOP BAR ===== */
-.top-bar {
+/* ===== HERO ===== */
+.hero {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 22px;
+  align-items: stretch;
+  background: linear-gradient(135deg, #ffffff 0%, #f7fffb 100%);
+  border: 1px solid rgba(45, 106, 79, 0.12);
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: 0 12px 30px rgba(34, 80, 61, 0.08);
+  margin-bottom: 22px;
+}
+
+.hero-kicker {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #2f7d58;
+  margin: 0 0 8px;
+}
+
+.hero h1 {
+  font-family: "DM Serif Display", serif;
+  font-size: 32px;
+  margin: 0 0 10px;
+  line-height: 1.1;
+}
+
+.hero-sub {
+  margin: 0 0 18px;
+  color: #4b5a63;
+}
+
+.hero-chips {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #ffffff;
-  padding: 20px 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.top-bar h1 {
-  margin: 0;
-  font-size: 24px;
+.chip {
+  background: #eef8f2;
+  color: #2f7d58;
+  border: 1px dashed rgba(47, 125, 88, 0.35);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
 }
 
-.top-bar p {
-  margin: 4px 0 0;
-  color: #666;
+.points-card {
+  background: radial-gradient(120px 90px at 90% 20%, rgba(255, 196, 76, 0.35), transparent 60%),
+    linear-gradient(135deg, #1f2a32 0%, #243b2f 100%);
+  color: #f8fff9;
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.points {
-  font-size: 16px;
-  background: #e8f7ef;
-  color: #1b7f5a;
-  padding: 10px 16px;
-  border-radius: 20px;
+.points-title {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  color: #c8f5dc;
+}
+
+.points-value {
+  font-size: 38px;
+  font-weight: 700;
+}
+
+.points-meta {
+  font-size: 13px;
+  color: #c8f5dc;
+}
+
+.ghost-btn {
+  margin-top: auto;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
   font-weight: 600;
 }
 
-/* ===== DASHBOARD CARDS ===== */
-.cards {
+.ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ===== QUICK ACTIONS ===== */
+.quick-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.primary-btn {
+  background: #2f7d58;
+  color: #ffffff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primary-btn:hover {
+  background: #246748;
+}
+
+.secondary-btn {
+  background: #f1f4f2;
+  color: #1f2a32;
+  border: 1px solid #d6e3dc;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.secondary-btn:hover {
+  background: #e5efe9;
+}
+
+/* ===== STATS GRID ===== */
+.stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-.card {
+.stat-card {
   background: #ffffff;
-  padding: 20px;
   border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease;
+  border: 1px solid rgba(45, 106, 79, 0.12);
+  padding: 18px;
+  box-shadow: 0 8px 22px rgba(25, 64, 52, 0.08);
 }
 
-.card:hover {
-  transform: translateY(-4px);
+.stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #7a8b93;
+  margin-bottom: 8px;
 }
 
-.card h3 {
-  margin-bottom: 10px;
-  color: #333;
+.stat-value {
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.card p {
-  font-size: 15px;
-  color: #555;
+.stat-note {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #5d6b73;
+}
+
+/* ===== INFO GRID ===== */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.info-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid rgba(45, 106, 79, 0.12);
+  padding: 18px;
+  box-shadow: 0 8px 22px rgba(25, 64, 52, 0.08);
+}
+
+.info-card.highlight {
+  background: linear-gradient(135deg, #f7fff9 0%, #fff9e9 100%);
+}
+
+.info-card h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.progress {
+  background: #edf1ee;
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2f7d58 0%, #6dcf87 100%);
+}
+
+.link-btn {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: #2f7d58;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tips {
+  margin: 0;
+  padding-left: 18px;
+  color: #4b5a63;
+  font-size: 14px;
 }
 
 /* ===== CONTENT BOX ===== */
@@ -80,21 +242,6 @@
   padding: 25px;
   border-radius: 14px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-}
-
-/* ===== PRIMARY BUTTON ===== */
-.primary-btn {
-  background: #2ecc71;
-  color: #ffffff;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 8px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.primary-btn:hover {
-  background: #27ae60;
 }
 
 /* ===== PROFILE TABLE ===== */
@@ -128,14 +275,22 @@
 }
 
 /* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
-  .top-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+  .hero {
+    padding: 20px;
   }
 
-  .points {
-    align-self: flex-end;
+  .hero h1 {
+    font-size: 26px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
   }
 }

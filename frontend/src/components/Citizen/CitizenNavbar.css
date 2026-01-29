@@ -123,6 +123,75 @@
   line-height: 1;
 }
 
+/* Pickup Dropdown - Scoped */
+.citizen-navbar .nav-dropdown {
+  position: relative;
+}
+
+.citizen-navbar .dropdown-trigger {
+  padding-right: 12px;
+}
+
+.citizen-navbar .nav-caret {
+  margin-left: 6px;
+  font-size: 12px;
+  color: #777;
+  transition: var(--citizen-nav-transition);
+  flex-shrink: 0;
+}
+
+.citizen-navbar .nav-dropdown.open .nav-caret {
+  transform: rotate(180deg);
+  color: var(--citizen-nav-primary);
+}
+
+.citizen-navbar .nav-dropdown .dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 190px;
+  background: var(--citizen-nav-bg);
+  border: 1px solid var(--citizen-nav-border);
+  border-radius: 10px;
+  box-shadow: var(--citizen-nav-shadow-hover);
+  padding: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: var(--citizen-nav-transition);
+  z-index: 1002;
+}
+
+.citizen-navbar .nav-dropdown.open .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.citizen-navbar .dropdown-link {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--citizen-nav-text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  transition: var(--citizen-nav-transition);
+}
+
+.citizen-navbar .dropdown-link:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.citizen-navbar .dropdown-link:hover {
+  background: rgba(46, 125, 50, 0.08);
+  color: var(--citizen-nav-primary);
+}
+
 /* Profile Section - Scoped */
 .citizen-navbar .profile-section {
   position: relative;
@@ -462,6 +531,19 @@
     border-radius: 8px;
     margin-bottom: 4px;
     font-size: 15px;
+  }
+
+  .citizen-navbar .nav-dropdown {
+    width: 100%;
+  }
+
+  .citizen-navbar .nav-dropdown .dropdown-menu {
+    position: static;
+    min-width: 100%;
+    margin: 6px 0 8px;
+    box-shadow: none;
+    background: rgba(46, 125, 50, 0.04);
+    border: 1px solid rgba(46, 125, 50, 0.15);
   }
   
   .citizen-navbar .nav-label {

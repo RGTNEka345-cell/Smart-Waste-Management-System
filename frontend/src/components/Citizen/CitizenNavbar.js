@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./CitizenNavbar.css";
 import { 
@@ -10,14 +11,19 @@ import {
   FaTrashAlt,
   FaMapMarkerAlt,
   FaHistory,
-  FaLeaf
+  FaLeaf,
+  FaChevronDown
 } from "react-icons/fa";
 
 const CitizenNavbar = ({ setActiveTab }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isPickupOpen, setIsPickupOpen] = useState(false);
   const [citizen, setCitizen] = useState(null);
+  const [latestLoading, setLatestLoading] = useState(false);
   const navigate = useNavigate();
+  const token = localStorage.getItem("citizenToken");
+  const API = "http://localhost:5000/api";
 
   useEffect(() => {
     const citizenData = JSON.parse(localStorage.getItem("citizen"));
@@ -30,6 +36,37 @@ const CitizenNavbar = ({ setActiveTab }) => {
     navigate("/about");
   };
 
+  const handleGoLatestRequest = async () => {
+    if (latestLoading) return;
+    try {
+      setLatestLoading(true);
+      const citizenId = citizen?.id;
+      const res = await axios.get(`${API}/pickup-requests/my`, {
+        params: citizenId ? { citizen_id: citizenId } : {},
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      const rows = Array.isArray(res.data) ? res.data : [];
+      if (rows.length === 0) {
+        alert("No pickup requests found.");
+        return;
+      }
+      const latest = rows
+        .slice()
+        .sort((a, b) => new Date(b.requested_at) - new Date(a.requested_at))[0];
+      if (!latest?.request_id) {
+        alert("Latest request not found.");
+        return;
+      }
+      navigate(`/citizen/pickup/${latest.request_id}`);
+    } catch (err) {
+      alert("Failed to load latest request.");
+    } finally {
+      setLatestLoading(false);
+      setIsMenuOpen(false);
+      setIsPickupOpen(false);
+    }
+  };
+
   const profileImage = citizen?.photo_url
     ? `http://localhost:5000${citizen.photo_url}`
     : "/default-user.png";
@@ -40,12 +77,6 @@ const CitizenNavbar = ({ setActiveTab }) => {
       id: "dashboard",
       label: "Dashboard",
       icon: <FaHome />
-    },
-    {
-      id: "request",
-      label: "Pickup Request",
-      icon: <FaTrashAlt />,
-      path: "/citizen/pickup-request/create"
     },
     {
       id: "dumping",
@@ -94,17 +125,60 @@ const CitizenNavbar = ({ setActiveTab }) => {
       className="nav-link"
       onClick={() => {
         if (item.path) {
-          navigate(item.path); // ✅ pickup request route
+          navigate(item.path);
         } else {
-          setActiveTab(item.id); // ✅ old tab system
+          setActiveTab(item.id);
         }
         setIsMenuOpen(false);
+        setIsPickupOpen(false);
       }}
     >
       <span className="nav-icon">{item.icon}</span>
       <span className="nav-label">{item.label}</span>
     </button>
-       ))}
+  ))}
+
+  <div className={`nav-dropdown ${isPickupOpen ? "open" : ""}`}>
+    <button
+      className="nav-link dropdown-trigger"
+      onClick={() => setIsPickupOpen(!isPickupOpen)}
+      aria-expanded={isPickupOpen}
+    >
+      <span className="nav-icon"><FaTrashAlt /></span>
+      <span className="nav-label">Pickup Requests</span>
+      <span className="nav-caret"><FaChevronDown /></span>
+    </button>
+
+          <div className="dropdown-menu">
+            <button
+              className="dropdown-link"
+              onClick={() => {
+                navigate("/citizen/pickup-request/create");
+                setIsMenuOpen(false);
+                setIsPickupOpen(false);
+              }}
+            >
+              Create Request
+            </button>
+            <button
+              className="dropdown-link"
+              onClick={() => {
+                navigate("/citizen/pickup/requests");
+                setIsMenuOpen(false);
+                setIsPickupOpen(false);
+              }}
+            >
+              My Requests
+            </button>
+            <button
+              className="dropdown-link"
+              onClick={handleGoLatestRequest}
+              disabled={latestLoading}
+            >
+              {latestLoading ? "Loading..." : "Latest Request"}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Profile Dropdown */}
@@ -183,7 +257,10 @@ const CitizenNavbar = ({ setActiveTab }) => {
       {isMenuOpen && (
         <div 
           className="menu-backdrop"
-          onClick={() => setIsMenuOpen(false)}
+          onClick={() => {
+            setIsMenuOpen(false);
+            setIsPickupOpen(false);
+          }}
         />
       )}
     </nav>

@@ -10,4 +10,13 @@ router.post(
   PickupRequestController.createPickupRequest
 );
 
+// My pickup requests list
+router.get("/pickup-requests/my", PickupRequestController.getMyPickupRequests);
+
+// Pickup request details
+router.get("/pickup-requests/:id", PickupRequestController.getPickupRequestDetails);
+
+// Cancel pickup request (before accepted)
+router.patch("/pickup-requests/:id/cancel", PickupRequestController.cancelPickupRequest);
+
 module.exports = router;

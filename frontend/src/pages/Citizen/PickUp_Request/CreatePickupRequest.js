@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import CitizenNavbar from "../../../components/Citizen/CitizenNavbar";
 import axios from "axios";
 import "./CreatePickupRequest.css";
 
@@ -17,6 +18,16 @@ const CreatePickupRequest = () => {
   const [photoError, setPhotoError] = useState("");
 
   const isSpecial = useMemo(() => requestType === "SPECIAL", [requestType]);
+  const photoPreviews = useMemo(
+    () => photos.map((file) => ({ file, url: URL.createObjectURL(file) })),
+    [photos]
+  );
+
+  useEffect(() => {
+    return () => {
+      photoPreviews.forEach((p) => URL.revokeObjectURL(p.url));
+    };
+  }, [photoPreviews]);
 
   /* ================= LOAD WASTE TYPES ================= */
   useEffect(() => {
@@ -125,10 +136,12 @@ const CreatePickupRequest = () => {
   };
 
   return (
-    <div className="pickup-container">
-      <h2>Create Pickup Request</h2>
+    <>
+      <CitizenNavbar setActiveTab={() => {}} />
+      <div className="pickup-container">
+        <h2>Create Pickup Request</h2>
 
-      <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
         {/* Request Type */}
         <label>Request Type</label>
         <select value={requestType} onChange={(e) => setRequestType(e.target.value)}>
@@ -190,13 +203,16 @@ const CreatePickupRequest = () => {
         {photoError && <p className="error-text">{photoError}</p>}
 
         {photos.length > 0 && (
-          <div className="photo-list">
-            {photos.map((file, idx) => (
-              <div className="photo-chip" key={idx}>
-                <span className="photo-name">{file.name}</span>
-                <button type="button" className="photo-remove" onClick={() => removePhoto(idx)}>
-                  ✕
-                </button>
+          <div className="photo-grid">
+            {photoPreviews.map((p, idx) => (
+              <div className="photo-card" key={p.url}>
+                <img src={p.url} alt={`Upload ${idx + 1}`} />
+                <div className="photo-meta">
+                  <span className="photo-name">{p.file.name}</span>
+                  <button type="button" className="photo-remove" onClick={() => removePhoto(idx)}>
+                    x
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -209,9 +225,11 @@ const CreatePickupRequest = () => {
         <button type="submit" className="submit-btn">
           Submit Pickup Request
         </button>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 };
 
 export default CreatePickupRequest;
+

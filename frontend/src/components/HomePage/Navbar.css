@@ -18,6 +18,10 @@
   padding: 0.75rem 0;
 }
 
+.page-with-navbar {
+  padding-top: 96px;
+}
+
 .navbar-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -502,6 +506,10 @@
   
   .mobile-menu-container {
     max-width: 100%;
+  }
+
+  .page-with-navbar {
+    padding-top: 84px;
   }
 }
 
