@@ -291,3 +291,203 @@ exports.cancelPickupRequest = async (req, res) => {
     return res.status(500).json({ message: "Failed to cancel pickup request" });
   }
 };
+
+exports.getPendingPickupRequestsAdmin = async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      `SELECT pr.request_id, pr.request_type, pr.requested_at, pr.pickup_address,
+              pr.pickup_latitude, pr.pickup_longitude,
+              pr.citizen_id, c.full_name AS citizen_name, c.email AS citizen_email
+       FROM pickup_requests pr
+       JOIN citizens c ON c.id = pr.citizen_id
+       WHERE pr.status = 'PENDING_ADMIN'
+       ORDER BY pr.requested_at ASC`
+    );
+
+    if (rows.length === 0) {
+      return res.json([]);
+    }
+
+    const ids = rows.map((r) => r.request_id);
+    const placeholders = ids.map(() => "?").join(",");
+
+    const [items] = await db.execute(
+      `SELECT pri.item_id, pri.request_id, pri.wastetype_id, wt.name AS wastetype_name, pri.quantity, pri.unit
+       FROM pickup_request_items pri
+       LEFT JOIN wastetypes wt ON wt.id = pri.wastetype_id
+       WHERE pri.request_id IN (${placeholders})`,
+      ids
+    );
+
+    const [photos] = await db.execute(
+      `SELECT photo_id, request_id, photo_url, photo_type, uploaded_at
+       FROM pickup_request_photos
+       WHERE request_id IN (${placeholders})
+       ORDER BY uploaded_at ASC`,
+      ids
+    );
+
+    const itemsByRequest = new Map();
+    for (const item of items) {
+      if (!itemsByRequest.has(item.request_id)) {
+        itemsByRequest.set(item.request_id, []);
+      }
+      itemsByRequest.get(item.request_id).push(item);
+    }
+
+    const photosByRequest = new Map();
+    for (const photo of photos) {
+      if (!photosByRequest.has(photo.request_id)) {
+        photosByRequest.set(photo.request_id, []);
+      }
+      photosByRequest.get(photo.request_id).push(photo);
+    }
+
+    const payload = rows.map((r) => ({
+      ...r,
+      items: itemsByRequest.get(r.request_id) || [],
+      photos: photosByRequest.get(r.request_id) || []
+    }));
+
+    return res.json(payload);
+  } catch (err) {
+    console.error("Get pending pickup requests error:", err.message);
+    return res.status(500).json({ message: "Failed to load pending requests" });
+  }
+};
+
+exports.approvePickupRequestAdmin = async (req, res) => {
+  const requestId = parseInt(req.params.id, 10);
+  if (!Number.isInteger(requestId)) {
+    return res.status(400).json({ message: "Invalid request id" });
+  }
+
+  const adminId = req.adminId;
+
+  const conn = await db.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    const [rows] = await conn.execute(
+      `SELECT status, citizen_id
+       FROM pickup_requests
+       WHERE request_id = ?`,
+      [requestId]
+    );
+
+    if (rows.length === 0) {
+      await conn.rollback();
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    if (rows[0].status !== "PENDING_ADMIN") {
+      await conn.rollback();
+      return res.status(400).json({ message: "Request is not pending" });
+    }
+
+    await conn.execute(
+      `UPDATE pickup_requests
+       SET status = 'APPROVED_ADMIN', admin_decided_at = NOW()
+       WHERE request_id = ?`,
+      [requestId]
+    );
+
+    await conn.execute(
+      `INSERT INTO pickup_admin_approvals (request_id, admin_id, decision, remarks)
+       VALUES (?, ?, 'APPROVED', NULL)
+       ON DUPLICATE KEY UPDATE
+         admin_id = VALUES(admin_id),
+         decision = 'APPROVED',
+         remarks = NULL,
+         decided_at = CURRENT_TIMESTAMP`,
+      [requestId, adminId]
+    );
+
+    const title = "Pickup request approved";
+    const message = `Your pickup request #${requestId} was approved.`;
+    await conn.execute(
+      `INSERT INTO notifications (recipient_role, recipient_id, request_id, title, message)
+       VALUES ('CITIZEN', ?, ?, ?, ?)`,
+      [rows[0].citizen_id, requestId, title, message]
+    );
+
+    await conn.commit();
+    return res.json({ success: true });
+  } catch (err) {
+    await conn.rollback();
+    console.error("Approve pickup request error:", err.message);
+    return res.status(500).json({ message: "Failed to approve request" });
+  } finally {
+    conn.release();
+  }
+};
+
+exports.rejectPickupRequestAdmin = async (req, res) => {
+  const requestId = parseInt(req.params.id, 10);
+  if (!Number.isInteger(requestId)) {
+    return res.status(400).json({ message: "Invalid request id" });
+  }
+
+  const adminId = req.adminId;
+  const remarks = req.body?.remarks;
+  if (!remarks || String(remarks).trim() === "") {
+    return res.status(400).json({ message: "Reject remarks are required" });
+  }
+
+  const conn = await db.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    const [rows] = await conn.execute(
+      `SELECT status, citizen_id
+       FROM pickup_requests
+       WHERE request_id = ?`,
+      [requestId]
+    );
+
+    if (rows.length === 0) {
+      await conn.rollback();
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    if (rows[0].status !== "PENDING_ADMIN") {
+      await conn.rollback();
+      return res.status(400).json({ message: "Request is not pending" });
+    }
+
+    await conn.execute(
+      `UPDATE pickup_requests
+       SET status = 'REJECTED_ADMIN', admin_decided_at = NOW()
+       WHERE request_id = ?`,
+      [requestId]
+    );
+
+    await conn.execute(
+      `INSERT INTO pickup_admin_approvals (request_id, admin_id, decision, remarks)
+       VALUES (?, ?, 'REJECTED', ?)
+       ON DUPLICATE KEY UPDATE
+         admin_id = VALUES(admin_id),
+         decision = 'REJECTED',
+         remarks = VALUES(remarks),
+         decided_at = CURRENT_TIMESTAMP`,
+      [requestId, adminId, remarks]
+    );
+
+    const title = "Pickup request rejected";
+    const message = `Your pickup request #${requestId} was rejected. Reason: ${remarks}`;
+    await conn.execute(
+      `INSERT INTO notifications (recipient_role, recipient_id, request_id, title, message)
+       VALUES ('CITIZEN', ?, ?, ?, ?)`,
+      [rows[0].citizen_id, requestId, title, message]
+    );
+
+    await conn.commit();
+    return res.json({ success: true });
+  } catch (err) {
+    await conn.rollback();
+    console.error("Reject pickup request error:", err.message);
+    return res.status(500).json({ message: "Failed to reject request" });
+  } finally {
+    conn.release();
+  }
+};

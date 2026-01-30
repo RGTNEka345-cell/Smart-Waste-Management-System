@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
 import "./AdminDashboard.css";
 
@@ -51,6 +52,8 @@ const AdminDashboard = () => {
             <h4>Last Login</h4>
             <p>{new Date().toLocaleDateString()}</p>
           </div>
+
+          <Link to="/admin/pickup-queue">Pickup Requests Queue</Link>
         </div>
       </div>
     </>
