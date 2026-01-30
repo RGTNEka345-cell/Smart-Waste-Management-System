@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CollectorDashboard.css";
 
+
 const CollectorDashboard = () => {
   const navigate = useNavigate();
   const [collectorData, setCollectorData] = useState(null);
@@ -99,6 +100,14 @@ const CollectorDashboard = () => {
                 <label>Address:</label>
                 <span>{collectorData?.home_address}</span>
               </div>
+              <div>
+                    <button onClick={() => navigate("/collector/offers")}>
+  Pickup Offers
+</button>
+                  
+
+              </div>
+              
             </div>
           </div>
         </div>

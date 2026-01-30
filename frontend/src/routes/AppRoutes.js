@@ -17,7 +17,7 @@ import CreatePickupRequest from "../pages/Citizen/PickUp_Request/CreatePickupReq
 import MyPickupRequests from "../pages/Citizen/PickUp_Request/MyPickupRequests";
 import PickupRequestDetails from "../pages/Citizen/PickUp_Request/PickupRequestDetails";
 import AdminPickupQueue from "../pages/admin/PickupRequests/AdminPickupQueue";
-
+import CollectorOffersInbox from "../pages/Collector/Pickup_Request/CollectorOffersInbox";
 
 // Collector නව components import කරන්න
 import CollectorForgotPassword from "../pages/Collector/Collector_Password/ForgotPassword";
@@ -52,6 +52,7 @@ function AppRoutes() {
       {/* Collector - Updated with new routes */}
       <Route path="/register/collector" element={<CollectorRegister />} />
       <Route path="/login/collector" element={<CollectorLogin />} />
+      <Route path="/collector/offers" element={<CollectorOffersInbox />} />
       
       {/* New Collector Routes */}
       <Route path="/collector/forgot-password" element={<CollectorForgotPassword />} />

@@ -1,4 +1,5 @@
 const db = require("../config/database");
+const { assignNextCollector } = require("../utils/pickupAssignment");
 
 const VALID_REQUEST_TYPES = new Set(["NORMAL", "SPECIAL"]);
 const VALID_TARGET_TYPES = new Set(["government", "factory"]);
@@ -410,6 +411,9 @@ exports.approvePickupRequestAdmin = async (req, res) => {
        VALUES ('CITIZEN', ?, ?, ?, ?)`,
       [rows[0].citizen_id, requestId, title, message]
     );
+
+    // Assign nearest collector (creates pickup offer)
+    await assignNextCollector(requestId, conn);
 
     await conn.commit();
     return res.json({ success: true });

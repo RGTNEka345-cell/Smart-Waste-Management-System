@@ -4,6 +4,8 @@ const upload = require("../middlewares/upload");
 const CollectorController = require("../controllers/CollectorController");
 const WasteTypeController = require("../controllers/WasteTypeController");
 const CollectorAuthController = require("../controllers/CollectorAuthController");
+const CollectorOffersController = require("../controllers/CollectorOffersController");
+const collectorAuth = require("../middlewares/collectorAuth");
 
 // Registration
 router.post(
@@ -30,5 +32,10 @@ router.post("/collectors/logout", CollectorAuthController.logout);
 
 // Waste Types
 router.get("/waste-types", WasteTypeController.getAllWasteTypes);
+
+// Pickup Offers (Collector)
+router.get("/collector/offers", collectorAuth, CollectorOffersController.listOffers);
+router.post("/collector/offers/:id/accept", collectorAuth, CollectorOffersController.acceptOffer);
+router.post("/collector/offers/:id/reject", collectorAuth, CollectorOffersController.rejectOffer);
 
 module.exports = router;
