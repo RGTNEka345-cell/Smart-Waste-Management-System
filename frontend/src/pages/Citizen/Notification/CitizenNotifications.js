@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import "./CitizenNotifications.css";
 
@@ -10,7 +10,7 @@ const CitizenNotifications = () => {
   const [list, setList] = useState([]);
   const [unread, setUnread] = useState(0);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const res = await axios.get(`${API}/notifications`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
@@ -21,13 +21,13 @@ const CitizenNotifications = () => {
       setList([]);
       setUnread(0);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchNotifications();
     const t = setInterval(fetchNotifications, 10000); // polling
     return () => clearInterval(t);
-  }, []);
+  }, [fetchNotifications]);
 
   const markRead = async (id) => {
     await axios.patch(`${API}/notifications/${id}/read`, {}, {

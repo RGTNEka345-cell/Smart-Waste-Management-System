@@ -197,6 +197,29 @@
   position: relative;
   z-index: 1001;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.citizen-navbar .icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--citizen-nav-text);
+  font-size: 18px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 8px;
+  transition: var(--citizen-nav-transition);
+  text-decoration: none;
+}
+
+.citizen-navbar .icon-btn:hover {
+  background: rgba(46, 125, 50, 0.08);
+  color: var(--citizen-nav-primary);
 }
 
 .citizen-navbar .profile-trigger {

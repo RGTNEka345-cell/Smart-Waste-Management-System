@@ -7,10 +7,10 @@ import {
   FiTruck,
   FiBarChart2,
   FiBell,
-  FiSettings,
   FiLogOut,
   FiMenu,
   FiX,
+  FiChevronDown,
 } from "react-icons/fi";
 import "./AdminNavbar.css";
 
@@ -18,6 +18,7 @@ const AdminNavbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [pickupOpen, setPickupOpen] = useState(false);
 
   const isActive = (path) => location.pathname.startsWith(path);
 
@@ -63,6 +64,27 @@ const AdminNavbar = () => {
           </Link>
         </li>
 
+        <li className={`pickup-dropdown ${pickupOpen ? "open" : ""}`}>
+          <button
+            className="pickup-trigger"
+            onClick={() => setPickupOpen(!pickupOpen)}
+            type="button"
+          >
+            <span className="nav-icon"><FiTrash2 /></span>
+            <span>Pickup Requests</span>
+            <FiChevronDown className="caret" />
+          </button>
+
+          <div className="pickup-menu">
+            <Link to="/admin/pickup-queue" onClick={() => setPickupOpen(false)}>
+              Pickup Queue
+            </Link>
+            <Link to="/admin/pickup-requests" onClick={() => setPickupOpen(false)}>
+              Pickup Request Details
+            </Link>
+          </div>
+        </li>
+
         <li>
           <Link className={isActive("/admin/approval-history") ? "active" : ""} to="/admin/approval-history">
             <FiBarChart2 /> Approval History
@@ -77,9 +99,9 @@ const AdminNavbar = () => {
       </ul>
 
       <div className="admin-navbar-right">
-        <button className="icon-btn">
+        <Link className="icon-btn" to="/admin/notifications" aria-label="Notifications">
           <FiBell />
-        </button>
+        </Link>
 
         <div className="admin-profile">
           <span className="admin-name">Admin</span>

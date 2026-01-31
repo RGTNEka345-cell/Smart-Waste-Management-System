@@ -5,7 +5,9 @@ const CollectorController = require("../controllers/CollectorController");
 const WasteTypeController = require("../controllers/WasteTypeController");
 const CollectorAuthController = require("../controllers/CollectorAuthController");
 const CollectorOffersController = require("../controllers/CollectorOffersController");
+const CollectorJobsController = require("../controllers/CollectorJobsController");
 const collectorAuth = require("../middlewares/collectorAuth");
+const uploadPickupJobImages = require("../middlewares/uploadPickupJobImages");
 
 // Registration
 router.post(
@@ -37,5 +39,14 @@ router.get("/waste-types", WasteTypeController.getAllWasteTypes);
 router.get("/collector/offers", collectorAuth, CollectorOffersController.listOffers);
 router.post("/collector/offers/:id/accept", collectorAuth, CollectorOffersController.acceptOffer);
 router.post("/collector/offers/:id/reject", collectorAuth, CollectorOffersController.rejectOffer);
+
+// Pickup Jobs (Collector)
+router.post("/collector/jobs/:id/start", collectorAuth, CollectorJobsController.startJob);
+router.post(
+  "/collector/jobs/:id/complete",
+  collectorAuth,
+  uploadPickupJobImages.array("images", 5),
+  CollectorJobsController.completeJob
+);
 
 module.exports = router;

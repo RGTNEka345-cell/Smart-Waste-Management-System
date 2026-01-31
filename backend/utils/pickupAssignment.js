@@ -40,6 +40,21 @@ const assignNextCollector = async (requestId, conn) => {
        WHERE request_id = ?`,
       [requestId]
     );
+    const [admins] = await conn.execute(`SELECT admin_id FROM admins`);
+    if (admins.length > 0) {
+      const values = admins.map((a) => [
+        "ADMIN",
+        a.admin_id,
+        requestId,
+        "Request failed to assign",
+        `Pickup request #${requestId} failed to assign (missing coordinates).`
+      ]);
+      await conn.query(
+        `INSERT INTO notifications (recipient_role, recipient_id, request_id, title, message)
+         VALUES ?`,
+        [values]
+      );
+    }
     return { ok: false, reason: "Missing coordinates" };
   }
 
@@ -53,6 +68,21 @@ const assignNextCollector = async (requestId, conn) => {
        WHERE request_id = ?`,
       [requestId]
     );
+    const [admins] = await conn.execute(`SELECT admin_id FROM admins`);
+    if (admins.length > 0) {
+      const values = admins.map((a) => [
+        "ADMIN",
+        a.admin_id,
+        requestId,
+        "Request failed to assign",
+        `Pickup request #${requestId} failed to assign (max attempts reached).`
+      ]);
+      await conn.query(
+        `INSERT INTO notifications (recipient_role, recipient_id, request_id, title, message)
+         VALUES ?`,
+        [values]
+      );
+    }
     return { ok: false, reason: "Max attempts reached" };
   }
 
@@ -106,6 +136,21 @@ const assignNextCollector = async (requestId, conn) => {
        WHERE request_id = ?`,
       [requestId]
     );
+    const [admins] = await conn.execute(`SELECT admin_id FROM admins`);
+    if (admins.length > 0) {
+      const values = admins.map((a) => [
+        "ADMIN",
+        a.admin_id,
+        requestId,
+        "Request failed to assign",
+        `Pickup request #${requestId} failed to assign (no collectors available).`
+      ]);
+      await conn.query(
+        `INSERT INTO notifications (recipient_role, recipient_id, request_id, title, message)
+         VALUES ?`,
+        [values]
+      );
+    }
     return { ok: false, reason: "No collectors available" };
   }
 

@@ -72,6 +72,63 @@
   color: #fff;
 }
 
+.pickup-dropdown {
+  position: relative;
+}
+
+.pickup-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #cbd5f5;
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.pickup-trigger:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.pickup-trigger .caret {
+  font-size: 0.9rem;
+}
+
+.pickup-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 220px;
+  background: #0b1220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+  z-index: 1001;
+  padding: 6px;
+}
+
+.pickup-menu a {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #cbd5f5;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.pickup-menu a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.pickup-dropdown.open .pickup-menu {
+  display: flex;
+}
+
 /* Right */
 .admin-navbar-right {
   display: flex;
@@ -85,6 +142,10 @@
   color: #cbd5f5;
   font-size: 1.2rem;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .icon-btn:hover {
@@ -125,5 +186,12 @@
 
   .admin-nav-links li {
     padding: 0 20px;
+  }
+
+  .pickup-menu {
+    position: static;
+    border: none;
+    background: transparent;
+    padding: 0;
   }
 }

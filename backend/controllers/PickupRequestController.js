@@ -152,6 +152,18 @@ exports.createPickupRequest = async (req, res) => {
       );
     }
 
+    // Optional: notify citizen
+    await conn.execute(
+      `INSERT INTO notifications (recipient_role, recipient_id, request_id, title, message)
+       VALUES ('CITIZEN', ?, ?, ?, ?)`,
+      [
+        citizenId,
+        requestId,
+        "Request submitted",
+        `Your pickup request #${requestId} has been submitted.`
+      ]
+    );
+
     await conn.commit();
 
     return res.status(201).json({
@@ -493,5 +505,126 @@ exports.rejectPickupRequestAdmin = async (req, res) => {
     return res.status(500).json({ message: "Failed to reject request" });
   } finally {
     conn.release();
+  }
+};
+
+exports.getPickupRequestDetailsAdmin = async (req, res) => {
+  try {
+    const requestId = parseInt(req.params.id, 10);
+    if (!Number.isInteger(requestId)) {
+      return res.status(400).json({ message: "Invalid request id" });
+    }
+
+    const [reqRows] = await db.execute(
+      `SELECT *
+       FROM pickup_requests
+       WHERE request_id = ?`,
+      [requestId]
+    );
+
+    if (reqRows.length === 0) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    const request = reqRows[0];
+
+    const [[citizen]] = await db.execute(
+      `SELECT id, full_name, email, phone, address
+       FROM citizens
+       WHERE id = ?`,
+      [request.citizen_id]
+    );
+
+    const [items] = await db.execute(
+      `SELECT pri.item_id, pri.wastetype_id, wt.name AS wastetype_name, pri.quantity, pri.unit
+       FROM pickup_request_items pri
+       LEFT JOIN wastetypes wt ON wt.id = pri.wastetype_id
+       WHERE pri.request_id = ?`,
+      [requestId]
+    );
+
+    const [photos] = await db.execute(
+      `SELECT photo_id, photo_url, photo_type, uploaded_at
+       FROM pickup_request_photos
+       WHERE request_id = ?
+       ORDER BY uploaded_at ASC`,
+      [requestId]
+    );
+
+    const [history] = await db.execute(
+      `SELECT history_id, new_status AS status, changed_at, note
+       FROM pickup_status_history
+       WHERE request_id = ?
+       ORDER BY changed_at ASC`,
+      [requestId]
+    );
+
+    const [[decision]] = await db.execute(
+      `SELECT decision AS status, remarks, decided_at
+       FROM pickup_admin_approvals
+       WHERE request_id = ?`,
+      [requestId]
+    );
+
+    return res.json({
+      request,
+      citizen: citizen || null,
+      items,
+      photos,
+      history,
+      admin_decision: decision || null
+    });
+  } catch (err) {
+    console.error("Get admin pickup request details error:", err.message);
+    return res.status(500).json({ message: "Failed to load request details" });
+  }
+};
+
+exports.searchPickupRequestByCitizenAdmin = async (req, res) => {
+  try {
+    const q = (req.query.q || "").trim();
+    if (!q) {
+      return res.status(400).json({ message: "Search query required" });
+    }
+
+    const like = `%${q}%`;
+    const [rows] = await db.execute(
+      `SELECT pr.request_id
+       FROM pickup_requests pr
+       JOIN citizens c ON c.id = pr.citizen_id
+       WHERE c.full_name LIKE ? OR c.email LIKE ?
+       ORDER BY pr.requested_at DESC
+       LIMIT 1`,
+      [like, like]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No matching request found" });
+    }
+
+    return res.json({ request_id: rows[0].request_id });
+  } catch (err) {
+    console.error("Search pickup request admin error:", err.message);
+    return res.status(500).json({ message: "Search failed" });
+  }
+};
+
+exports.getLatestPickupRequestAdmin = async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      `SELECT request_id
+       FROM pickup_requests
+       ORDER BY requested_at DESC
+       LIMIT 1`
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No pickup requests found" });
+    }
+
+    return res.json({ request_id: rows[0].request_id });
+  } catch (err) {
+    console.error("Get latest pickup request admin error:", err.message);
+    return res.status(500).json({ message: "Failed to load latest request" });
   }
 };

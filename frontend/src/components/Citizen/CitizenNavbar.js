@@ -12,6 +12,7 @@ import {
   FaMapMarkerAlt,
   FaHistory,
   FaLeaf,
+  FaBell,
   FaChevronDown
 } from "react-icons/fa";
 
@@ -183,6 +184,17 @@ const CitizenNavbar = ({ setActiveTab }) => {
 
       {/* Profile Dropdown */}
       <div className="profile-section">
+        <Link
+          to="/citizen/notifications"
+          className="icon-btn"
+          onClick={() => {
+            setIsMenuOpen(false);
+            setIsPickupOpen(false);
+          }}
+          aria-label="Notifications"
+        >
+          <FaBell />
+        </Link>
         <div 
           className="profile-trigger"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}

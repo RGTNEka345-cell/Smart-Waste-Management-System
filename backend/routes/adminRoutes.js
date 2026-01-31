@@ -44,5 +44,20 @@ router.post(
   adminAuth,
   PickupRequestController.rejectPickupRequestAdmin
 );
+router.get(
+  "/admin/pickup-requests/:id",
+  adminAuth,
+  PickupRequestController.getPickupRequestDetailsAdmin
+);
+router.get(
+  "/admin/pickup-requests-search",
+  adminAuth,
+  PickupRequestController.searchPickupRequestByCitizenAdmin
+);
+router.get(
+  "/admin/pickup-requests-latest",
+  adminAuth,
+  PickupRequestController.getLatestPickupRequestAdmin
+);
 
 module.exports = router;

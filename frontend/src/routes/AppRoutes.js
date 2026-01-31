@@ -17,7 +17,10 @@ import CreatePickupRequest from "../pages/Citizen/PickUp_Request/CreatePickupReq
 import MyPickupRequests from "../pages/Citizen/PickUp_Request/MyPickupRequests";
 import PickupRequestDetails from "../pages/Citizen/PickUp_Request/PickupRequestDetails";
 import AdminPickupQueue from "../pages/admin/PickupRequests/AdminPickupQueue";
+import AdminPickupRequestDetails from "../pages/admin/PickupRequests/AdminPickupRequestDetails";
+import AdminNotifications from "../pages/admin/Notification/AdminNotifications";
 import CollectorOffersInbox from "../pages/Collector/Pickup_Request/CollectorOffersInbox";
+import CitizenNotifications from "../pages/Citizen/Notification/CitizenNotifications";
 
 // Collector නව components import කරන්න
 import CollectorForgotPassword from "../pages/Collector/Collector_Password/ForgotPassword";
@@ -38,6 +41,7 @@ function AppRoutes() {
       <Route path="/citizen/pickup-request/create" element={<CreatePickupRequest />}/>
       <Route path="/citizen/pickup/requests" element={<MyPickupRequests />}/>
       <Route path="/citizen/pickup/:requestId" element={<PickupRequestDetails />}/>
+      <Route path="/citizen/notifications" element={<CitizenNotifications />}/>
 
 
       {/* Admin - No changes */}
@@ -47,6 +51,9 @@ function AppRoutes() {
       <Route path="/admin/collector-approvals" element={<AdminCollectorApproval />} />
       <Route path="/admin/approval-history" element={<CollectorApprovalHistory />} />
       <Route path="/admin/pickup-queue" element={<AdminPickupQueue />} />
+      <Route path="/admin/pickup-requests" element={<AdminPickupRequestDetails />} />
+      <Route path="/admin/pickup-requests/:id" element={<AdminPickupRequestDetails />} />
+      <Route path="/admin/notifications" element={<AdminNotifications />} />
 
 
       {/* Collector - Updated with new routes */}
