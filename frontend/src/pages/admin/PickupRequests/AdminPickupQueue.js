@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import "./AdminPickupQueue.css";
 
 // ✅ Use .env (fallback to localhost)
@@ -106,13 +106,20 @@ const AdminPickupQueue = () => {
   }, [requests, search, typeFilter]);
 
   if (loading) {
-    return <div className="apq-container">Loading...</div>;
+    return (
+      <>
+        <AdminNavbar />
+        <div className="apq-container">Loading...</div>
+      </>
+    );
   }
 
   return (
-    <div className="apq-container">
-      <div className="apq-top">
-        <h2>Pickup Requests Queue</h2>
+    <>
+      <AdminNavbar />
+      <div className="apq-container">
+        <div className="apq-top">
+          <h2>Pickup Requests Queue</h2>
 
         <div className="apq-filters">
           <input
@@ -137,17 +144,17 @@ const AdminPickupQueue = () => {
         {/* Map preview removed for now; open in Google Maps link used */}
       </div>
 
-      {filtered.length === 0 ? (
-        <div className="apq-empty">No pending pickup requests</div>
-      ) : (
-        <div className="apq-list">
-          {filtered.map((r) => {
-            const lat = Number(r.pickup_latitude);
-            const lng = Number(r.pickup_longitude);
-            const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+        {filtered.length === 0 ? (
+          <div className="apq-empty">No pending pickup requests</div>
+        ) : (
+          <div className="apq-list">
+            {filtered.map((r) => {
+              const lat = Number(r.pickup_latitude);
+              const lng = Number(r.pickup_longitude);
+              const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
 
-            return (
-              <div className="apq-card" key={r.request_id}>
+              return (
+                <div className="apq-card" key={r.request_id}>
                 <div className="apq-header">
                   <h3>Request #{r.request_id}</h3>
                   <span className={`badge ${r.request_type}`}>
@@ -258,12 +265,13 @@ const AdminPickupQueue = () => {
                     Reject
                   </button>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

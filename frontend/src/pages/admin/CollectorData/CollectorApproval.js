@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import "./CollectorApproval.css";
 
 const AdminCollectorApproval = () => {
@@ -79,11 +80,20 @@ const AdminCollectorApproval = () => {
     }
   };
 
-  if (loading) return <p className="loading">Loading collectors...</p>;
+  if (loading) {
+    return (
+      <>
+        <AdminNavbar />
+        <p className="loading">Loading collectors...</p>
+      </>
+    );
+  }
 
   return (
-    <div className="approval-container">
-      <h2>Collector Approvals</h2>
+    <>
+      <AdminNavbar />
+      <div className="approval-container">
+        <h2>Collector Approvals</h2>
 
       {collectors.length === 0 ? (
         <p className="no-collectors">No pending collectors</p>
@@ -235,7 +245,8 @@ const AdminCollectorApproval = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

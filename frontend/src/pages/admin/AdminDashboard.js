@@ -5,6 +5,8 @@ import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
   const [admin, setAdmin] = useState(null);
+  const [stats, setStats] = useState({ citizens: 0, collectors: 0 });
+  const [loadingStats, setLoadingStats] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,6 +14,28 @@ const AdminDashboard = () => {
     if (storedAdmin) {
       setAdmin(JSON.parse(storedAdmin));
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoadingStats(true);
+        const token = localStorage.getItem("adminToken");
+        const res = await fetch("http://localhost:5000/api/admin/stats", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        const data = await res.json();
+        setStats({
+          citizens: data?.citizens || 0,
+          collectors: data?.collectors || 0
+        });
+      } catch (_) {
+        setStats({ citizens: 0, collectors: 0 });
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+    fetchStats();
   }, []);
 
   if (!admin) {
@@ -68,6 +92,69 @@ const AdminDashboard = () => {
           <div className="stat-card">
             <span className="stat-label">Last Login</span>
             <span className="stat-value">{new Date().toLocaleDateString()}</span>
+          </div>
+        </div>
+
+        <div className="admin-stats">
+          <div className="stats-head">
+            <h3>Live Counts</h3>
+            {loadingStats && <span className="muted">Updating...</span>}
+          </div>
+
+          <div className="count-grid">
+            <div className="count-card">
+              <span className="count-label">Citizens</span>
+              <span className="count-value">{stats.citizens}</span>
+              <div className="mini-bar">
+                <div
+                  className="bar-fill blue"
+                  style={{
+                    width: `${Math.min(100, (stats.citizens / (stats.citizens + stats.collectors || 1)) * 100)}%`
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="count-card">
+              <span className="count-label">Collectors</span>
+              <span className="count-value">{stats.collectors}</span>
+              <div className="mini-bar">
+                <div
+                  className="bar-fill green"
+                  style={{
+                    width: `${Math.min(100, (stats.collectors / (stats.citizens + stats.collectors || 1)) * 100)}%`
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="bar-chart">
+            <div className="bar-row">
+              <span>Citizens</span>
+              <div className="bar-track">
+                <div
+                  className="bar-fill blue"
+                  style={{
+                    width: `${Math.min(100, (stats.citizens / (Math.max(stats.citizens, stats.collectors) || 1)) * 100)}%`
+                  }}
+                />
+              </div>
+              <span className="bar-value">{stats.citizens}</span>
+            </div>
+
+            <div className="bar-row">
+              <span>Collectors</span>
+              <div className="bar-track">
+                <div
+                  className="bar-fill green"
+                  style={{
+                    width: `${Math.min(100, (stats.collectors / (Math.max(stats.citizens, stats.collectors) || 1)) * 100)}%`
+                  }}
+                />
+              </div>
+              <span className="bar-value">{stats.collectors}</span>
+            </div>
           </div>
         </div>
 

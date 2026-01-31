@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import "./WasteType.css";
 
 const WasteType = () => {
@@ -76,9 +77,11 @@ const WasteType = () => {
   };
 
   return (
-    <div className="admin-container">
-      <h2>Manage Waste Types</h2>
-      <p>Add and manage waste categories</p>
+    <>
+      <AdminNavbar />
+      <div className="admin-container">
+        <h2>Manage Waste Types</h2>
+        <p>Add and manage waste categories</p>
 
       {/* Add Form */}
       <form className="waste-form" onSubmit={handleAdd}>
@@ -132,7 +135,8 @@ const WasteType = () => {
           )}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -18,6 +18,7 @@ import MyPickupRequests from "../pages/Citizen/PickUp_Request/MyPickupRequests";
 import PickupRequestDetails from "../pages/Citizen/PickUp_Request/PickupRequestDetails";
 import AdminPickupQueue from "../pages/admin/PickupRequests/AdminPickupQueue";
 import AdminPickupRequestDetails from "../pages/admin/PickupRequests/AdminPickupRequestDetails";
+import AdminCitizens from "../pages/admin/CitizenData/AdminCitizens";
 import AdminNotifications from "../pages/admin/Notification/AdminNotifications";
 import CollectorOffersInbox from "../pages/Collector/Pickup_Request/CollectorOffersInbox";
 import CitizenNotifications from "../pages/Citizen/Notification/CitizenNotifications";
@@ -53,6 +54,7 @@ function AppRoutes() {
       <Route path="/admin/pickup-queue" element={<AdminPickupQueue />} />
       <Route path="/admin/pickup-requests" element={<AdminPickupRequestDetails />} />
       <Route path="/admin/pickup-requests/:id" element={<AdminPickupRequestDetails />} />
+      <Route path="/admin/citizens" element={<AdminCitizens />} />
       <Route path="/admin/notifications" element={<AdminNotifications />} />
 
 

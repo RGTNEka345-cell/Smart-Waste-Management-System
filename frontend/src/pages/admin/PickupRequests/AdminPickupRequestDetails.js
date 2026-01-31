@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import "./AdminPickupRequestDetails.css";
 
 const API = "http://localhost:5000/api";
@@ -111,9 +112,10 @@ const AdminPickupRequestDetails = () => {
   const request = data?.request;
   const citizen = data?.citizen;
   const items = data?.items || [];
-  const photos = data?.photos || [];
   const history = data?.history || [];
   const adminDecision = data?.admin_decision;
+
+  const photos = useMemo(() => data?.photos || [], [data?.photos]);
 
   const photosByType = useMemo(() => {
     // If your photos table doesn't have BEFORE/AFTER, they will go into OTHER.
@@ -125,48 +127,55 @@ const AdminPickupRequestDetails = () => {
 
   if (loading) {
     return (
-      <div className="ard-wrap">
-        <div className="ard-card">Loading...</div>
-      </div>
+      <>
+        <AdminNavbar />
+        <div className="ard-wrap">
+          <div className="ard-card">Loading...</div>
+        </div>
+      </>
     );
   }
 
   if (!request) {
     return (
-      <div className="ard-wrap">
-        <div className="ard-card">
-          Request not found. <Link to="/admin/pickup-queue">Back</Link>
+      <>
+        <AdminNavbar />
+        <div className="ard-wrap">
+          <div className="ard-card">
+            Request not found. <Link to="/admin/pickup-queue">Back</Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="ard-wrap">
-      <div className="ard-top">
-        <div>
-          <h2>Pickup Request #{request.request_id}</h2>
-          <p className="muted">
-            {request.request_type} • {request.target_collection_type} •{" "}
-            <span className={badgeClass(request.status)}>{statusLabel(request.status)}</span>
-          </p>
-        </div>
-
-        <div className="ard-top-actions">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Search by citizen name or email"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button className="btn small" onClick={handleSearch} disabled={searchLoading}>
-              {searchLoading ? "Searching..." : "Search"}
-            </button>
+    <>
+      <AdminNavbar />
+      <div className="ard-wrap">
+        <div className="ard-top">
+          <div>
+            <h2>Pickup Request #{request.request_id}</h2>
+            <p className="muted">
+              {request.request_type} • {request.target_collection_type} •{" "}
+              <span className={badgeClass(request.status)}>{statusLabel(request.status)}</span>
+            </p>
           </div>
-          
+
+          <div className="ard-top-actions">
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder="Search by citizen name or email"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <button className="btn small" onClick={handleSearch} disabled={searchLoading}>
+                {searchLoading ? "Searching..." : "Search"}
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
 
       {/* Citizen details */}
       <div className="ard-card">
@@ -297,7 +306,7 @@ const AdminPickupRequestDetails = () => {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      <img src={`${HOST}${p.photo_url}`} alt="photo" />
+                      <img src={`${HOST}${p.photo_url}`} alt="pickup" />
                     </a>
                   ))}
                 </div>
@@ -349,7 +358,8 @@ const AdminPickupRequestDetails = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

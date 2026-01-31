@@ -114,3 +114,26 @@ exports.verifyOtp = async (req, res) => {
     res.status(500).json({ message: "OTP verification failed" });
   }
 };
+
+// ================= ADMIN STATS =================
+exports.getAdminStats = async (req, res) => {
+  try {
+    const db = require("../config/database");
+
+    const [[citizenCount]] = await db.execute(
+      "SELECT COUNT(*) AS total FROM citizens"
+    );
+
+    const [[collectorCount]] = await db.execute(
+      "SELECT COUNT(*) AS total FROM Collectors"
+    );
+
+    res.json({
+      citizens: citizenCount?.total || 0,
+      collectors: collectorCount?.total || 0
+    });
+  } catch (err) {
+    console.error("Admin stats error:", err.message);
+    res.status(500).json({ message: "Failed to load admin stats" });
+  }
+};

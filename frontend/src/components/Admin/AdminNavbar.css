@@ -129,6 +129,120 @@
   display: flex;
 }
 
+.collectors-dropdown {
+  position: relative;
+}
+
+.collectors-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #cbd5f5;
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.collectors-trigger:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.collectors-trigger .caret {
+  font-size: 0.9rem;
+}
+
+.collectors-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 220px;
+  background: #0b1220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+  z-index: 1001;
+  padding: 6px;
+}
+
+.collectors-menu a {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #cbd5f5;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.collectors-menu a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.collectors-dropdown.open .collectors-menu {
+  display: flex;
+}
+
+.citizens-dropdown {
+  position: relative;
+}
+
+.citizens-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #cbd5f5;
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.citizens-trigger:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.citizens-trigger .caret {
+  font-size: 0.9rem;
+}
+
+.citizens-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 220px;
+  background: #0b1220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+  z-index: 1001;
+  padding: 6px;
+}
+
+.citizens-menu a {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #cbd5f5;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.citizens-menu a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.citizens-dropdown.open .citizens-menu {
+  display: flex;
+}
+
 /* Right */
 .admin-navbar-right {
   display: flex;
@@ -189,6 +303,20 @@
   }
 
   .pickup-menu {
+    position: static;
+    border: none;
+    background: transparent;
+    padding: 0;
+  }
+
+  .collectors-menu {
+    position: static;
+    border: none;
+    background: transparent;
+    padding: 0;
+  }
+
+  .citizens-menu {
     position: static;
     border: none;
     background: transparent;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import "./AdminNotifications.css";
 
 const API = "http://localhost:5000/api";
@@ -34,8 +35,10 @@ const AdminNotifications = () => {
   };
 
   return (
-    <div className="an-wrap">
-      <h2>Notifications</h2>
+    <>
+      <AdminNavbar />
+      <div className="an-wrap">
+        <h2>Notifications</h2>
 
       {list.length === 0 ? (
         <div className="an-card">No notifications</div>
@@ -52,7 +55,8 @@ const AdminNotifications = () => {
           </div>
         ))
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

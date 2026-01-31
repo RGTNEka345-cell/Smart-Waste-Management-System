@@ -19,6 +19,8 @@ const AdminNavbar = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [pickupOpen, setPickupOpen] = useState(false);
+  const [collectorsOpen, setCollectorsOpen] = useState(false);
+  const [citizensOpen, setCitizensOpen] = useState(false);
 
   const isActive = (path) => location.pathname.startsWith(path);
 
@@ -46,10 +48,22 @@ const AdminNavbar = () => {
           </Link>
         </li>
 
-        <li>
-          <Link className={isActive("/admin/users") ? "active" : ""} to="/admin/users">
-            <FiUsers /> Users
-          </Link>
+        <li className={`citizens-dropdown ${citizensOpen ? "open" : ""}`}>
+          <button
+            className="citizens-trigger"
+            onClick={() => setCitizensOpen(!citizensOpen)}
+            type="button"
+          >
+            <span className="nav-icon"><FiUsers /></span>
+            <span>Citizens</span>
+            <FiChevronDown className="caret" />
+          </button>
+
+          <div className="citizens-menu">
+            <Link to="/admin/citizens" onClick={() => setCitizensOpen(false)}>
+              Citizen Details
+            </Link>
+          </div>
         </li>
 
         <li>
@@ -58,10 +72,25 @@ const AdminNavbar = () => {
           </Link>
         </li>
 
-        <li>
-          <Link className={isActive("/admin/collector-approvals") ? "active" : ""} to="/admin/collector-approvals">
-            <FiTruck /> Collector Approvals
-          </Link>
+        <li className={`collectors-dropdown ${collectorsOpen ? "open" : ""}`}>
+          <button
+            className="collectors-trigger"
+            onClick={() => setCollectorsOpen(!collectorsOpen)}
+            type="button"
+          >
+            <span className="nav-icon"><FiTruck /></span>
+            <span>Collectors</span>
+            <FiChevronDown className="caret" />
+          </button>
+
+          <div className="collectors-menu">
+            <Link to="/admin/collector-approvals" onClick={() => setCollectorsOpen(false)}>
+              Collector Approvals
+            </Link>
+            <Link to="/admin/approval-history" onClick={() => setCollectorsOpen(false)}>
+              Approval History
+            </Link>
+          </div>
         </li>
 
         <li className={`pickup-dropdown ${pickupOpen ? "open" : ""}`}>
@@ -85,11 +114,6 @@ const AdminNavbar = () => {
           </div>
         </li>
 
-        <li>
-          <Link className={isActive("/admin/approval-history") ? "active" : ""} to="/admin/approval-history">
-            <FiBarChart2 /> Approval History
-          </Link>
-        </li>
 
         <li>
           <Link className={isActive("/admin/reports") ? "active" : ""} to="/admin/reports">

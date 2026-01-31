@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import "./CollectorApprovalHistory.css";
 
 const CollectorApprovalHistory = () => {
@@ -9,6 +10,8 @@ const CollectorApprovalHistory = () => {
   const [activeTab, setActiveTab] = useState("approved");
   const [selectedCollector, setSelectedCollector] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("ALL");
 
   useEffect(() => {
     fetchApprovalHistory();
@@ -53,13 +56,43 @@ const CollectorApprovalHistory = () => {
     });
   };
 
-  if (loading) return <p className="loading">Loading history...</p>;
+  if (loading) {
+    return (
+      <>
+        <AdminNavbar />
+        <p className="loading">Loading history...</p>
+      </>
+    );
+  }
 
   const currentData = activeTab === "approved" ? approvedCollectors : rejectedCollectors;
 
+  const filtered = currentData.filter((c) => {
+    const matchesType =
+      typeFilter === "ALL" || c.collection_type?.toLowerCase() === typeFilter;
+
+    const q = search.trim().toLowerCase();
+    if (!q) return matchesType;
+
+    const hay = [
+      c.full_name,
+      c.email,
+      c.phone_number,
+      c.vehicle_number,
+      c.home_address
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return matchesType && hay.includes(q);
+  });
+
   return (
-    <div className="history-container">
-      <h2>Collector Approval History</h2>
+    <>
+      <AdminNavbar />
+      <div className="history-container">
+        <h2>Collector Approval History</h2>
 
       <div className="tab-buttons">
         <button
@@ -76,7 +109,25 @@ const CollectorApprovalHistory = () => {
         </button>
       </div>
 
-      {currentData.length === 0 ? (
+      <div className="filters">
+        <input
+          className="filter-input"
+          placeholder="Search name, email, phone, vehicle, address..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className="filter-select"
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+        >
+          <option value="ALL">All Types</option>
+          <option value="government">Government</option>
+          <option value="factory">Factory</option>
+        </select>
+      </div>
+
+      {filtered.length === 0 ? (
         <p className="no-data">
           No {activeTab} collectors found
         </p>
@@ -101,7 +152,7 @@ const CollectorApprovalHistory = () => {
               </tr>
             </thead>
             <tbody>
-              {currentData.map((collector) => (
+              {filtered.map((collector) => (
                 <tr key={collector.approval_id}>
                   <td className="name-cell">{collector.full_name}</td>
                   <td>{collector.email}</td>
@@ -233,7 +284,7 @@ const CollectorApprovalHistory = () => {
                 <div className="detail-section full-width">
                   <h3>Vehicle Photo</h3>
                   <img
-                    src={`http://localhost:5000/uploads/vehicles/${selectedCollector.vehicle_photo}`}
+                    src={`http://localhost:5000/uploads/collectors/${selectedCollector.vehicle_photo}`}
                     alt="Vehicle"
                     className="vehicle-photo-modal"
                     onError={(e) => {
@@ -252,7 +303,8 @@ const CollectorApprovalHistory = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

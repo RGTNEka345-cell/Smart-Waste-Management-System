@@ -4,6 +4,7 @@ const router = express.Router();
 const AdminController = require("../controllers/AdminController");
 const WasteTypeController = require("../controllers/WasteTypeController");
 const PickupRequestController = require("../controllers/PickupRequestController");
+const AdminCitizenController = require("../controllers/AdminCitizenController");
 const adminAuth = require("../middlewares/adminAuth");
 const {
   getPendingCollectors,
@@ -16,6 +17,7 @@ const {
 router.post("/admin/login", AdminController.login);
 router.post("/admin/forgot-password", AdminController.forgotPassword);
 router.post("/admin/verify-otp", AdminController.verifyOtp);
+router.get("/admin/stats", adminAuth, AdminController.getAdminStats);
 
 // Waste Type Management (Admin only)
 router.post("/admin/wastetypes", adminAuth, WasteTypeController.createWasteType);
@@ -59,5 +61,9 @@ router.get(
   adminAuth,
   PickupRequestController.getLatestPickupRequestAdmin
 );
+
+// Citizens (Admin only)
+router.get("/admin/citizens", adminAuth, AdminCitizenController.listCitizens);
+router.get("/admin/citizens/:id", adminAuth, AdminCitizenController.getCitizenDetails);
 
 module.exports = router;
