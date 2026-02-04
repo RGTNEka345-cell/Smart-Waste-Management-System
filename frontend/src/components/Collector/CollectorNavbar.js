@@ -126,7 +126,7 @@ const CollectorNavbar = () => {
 
             <div className="dropdown-items">
               <Link
-                to="/collector/profile"
+                to="/collector/profile/update"
                 className="dropdown-item"
                 onClick={() => setIsDropdownOpen(false)}
               >

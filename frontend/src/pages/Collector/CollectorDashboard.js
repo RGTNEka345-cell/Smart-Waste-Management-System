@@ -61,7 +61,8 @@ const CollectorDashboard = () => {
               >
                 View Pickup Offers
               </button>
-              <button className="secondary-btn" type="button">
+              <button className="secondary-btn" type="button"
+              onClick={() => navigate("/collector/job")}>
                 Active Job
               </button>
             </div>

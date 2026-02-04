@@ -22,10 +22,12 @@ import AdminCitizens from "../pages/admin/CitizenData/AdminCitizens";
 import AdminNotifications from "../pages/admin/Notification/AdminNotifications";
 import CollectorOffersInbox from "../pages/Collector/Pickup_Request/CollectorOffersInbox";
 import CitizenNotifications from "../pages/Citizen/Notification/CitizenNotifications";
-
 // Collector නව components import කරන්න
 import CollectorForgotPassword from "../pages/Collector/Collector_Password/ForgotPassword";
 import CollectorDashboard from "../pages/Collector/CollectorDashboard";
+import CollectorActiveJob from "../pages/Collector/Pickup_Request/CollectorActiveJob";
+import CollectorCompletePickup from "../pages/Collector/Pickup_Request/CollectorCompletePickup";
+import CollectorProfileUpdate from "../pages/Collector/Collector_Profile/CollectorProfileUpdate";
 
 function AppRoutes() {
   return (
@@ -66,6 +68,10 @@ function AppRoutes() {
       {/* New Collector Routes */}
       <Route path="/collector/forgot-password" element={<CollectorForgotPassword />} />
       <Route path="/collector/dashboard" element={<CollectorDashboard />} />
+      <Route path="/collector/job" element={<CollectorActiveJob />} />
+      <Route path="/collector/job/:requestId/complete" element={<CollectorCompletePickup />} />
+      <Route path="/collector/profile/update" element={<CollectorProfileUpdate />} />
+
 
       {/* About */}
       <Route path="/about" element={<HomePage />} />

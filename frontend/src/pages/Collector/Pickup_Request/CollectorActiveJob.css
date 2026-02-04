@@ -1,0 +1,105 @@
+.caj-wrap {
+  max-width: 900px;
+  margin: 25px auto;
+  padding: 0 16px;
+}
+
+.caj-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.caj-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.caj-card.empty {
+  text-align: center;
+  opacity: 0.8;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.grid2 p {
+  margin: 4px 0 0;
+}
+
+.map-box {
+  margin-top: 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.map-placeholder {
+  height: 100px;
+  border-radius: 14px;
+  border: 1px dashed #ddd;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+}
+
+.actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: none;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn.start {
+  background: #1976d2;
+  color: #fff;
+}
+
+.btn.arrived {
+  background: #f9a825;
+  color: #222;
+}
+
+.btn.complete {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  border: 1px solid #ddd;
+}
+
+.badge.ACCEPTED_BY_COLLECTOR {
+  background: #e3f2fd;
+  border-color: #b6dbff;
+}
+
+.badge.IN_PROGRESS {
+  background: #fff7e6;
+  border-color: #ffe1a3;
+}

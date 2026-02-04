@@ -6,6 +6,7 @@ const WasteTypeController = require("../controllers/WasteTypeController");
 const CollectorAuthController = require("../controllers/CollectorAuthController");
 const CollectorOffersController = require("../controllers/CollectorOffersController");
 const CollectorJobsController = require("../controllers/CollectorJobsController");
+const CollectorActiveJobController = require("../controllers/CollectorActiveJobController");
 const collectorAuth = require("../middlewares/collectorAuth");
 const uploadPickupJobImages = require("../middlewares/uploadPickupJobImages");
 
@@ -35,17 +36,30 @@ router.post("/collectors/logout", CollectorAuthController.logout);
 // Waste Types
 router.get("/waste-types", WasteTypeController.getAllWasteTypes);
 
+// Collector Profile (View/Update)
+router.get("/collector/profile", collectorAuth, CollectorController.getProfile);
+router.put(
+  "/collector/profile",
+  collectorAuth,
+  upload.single("vehicle_photo"),
+  CollectorController.updateProfile
+);
+
 // Pickup Offers (Collector)
 router.get("/collector/offers", collectorAuth, CollectorOffersController.listOffers);
 router.post("/collector/offers/:id/accept", collectorAuth, CollectorOffersController.acceptOffer);
 router.post("/collector/offers/:id/reject", collectorAuth, CollectorOffersController.rejectOffer);
 
+// Active Job (Collector)
+router.get("/collector/active-job", collectorAuth, CollectorActiveJobController.getActiveJob);
+
 // Pickup Jobs (Collector)
 router.post("/collector/jobs/:id/start", collectorAuth, CollectorJobsController.startJob);
+router.post("/collector/jobs/:id/arrived", collectorAuth, CollectorJobsController.arriveJob);
 router.post(
   "/collector/jobs/:id/complete",
   collectorAuth,
-  uploadPickupJobImages.array("images", 5),
+  uploadPickupJobImages.array("images", 6),
   CollectorJobsController.completeJob
 );
 

@@ -22,6 +22,12 @@ const AdminNavbar = () => {
   const [collectorsOpen, setCollectorsOpen] = useState(false);
   const [citizensOpen, setCitizensOpen] = useState(false);
 
+  const closeAllDropdowns = () => {
+    setPickupOpen(false);
+    setCollectorsOpen(false);
+    setCitizensOpen(false);
+  };
+
   const isActive = (path) => location.pathname.startsWith(path);
 
   const logout = () => {
@@ -51,7 +57,11 @@ const AdminNavbar = () => {
         <li className={`citizens-dropdown ${citizensOpen ? "open" : ""}`}>
           <button
             className="citizens-trigger"
-            onClick={() => setCitizensOpen(!citizensOpen)}
+            onClick={() => {
+              setCitizensOpen(!citizensOpen);
+              setCollectorsOpen(false);
+              setPickupOpen(false);
+            }}
             type="button"
           >
             <span className="nav-icon"><FiUsers /></span>
@@ -60,7 +70,13 @@ const AdminNavbar = () => {
           </button>
 
           <div className="citizens-menu">
-            <Link to="/admin/citizens" onClick={() => setCitizensOpen(false)}>
+            <Link
+              to="/admin/citizens"
+              onClick={() => {
+                setCitizensOpen(false);
+                closeAllDropdowns();
+              }}
+            >
               Citizen Details
             </Link>
           </div>
@@ -75,7 +91,11 @@ const AdminNavbar = () => {
         <li className={`collectors-dropdown ${collectorsOpen ? "open" : ""}`}>
           <button
             className="collectors-trigger"
-            onClick={() => setCollectorsOpen(!collectorsOpen)}
+            onClick={() => {
+              setCollectorsOpen(!collectorsOpen);
+              setCitizensOpen(false);
+              setPickupOpen(false);
+            }}
             type="button"
           >
             <span className="nav-icon"><FiTruck /></span>
@@ -84,10 +104,22 @@ const AdminNavbar = () => {
           </button>
 
           <div className="collectors-menu">
-            <Link to="/admin/collector-approvals" onClick={() => setCollectorsOpen(false)}>
+            <Link
+              to="/admin/collector-approvals"
+              onClick={() => {
+                setCollectorsOpen(false);
+                closeAllDropdowns();
+              }}
+            >
               Collector Approvals
             </Link>
-            <Link to="/admin/approval-history" onClick={() => setCollectorsOpen(false)}>
+            <Link
+              to="/admin/approval-history"
+              onClick={() => {
+                setCollectorsOpen(false);
+                closeAllDropdowns();
+              }}
+            >
               Approval History
             </Link>
           </div>
@@ -96,7 +128,11 @@ const AdminNavbar = () => {
         <li className={`pickup-dropdown ${pickupOpen ? "open" : ""}`}>
           <button
             className="pickup-trigger"
-            onClick={() => setPickupOpen(!pickupOpen)}
+            onClick={() => {
+              setPickupOpen(!pickupOpen);
+              setCitizensOpen(false);
+              setCollectorsOpen(false);
+            }}
             type="button"
           >
             <span className="nav-icon"><FiTrash2 /></span>
@@ -105,10 +141,22 @@ const AdminNavbar = () => {
           </button>
 
           <div className="pickup-menu">
-            <Link to="/admin/pickup-queue" onClick={() => setPickupOpen(false)}>
+            <Link
+              to="/admin/pickup-queue"
+              onClick={() => {
+                setPickupOpen(false);
+                closeAllDropdowns();
+              }}
+            >
               Pickup Queue
             </Link>
-            <Link to="/admin/pickup-requests" onClick={() => setPickupOpen(false)}>
+            <Link
+              to="/admin/pickup-requests"
+              onClick={() => {
+                setPickupOpen(false);
+                closeAllDropdowns();
+              }}
+            >
               Pickup Request Details
             </Link>
           </div>

@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const db = require("../config/database");
 const Collector = require("../models/Collector");
 const Factory = require("../models/FactoryDetails");
 const Government = require("../models/GovernmentDetails");
@@ -195,5 +196,112 @@ exports.loginCollector = async (req, res) => {
     res.status(500).json({ 
       message: "Login failed" 
     });
+  }
+};
+
+// ============ COLLECTOR PROFILE (GET/UPDATE) ============
+exports.getProfile = async (req, res) => {
+  try {
+    const collectorId = req.collectorId;
+
+    const [collectors] = await db.execute(
+      `SELECT collector_id, full_name, email, gender, phone_number, home_address,
+              collection_type, vehicle_photo, vehicle_number, latitude, longitude,
+              status, created_at
+       FROM Collectors
+       WHERE collector_id = ?`,
+      [collectorId]
+    );
+
+    if (collectors.length === 0) {
+      return res.status(404).json({ message: "Collector not found" });
+    }
+
+    const collector = collectors[0];
+
+    const [factoryRows] = await db.execute(
+      `SELECT * FROM Factory_Details WHERE collector_id = ? LIMIT 1`,
+      [collectorId]
+    );
+
+    const [govRows] = await db.execute(
+      `SELECT * FROM Government_Details WHERE collector_id = ? LIMIT 1`,
+      [collectorId]
+    );
+
+    res.json({
+      collector,
+      factory_details: factoryRows[0] || null,
+      government_details: govRows[0] || null
+    });
+  } catch (err) {
+    console.error("Get collector profile error:", err);
+    res.status(500).json({ message: "Failed to load profile" });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const collectorId = req.collectorId;
+    const {
+      full_name,
+      phone_number,
+      home_address,
+      latitude,
+      longitude
+    } = req.body || {};
+
+    if (!full_name || !full_name.trim()) {
+      return res.status(400).json({ message: "Full name is required" });
+    }
+    if (!phone_number || !phone_number.trim()) {
+      return res.status(400).json({ message: "Phone number is required" });
+    }
+
+    const lat =
+      latitude === "" || latitude === undefined || latitude === null
+        ? null
+        : parseFloat(latitude);
+    const lng =
+      longitude === "" || longitude === undefined || longitude === null
+        ? null
+        : parseFloat(longitude);
+
+    if (lat !== null && Number.isNaN(lat)) {
+      return res.status(400).json({ message: "Invalid latitude" });
+    }
+    if (lng !== null && Number.isNaN(lng)) {
+      return res.status(400).json({ message: "Invalid longitude" });
+    }
+
+    const fields = [
+      "full_name = ?",
+      "phone_number = ?",
+      "home_address = ?",
+      "latitude = ?",
+      "longitude = ?"
+    ];
+    const values = [
+      full_name.trim(),
+      phone_number.trim(),
+      home_address || null,
+      lat,
+      lng
+    ];
+
+    if (req.file) {
+      fields.push("vehicle_photo = ?");
+      values.push(req.file.filename);
+    }
+
+    values.push(collectorId);
+
+    const sql = `UPDATE Collectors SET ${fields.join(", ")} WHERE collector_id = ?`;
+    await db.execute(sql, values);
+
+    res.json({ success: true, message: "Profile updated" });
+  } catch (err) {
+    console.error("Update collector profile error:", err);
+    res.status(500).json({ message: "Update failed" });
   }
 };
