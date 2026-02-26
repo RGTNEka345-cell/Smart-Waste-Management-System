@@ -32,12 +32,13 @@ exports.createPickupRequest = async (req, res) => {
     return res.status(400).json({ message: "Invalid payload data" });
   }
 
-  const citizenId = parseInt(payload.citizen_id, 10);
+  const citizenId =
+    parseInt(payload.citizen_id, 10) || getCitizenIdFromRequest(req);
   const requestType = payload.request_type;
   const targetCollectionType = payload.target_collection_type;
-  const pickupLatitude = Number(payload.pickup_latitude);
-  const pickupLongitude = Number(payload.pickup_longitude);
-  const pickupAddress = payload.pickup_address || null;
+  let pickupLatitude = Number(payload.pickup_latitude);
+  let pickupLongitude = Number(payload.pickup_longitude);
+  let pickupAddress = payload.pickup_address || null;
   const note = payload.note || null;
   const items = Array.isArray(payload.items) ? payload.items : [];
 
@@ -50,8 +51,32 @@ exports.createPickupRequest = async (req, res) => {
   if (!VALID_TARGET_TYPES.has(targetCollectionType)) {
     return res.status(400).json({ message: "Invalid target_collection_type" });
   }
+  // Fallback to citizen profile coordinates/address if frontend did not send them.
+  if (!Number.isFinite(pickupLatitude) || !Number.isFinite(pickupLongitude) || !pickupAddress) {
+    try {
+      const [citizenRows] = await db.execute(
+        `SELECT latitude, longitude, address FROM citizens WHERE id = ? LIMIT 1`,
+        [citizenId]
+      );
+      if (citizenRows.length > 0) {
+        const c = citizenRows[0];
+        if (!Number.isFinite(pickupLatitude) && c.latitude !== null && c.latitude !== undefined) {
+          pickupLatitude = Number(c.latitude);
+        }
+        if (!Number.isFinite(pickupLongitude) && c.longitude !== null && c.longitude !== undefined) {
+          pickupLongitude = Number(c.longitude);
+        }
+        if (!pickupAddress && c.address) {
+          pickupAddress = c.address;
+        }
+      }
+    } catch (err) {
+      console.error("Citizen location fallback error:", err.message);
+    }
+  }
+
   if (!Number.isFinite(pickupLatitude) || !Number.isFinite(pickupLongitude)) {
-    return res.status(400).json({ message: "pickup latitude/longitude required" });
+    return res.status(400).json({ message: "Pickup location missing. Please update your profile location and try again." });
   }
 
   const isSpecial = requestType === "SPECIAL";
@@ -71,7 +96,7 @@ exports.createPickupRequest = async (req, res) => {
       `SELECT request_id, status
        FROM pickup_requests
        WHERE citizen_id = ? AND request_type = ?
-         AND status IN ('PENDING_ADMIN','APPROVED_ADMIN','ASSIGNING','FAILED_TO_ASSIGN','ACCEPTED_BY_COLLECTOR','IN_PROGRESS')
+         AND status NOT IN ('COMPLETED', 'CANCELLED_BY_CITIZEN', 'REJECTED_ADMIN')
        LIMIT 1`,
       [citizenId, requestType]
     );
@@ -79,7 +104,8 @@ exports.createPickupRequest = async (req, res) => {
     if (activeRows.length > 0) {
       await conn.rollback();
       return res.status(409).json({
-        message: "You already have an active pickup request for this type. Please wait until it is completed."
+        message:
+          "You already have an active pickup request for this type. You can create a new one only after it is completed, cancelled by you, or rejected by admin."
       });
     }
 

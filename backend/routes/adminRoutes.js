@@ -3,9 +3,12 @@ const router = express.Router();
 
 const AdminController = require("../controllers/AdminController");
 const WasteTypeController = require("../controllers/WasteTypeController");
+const EcoTipController = require("../controllers/EcoTipController");
 const PickupRequestController = require("../controllers/PickupRequestController");
 const AdminCitizenController = require("../controllers/AdminCitizenController");
 const adminAuth = require("../middlewares/adminAuth");
+const uploadAdminPhoto = require("../middlewares/uploadAdminPhoto");
+const uploadEcoTipImage = require("../middlewares/uploadEcoTipImage");
 const {
   getPendingCollectors,
   approveOrRejectCollector,
@@ -18,11 +21,22 @@ router.post("/admin/login", AdminController.login);
 router.post("/admin/forgot-password", AdminController.forgotPassword);
 router.post("/admin/verify-otp", AdminController.verifyOtp);
 router.get("/admin/stats", adminAuth, AdminController.getAdminStats);
+router.get("/admin/profile", adminAuth, AdminController.getProfile);
+router.post("/admin/profile/request-otp", adminAuth, AdminController.requestProfileOtp);
+router.put("/admin/profile", adminAuth, uploadAdminPhoto.single("photo"), AdminController.updateProfile);
+router.post("/admin/sub-admins", adminAuth, uploadAdminPhoto.single("photo"), AdminController.createSubAdmin);
 
 // Waste Type Management (Admin only)
 router.post("/admin/wastetypes", adminAuth, WasteTypeController.createWasteType);
 router.get("/admin/wastetypes", adminAuth, WasteTypeController.getAllWasteTypes);
 router.delete("/admin/wastetypes/:id", adminAuth, WasteTypeController.deleteWasteType);
+router.post(
+  "/admin/eco-tips",
+  adminAuth,
+  uploadEcoTipImage.single("image"),
+  EcoTipController.createEcoTip
+);
+router.get("/eco-tips", EcoTipController.listEcoTips);
 
 // Collector Approvals (Admin only)
 router.get("/admin/collectors/pending", adminAuth, getPendingCollectors);

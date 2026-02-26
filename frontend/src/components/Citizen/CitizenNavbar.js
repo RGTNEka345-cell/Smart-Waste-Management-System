@@ -87,7 +87,8 @@ const CitizenNavbar = ({ setActiveTab }) => {
     {
       id: "tips",
       label: "Eco Tips",
-      icon: <FaLeaf />
+      icon: <FaLeaf />,
+      path: "/citizen/eco-tips"
     },
     {
       id: "history",

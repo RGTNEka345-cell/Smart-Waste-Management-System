@@ -1,0 +1,131 @@
+.csa-wrap {
+  max-width: 900px;
+  margin: 90px auto 25px;
+  padding: 0 16px;
+}
+
+.csa-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.csa-top h2 {
+  margin: 0;
+}
+
+.muted {
+  margin-top: 4px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.roleBadge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  border: 1px solid #ddd;
+  font-size: 12px;
+}
+
+.roleBadge.ok {
+  background: #e8f5e9;
+  border-color: #b7e2bd;
+  color: #2e7d32;
+}
+
+.roleBadge.bad {
+  background: #ffebee;
+  border-color: #ffcdd2;
+  color: #d32f2f;
+}
+
+.csa-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  display: grid;
+  gap: 18px;
+}
+
+.csa-card.blocked {
+  border: 1px dashed #ffb3b8;
+  background: #fff6f7;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.field label {
+  font-weight: 900;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  outline: none;
+  background: #fff;
+}
+
+.field textarea {
+  resize: none;
+  min-height: 80px;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+.photo-preview-box {
+  margin-top: 10px;
+  width: 130px;
+  height: 130px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  background: #f8fafc;
+}
+
+.photo-preview-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.btn {
+  border: none;
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn.save {
+  background: #1976d2;
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 850px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}

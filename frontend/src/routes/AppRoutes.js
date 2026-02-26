@@ -28,6 +28,12 @@ import CollectorDashboard from "../pages/Collector/CollectorDashboard";
 import CollectorActiveJob from "../pages/Collector/Pickup_Request/CollectorActiveJob";
 import CollectorCompletePickup from "../pages/Collector/Pickup_Request/CollectorCompletePickup";
 import CollectorProfileUpdate from "../pages/Collector/Collector_Profile/CollectorProfileUpdate";
+import AdminAddEcoTip from "../pages/admin/Eco_Tips/AdminAddEcoTip";
+import AdminProfileUpdate from "../pages/admin/Admin_Profile/AdminProfileUpdate";
+import CreateSubAdmin from "../pages/admin/Sub_Admin/CreateSubAdmin";
+import CitizenEcoTips from "../pages/Citizen/Eco_Tips/CitizenEcoTips";
+import CollectorEcoTips from "../pages/Collector/Eco_Tips/CollectorEcoTips";
+
 
 function AppRoutes() {
   return (
@@ -45,6 +51,7 @@ function AppRoutes() {
       <Route path="/citizen/pickup/requests" element={<MyPickupRequests />}/>
       <Route path="/citizen/pickup/:requestId" element={<PickupRequestDetails />}/>
       <Route path="/citizen/notifications" element={<CitizenNotifications />}/>
+      <Route path="/citizen/eco-tips" element={<CitizenEcoTips />} />
 
 
       {/* Admin - No changes */}
@@ -58,6 +65,9 @@ function AppRoutes() {
       <Route path="/admin/pickup-requests/:id" element={<AdminPickupRequestDetails />} />
       <Route path="/admin/citizens" element={<AdminCitizens />} />
       <Route path="/admin/notifications" element={<AdminNotifications />} />
+      <Route path="/admin/eco-tips/add" element={<AdminAddEcoTip />} />
+      <Route path="/admin/profile/update" element={<AdminProfileUpdate />} />
+      <Route path="/admin/sub-admins/create" element={<CreateSubAdmin />} />
 
 
       {/* Collector - Updated with new routes */}
@@ -71,7 +81,8 @@ function AppRoutes() {
       <Route path="/collector/job" element={<CollectorActiveJob />} />
       <Route path="/collector/job/:requestId/complete" element={<CollectorCompletePickup />} />
       <Route path="/collector/profile/update" element={<CollectorProfileUpdate />} />
-
+      
+      <Route path="/collector/eco-tips" element={<CollectorEcoTips />} />
 
       {/* About */}
       <Route path="/about" element={<HomePage />} />

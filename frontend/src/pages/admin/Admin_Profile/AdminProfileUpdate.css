@@ -1,0 +1,213 @@
+.apu-wrap {
+  max-width: 900px;
+  margin: 90px auto 25px;
+  padding: 0 16px;
+}
+
+.apu-top h2 {
+  margin: 0;
+}
+
+.muted {
+  margin-top: 4px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.apu-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  display: grid;
+  gap: 18px;
+}
+
+/* PHOTO */
+.photoRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.photoBox {
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 14px;
+  background: #fafafa;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.imgWrap {
+  width: 110px;
+  height: 110px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #eee;
+  background: #fff;
+}
+
+.imgWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fileBtn {
+  background: #1976d2;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.statusBox {
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 14px;
+  background: #fafafa;
+  display: grid;
+  gap: 10px;
+}
+
+.pill {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #e3f2fd;
+  border: 1px solid #b6dbff;
+  font-weight: 900;
+  font-size: 12px;
+  width: fit-content;
+}
+
+/* FORM */
+.secTitle {
+  margin: 6px 0 0;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.field label {
+  font-weight: 900;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  outline: none;
+}
+
+.field textarea {
+  resize: none;
+  min-height: 80px;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+/* READ ONLY */
+.readonly .ro {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 12px;
+  background: #fafafa;
+}
+
+.ro strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* BUTTON */
+.btn {
+  border: none;
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn.save {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* OTP Modal */
+.otp-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+}
+
+.otp-card {
+  background: #0b1220;
+  color: #e5e7eb;
+  width: min(420px, 92vw);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+
+.otp-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+
+.otp-card p {
+  margin: 0 0 16px;
+  color: #cbd5f5;
+  font-size: 0.95rem;
+}
+
+.otp-card input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #0f172a;
+  color: #e5e7eb;
+  font-size: 1rem;
+  outline: none;
+}
+
+.otp-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 850px) {
+  .photoRow {
+    grid-template-columns: 1fr;
+  }
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}

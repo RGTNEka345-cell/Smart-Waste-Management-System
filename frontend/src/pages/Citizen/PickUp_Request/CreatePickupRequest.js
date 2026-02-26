@@ -131,7 +131,8 @@ const CreatePickupRequest = () => {
       setItems([{ wastetype_id: "", quantity: "", unit: "kg" }]);
       setRequestType("NORMAL");
     } catch (err) {
-      alert("Error submitting request");
+      const msg = err?.response?.data?.message || "Error submitting request";
+      alert(msg);
     }
   };
 

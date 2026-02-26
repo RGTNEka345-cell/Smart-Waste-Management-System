@@ -1,5 +1,67 @@
 const db = require("../config/database");
 
+exports.getDashboardStats = async (req, res) => {
+  const collectorId = req.collectorId;
+
+  try {
+    const [[summary]] = await db.execute(
+      `SELECT
+          SUM(CASE WHEN pj.job_status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_jobs,
+          SUM(CASE WHEN pj.job_status IN ('NOT_STARTED','STARTED','ARRIVED') THEN 1 ELSE 0 END) AS active_jobs,
+          SUM(CASE WHEN pj.job_status = 'NOT_STARTED' THEN 1 ELSE 0 END) AS pending_jobs
+       FROM pickup_jobs pj
+       JOIN pickup_offers po ON po.offer_id = pj.offer_id
+       WHERE po.collector_id = ?`,
+      [collectorId]
+    );
+
+    const [monthlyRows] = await db.execute(
+      `SELECT
+          DATE_FORMAT(pj.completed_at, '%Y-%m') AS ym,
+          COUNT(*) AS total
+       FROM pickup_jobs pj
+       JOIN pickup_offers po ON po.offer_id = pj.offer_id
+       WHERE po.collector_id = ?
+         AND pj.job_status = 'COMPLETED'
+         AND pj.completed_at IS NOT NULL
+         AND pj.completed_at >= DATE_SUB(CURDATE(), INTERVAL 5 MONTH)
+       GROUP BY DATE_FORMAT(pj.completed_at, '%Y-%m')
+       ORDER BY ym ASC`,
+      [collectorId]
+    );
+
+    const [recentRows] = await db.execute(
+      `SELECT
+          pr.request_id,
+          pr.request_type,
+          pr.pickup_address,
+          pj.completed_at
+       FROM pickup_jobs pj
+       JOIN pickup_offers po ON po.offer_id = pj.offer_id
+       JOIN pickup_requests pr ON pr.request_id = pj.request_id
+       WHERE po.collector_id = ?
+         AND pj.job_status = 'COMPLETED'
+       ORDER BY pj.completed_at DESC
+       LIMIT 5`,
+      [collectorId]
+    );
+
+    return res.json({
+      completed_jobs: Number(summary?.completed_jobs || 0),
+      active_jobs: Number(summary?.active_jobs || 0),
+      pending_jobs: Number(summary?.pending_jobs || 0),
+      monthly_completed: monthlyRows.map((r) => ({
+        ym: r.ym,
+        total: Number(r.total || 0)
+      })),
+      recent_completed: recentRows
+    });
+  } catch (err) {
+    console.error("Collector dashboard stats error:", err.message);
+    return res.status(500).json({ message: "Failed to load collector dashboard stats" });
+  }
+};
+
 exports.startJob = async (req, res) => {
   const requestId = parseInt(req.params.id, 10);
   if (!Number.isInteger(requestId)) {

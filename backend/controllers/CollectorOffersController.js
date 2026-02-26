@@ -54,17 +54,6 @@ exports.acceptOffer = async (req, res) => {
       return res.status(400).json({ message: "Offer not available" });
     }
 
-    if (offer.offer_expires_at && new Date(offer.offer_expires_at) < new Date()) {
-      await conn.execute(
-        `UPDATE pickup_offers
-         SET offer_status = 'EXPIRED', responded_at = NOW()
-         WHERE offer_id = ?`,
-        [offerId]
-      );
-      await conn.rollback();
-      return res.status(400).json({ message: "Offer expired" });
-    }
-
     await conn.execute(
       `UPDATE pickup_offers
        SET offer_status = 'ACCEPTED', responded_at = NOW()

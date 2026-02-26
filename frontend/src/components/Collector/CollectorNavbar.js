@@ -9,7 +9,8 @@ import {
   FaHome,
   FaInbox,
   FaTruck,
-  FaHistory
+  FaHistory,
+  FaLeaf
 } from "react-icons/fa";
 
 const CollectorNavbar = () => {
@@ -19,11 +20,15 @@ const CollectorNavbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const stored =
-      localStorage.getItem("collector") ||
-      localStorage.getItem("collectorData");
-    const data = stored ? JSON.parse(stored) : null;
-    setCollector(data);
+    try {
+      const stored =
+        localStorage.getItem("collector") ||
+        localStorage.getItem("collectorData");
+      const data = stored ? JSON.parse(stored) : null;
+      setCollector(data);
+    } catch {
+      setCollector(null);
+    }
   }, []);
 
   const handleLogout = () => {
@@ -34,14 +39,25 @@ const CollectorNavbar = () => {
     navigate("/login/collector");
   };
 
-  const vehicleImage = collector?.vehicle_photo
-    ? `http://localhost:5000/uploads/collectors/${collector.vehicle_photo}`
-    : "/default-user.png";
+  const resolveVehicleImage = (photo) => {
+    if (!photo) return "/default-user.png";
+
+    const value = String(photo).trim();
+    if (!value) return "/default-user.png";
+    if (/^https?:\/\//i.test(value)) return value;
+    if (value.startsWith("/uploads/")) return `http://localhost:5000${value}`;
+    if (value.startsWith("uploads/")) return `http://localhost:5000/${value}`;
+
+    return `http://localhost:5000/uploads/collectors/${value}`;
+  };
+
+  const vehicleImage = resolveVehicleImage(collector?.vehicle_photo);
 
   const navItems = [
     { label: "Dashboard", icon: <FaHome />, path: "/collector/dashboard" },
     { label: "Pickup Offers", icon: <FaInbox />, path: "/collector/offers" },
     { label: "Active Job", icon: <FaTruck />, path: "/collector/job" },
+    { label: "Eco Tips", icon: <FaLeaf />, path: "/collector/eco-tips" },
     { label: "History", icon: <FaHistory />, path: "/collector/history" }
   ];
 

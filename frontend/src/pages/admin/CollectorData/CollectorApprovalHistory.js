@@ -307,5 +307,4 @@ const CollectorApprovalHistory = () => {
     </>
   );
 };
-
 export default CollectorApprovalHistory;

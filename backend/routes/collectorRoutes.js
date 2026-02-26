@@ -52,6 +52,7 @@ router.post("/collector/offers/:id/reject", collectorAuth, CollectorOffersContro
 
 // Active Job (Collector)
 router.get("/collector/active-job", collectorAuth, CollectorActiveJobController.getActiveJob);
+router.get("/collector/dashboard/stats", collectorAuth, CollectorJobsController.getDashboardStats);
 
 // Pickup Jobs (Collector)
 router.post("/collector/jobs/:id/start", collectorAuth, CollectorJobsController.startJob);

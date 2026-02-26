@@ -1,18 +1,28 @@
 // src/pages/collector/CollectorDashboard.js
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import CollectorNavbar from "../../components/Collector/CollectorNavbar";
 import "./CollectorDashboard.css";
 
+const API = "http://localhost:5000/api";
 
 const CollectorDashboard = () => {
   const navigate = useNavigate();
+  const token = localStorage.getItem("collectorToken");
   const [collectorData, setCollectorData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [dashboardStats, setDashboardStats] = useState({
+    completed_jobs: 0,
+    active_jobs: 0,
+    pending_jobs: 0,
+    monthly_completed: [],
+    recent_completed: []
+  });
+  const [statsLoading, setStatsLoading] = useState(false);
 
   useEffect(() => {
     // Check if collector is logged in
-    const token = localStorage.getItem("collectorToken");
     const storedData = localStorage.getItem("collectorData");
     
     if (!token || !storedData) {
@@ -31,6 +41,39 @@ const CollectorDashboard = () => {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      if (!token) return;
+
+      try {
+        setStatsLoading(true);
+        const res = await axios.get(`${API}/collector/dashboard/stats`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setDashboardStats({
+          completed_jobs: Number(res.data?.completed_jobs || 0),
+          active_jobs: Number(res.data?.active_jobs || 0),
+          pending_jobs: Number(res.data?.pending_jobs || 0),
+          monthly_completed: Array.isArray(res.data?.monthly_completed) ? res.data.monthly_completed : [],
+          recent_completed: Array.isArray(res.data?.recent_completed) ? res.data.recent_completed : []
+        });
+      } catch {
+        setDashboardStats({
+          completed_jobs: 0,
+          active_jobs: 0,
+          pending_jobs: 0,
+          monthly_completed: [],
+          recent_completed: []
+        });
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchDashboardStats();
+  }, [token]);
+
+  const chartMax = Math.max(1, ...dashboardStats.monthly_completed.map((item) => item.total));
 
   if (loading) {
     return (
@@ -74,12 +117,67 @@ const CollectorDashboard = () => {
               <p className="stat-value">{collectorData?.collection_type}</p>
             </div>
             <div className="stat-card">
-              <h3>Status</h3>
-              <p className="stat-value">{collectorData?.status}</p>
+              <h3>Current Active Jobs</h3>
+              <p className="stat-value">{dashboardStats.active_jobs}</p>
             </div>
             <div className="stat-card">
-              <h3>Vehicle Number</h3>
-              <p className="stat-value">{collectorData?.vehicle_number}</p>
+              <h3>Completed Pickups</h3>
+              <p className="stat-value">{dashboardStats.completed_jobs}</p>
+            </div>
+            <div className="stat-card">
+              <h3>Pending to Start</h3>
+              <p className="stat-value">{dashboardStats.pending_jobs}</p>
+            </div>
+          </div>
+
+          <div className="dashboard-content chart-panel">
+            <div className="content-card">
+              <h2>Pickup Activity (Last 6 Months)</h2>
+              {statsLoading ? (
+                <p className="muted-line">Loading activity...</p>
+              ) : dashboardStats.monthly_completed.length === 0 ? (
+                <p className="muted-line">No completed pickups in recent months.</p>
+              ) : (
+                <div className="mini-chart">
+                  {dashboardStats.monthly_completed.map((item) => (
+                    <div className="mini-bar-col" key={item.ym}>
+                      <div className="mini-bar-wrap">
+                        <div
+                          className="mini-bar"
+                          style={{ height: `${Math.max(12, Math.round((item.total / chartMax) * 120))}px` }}
+                          title={`${item.ym}: ${item.total}`}
+                        />
+                      </div>
+                      <small className="bar-label">{item.ym}</small>
+                      <small className="bar-value">{item.total}</small>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="dashboard-content recent-panel">
+            <div className="content-card">
+              <h2>Recent Pickup History</h2>
+              {dashboardStats.recent_completed.length === 0 ? (
+                <p className="muted-line">No completed pickups yet.</p>
+              ) : (
+                <div className="recent-list">
+                  {dashboardStats.recent_completed.map((item) => (
+                    <div className="recent-item" key={`${item.request_id}-${item.completed_at}`}>
+                      <div>
+                        <strong>Request #{item.request_id}</strong>
+                        <p>{item.pickup_address || "-"}</p>
+                      </div>
+                      <div className="recent-meta">
+                        <span>{item.request_type}</span>
+                        <small>{item.completed_at ? new Date(item.completed_at).toLocaleString() : "-"}</small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -104,8 +202,16 @@ const CollectorDashboard = () => {
                   <span>{collectorData?.gender}</span>
                 </div>
                 <div className="info-item">
+                  <label>Status:</label>
+                  <span>{collectorData?.status}</span>
+                </div>
+                <div className="info-item">
+                  <label>Vehicle Number:</label>
+                  <span>{collectorData?.vehicle_number}</span>
+                </div>
+                <div className="info-item">
                   <label>Address:</label>
-                  <span>{collectorData?.home_address}</span>
+                  <span>{collectorData?.home_address || "-"}</span>
                 </div>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import CollectorNavbar from "../../../components/Collector/CollectorNavbar";
 import "./CollectorActiveJob.css";
 
 const API = "http://localhost:5000/api";
@@ -83,31 +84,39 @@ const CollectorActiveJob = () => {
 
   if (loading) {
     return (
-      <div className="caj-wrap">
-        <div className="caj-card">Loading active job...</div>
-      </div>
+      <>
+        <CollectorNavbar />
+        <div className="caj-wrap">
+          <div className="caj-card">Loading active job...</div>
+        </div>
+      </>
     );
   }
 
   if (!job) {
     return (
-      <div className="caj-wrap">
-        <div className="caj-card empty">
-          No active job right now.
+      <>
+        <CollectorNavbar />
+        <div className="caj-wrap">
+          <div className="caj-card empty">
+            No active job right now.
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="caj-wrap">
-      <div className="caj-top">
-        <h2>My Active Job</h2>
-        <span className={`badge ${job.status}`}>{job.status}</span>
-      </div>
+    <>
+      <CollectorNavbar />
+      <div className="caj-wrap">
+        <div className="caj-top">
+          <h2>My Active Job</h2>
+          <span className={`badge ${job.status}`}>{job.status}</span>
+        </div>
 
-      <div className="caj-card">
-        <h3>Pickup Request #{job.request_id}</h3>
+        <div className="caj-card">
+          <h3>Pickup Request #{job.request_id}</h3>
 
         <div className="grid2">
           <div>
@@ -180,8 +189,9 @@ const CollectorActiveJob = () => {
             </>
           )}
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FiGrid,
@@ -8,6 +8,9 @@ import {
   FiBarChart2,
   FiBell,
   FiLogOut,
+  FiUser,
+  FiUserPlus,
+  FiBookOpen,
   FiMenu,
   FiX,
   FiChevronDown,
@@ -17,21 +20,32 @@ import "./AdminNavbar.css";
 const AdminNavbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [admin, setAdmin] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pickupOpen, setPickupOpen] = useState(false);
   const [collectorsOpen, setCollectorsOpen] = useState(false);
   const [citizensOpen, setCitizensOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("admin");
+    setAdmin(stored ? JSON.parse(stored) : null);
+  }, []);
 
   const closeAllDropdowns = () => {
     setPickupOpen(false);
     setCollectorsOpen(false);
     setCitizensOpen(false);
+    setProfileOpen(false);
   };
 
   const isActive = (path) => location.pathname.startsWith(path);
 
   const logout = () => {
-    // 🔐 Clear token here
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("admin");
+    localStorage.removeItem("adminId");
+    localStorage.removeItem("adminSession");
     navigate("/login/admin");
   };
 
@@ -168,6 +182,12 @@ const AdminNavbar = () => {
             <FiBarChart2 /> Reports
           </Link>
         </li>
+
+        <li>
+          <Link className={isActive("/admin/eco-tips") ? "active" : ""} to="/admin/eco-tips/add">
+            <FiBookOpen /> Eco Tips
+          </Link>
+        </li>
       </ul>
 
       <div className="admin-navbar-right">
@@ -176,10 +196,47 @@ const AdminNavbar = () => {
         </Link>
 
         <div className="admin-profile">
-          <span className="admin-name">Admin</span>
-          <button className="icon-btn" onClick={logout}>
-            <FiLogOut />
+          <button
+            className="admin-profile-trigger"
+            onClick={() => {
+              setProfileOpen(!profileOpen);
+              setPickupOpen(false);
+              setCollectorsOpen(false);
+              setCitizensOpen(false);
+            }}
+            type="button"
+          >
+            <span className="admin-name">Admin</span>
+            <FiChevronDown className="caret" />
           </button>
+
+          {profileOpen && (
+            <div className="admin-profile-menu">
+              <Link
+                to="/admin/profile/update"
+                onClick={() => {
+                  setProfileOpen(false);
+                  closeAllDropdowns();
+                }}
+              >
+                <FiUser /> Admin Profile Update
+              </Link>
+              {admin?.role === "main_admin" && (
+                <Link
+                  to="/admin/sub-admins/create"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    closeAllDropdowns();
+                  }}
+                >
+                  <FiUserPlus /> Create Sub Admin
+                </Link>
+              )}
+              <button type="button" onClick={logout}>
+                <FiLogOut /> Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>

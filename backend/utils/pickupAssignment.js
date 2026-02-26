@@ -155,7 +155,8 @@ const assignNextCollector = async (requestId, conn) => {
   }
 
   const candidate = candidates[0];
-  const offerExpiresAt = new Date(Date.now() + 30 * 60 * 1000);
+  // Keep offers open until collector responds (no short auto-expiry).
+  const offerExpiresAt = new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000);
 
   const [offerResult] = await conn.execute(
     `INSERT INTO pickup_offers
