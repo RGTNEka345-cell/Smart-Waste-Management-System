@@ -20,6 +20,7 @@ const CitizenNavbar = ({ setActiveTab }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPickupOpen, setIsPickupOpen] = useState(false);
+  const [isDumpOpen, setIsDumpOpen] = useState(false);
   const [citizen, setCitizen] = useState(null);
   const [latestLoading, setLatestLoading] = useState(false);
   const navigate = useNavigate();
@@ -34,7 +35,8 @@ const CitizenNavbar = ({ setActiveTab }) => {
   const handleLogout = () => {
     localStorage.removeItem("citizen");
     localStorage.removeItem("citizenToken");
-    navigate("/about");
+    localStorage.removeItem("citizenSession");
+    navigate("/login/citizen", { replace: true });
   };
 
   const handleGoLatestRequest = async () => {
@@ -65,6 +67,7 @@ const CitizenNavbar = ({ setActiveTab }) => {
       setLatestLoading(false);
       setIsMenuOpen(false);
       setIsPickupOpen(false);
+      setIsDumpOpen(false);
     }
   };
 
@@ -78,11 +81,6 @@ const CitizenNavbar = ({ setActiveTab }) => {
       id: "dashboard",
       label: "Dashboard",
       icon: <FaHome />
-    },
-    {
-      id: "dumping",
-      label: "Report Illegal Dumping",
-      icon: <FaMapMarkerAlt />
     },
     {
       id: "tips",
@@ -133,6 +131,7 @@ const CitizenNavbar = ({ setActiveTab }) => {
         }
         setIsMenuOpen(false);
         setIsPickupOpen(false);
+        setIsDumpOpen(false);
       }}
     >
       <span className="nav-icon">{item.icon}</span>
@@ -143,7 +142,10 @@ const CitizenNavbar = ({ setActiveTab }) => {
   <div className={`nav-dropdown ${isPickupOpen ? "open" : ""}`}>
     <button
       className="nav-link dropdown-trigger"
-      onClick={() => setIsPickupOpen(!isPickupOpen)}
+      onClick={() => {
+        setIsPickupOpen(!isPickupOpen);
+        setIsDumpOpen(false);
+      }}
       aria-expanded={isPickupOpen}
     >
       <span className="nav-icon"><FaTrashAlt /></span>
@@ -181,16 +183,61 @@ const CitizenNavbar = ({ setActiveTab }) => {
             </button>
           </div>
         </div>
+
+        <div className={`nav-dropdown ${isDumpOpen ? "open" : ""}`}>
+          <button
+            className="nav-link dropdown-trigger"
+            onClick={() => {
+              setIsDumpOpen(!isDumpOpen);
+              setIsPickupOpen(false);
+            }}
+            aria-expanded={isDumpOpen}
+          >
+            <span className="nav-icon"><FaMapMarkerAlt /></span>
+            <span className="nav-label">Illegal Dumping</span>
+            <span className="nav-caret"><FaChevronDown /></span>
+          </button>
+
+          <div className="dropdown-menu">
+            <button
+              className="dropdown-link"
+              onClick={() => {
+                navigate("/citizen/illegal-dumping/create");
+                setIsMenuOpen(false);
+                setIsPickupOpen(false);
+                setIsDumpOpen(false);
+              }}
+            >
+              Create Report
+            </button>
+            <button
+              className="dropdown-link"
+              onClick={() => {
+                navigate("/citizen/illegal-dumping/my");
+                setIsMenuOpen(false);
+                setIsPickupOpen(false);
+                setIsDumpOpen(false);
+              }}
+            >
+              My Reports
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Profile Dropdown */}
       <div className="profile-section">
+        <div className="online-status" title="Online">
+          <span className="online-dot" />
+        </div>
+
         <Link
           to="/citizen/notifications"
           className="icon-btn"
           onClick={() => {
             setIsMenuOpen(false);
             setIsPickupOpen(false);
+            setIsDumpOpen(false);
           }}
           aria-label="Notifications"
         >
@@ -273,6 +320,7 @@ const CitizenNavbar = ({ setActiveTab }) => {
           onClick={() => {
             setIsMenuOpen(false);
             setIsPickupOpen(false);
+            setIsDumpOpen(false);
           }}
         />
       )}

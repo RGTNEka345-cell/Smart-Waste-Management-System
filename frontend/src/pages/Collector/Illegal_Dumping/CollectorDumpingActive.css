@@ -1,0 +1,166 @@
+.collector-dump-active {
+  max-width: 1040px;
+  margin: 86px auto 28px;
+  padding: 0 16px;
+}
+
+.collector-dump-active .id-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.collector-dump-active .id-top h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.5rem;
+}
+
+.collector-dump-active .muted {
+  color: #6b7280;
+}
+
+.collector-dump-active .card {
+  background: #fff;
+  border: 1px solid #e5eaf2;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+}
+
+.collector-dump-active .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.collector-dump-active .title {
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 5px;
+}
+
+.collector-dump-active .sub {
+  color: #475467;
+  font-size: 0.93rem;
+}
+
+.collector-dump-active .pills {
+  display: flex;
+  gap: 8px;
+}
+
+.collector-dump-active .pill {
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: #e0ebff;
+  color: #1d4ed8;
+}
+
+.collector-dump-active .pill.warn {
+  background: #fff3bf;
+  color: #854d0e;
+}
+
+.collector-dump-active .mapBox {
+  border: 1px dashed #c7d2e3;
+  border-radius: 12px;
+  padding: 14px;
+  color: #64748b;
+  text-align: center;
+  margin: 12px 0;
+  background: #f8fbff;
+}
+
+.collector-dump-active .field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.collector-dump-active .field input,
+.collector-dump-active .field textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.collector-dump-active .field textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.collector-dump-active .previewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.collector-dump-active .imgBox {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.collector-dump-active .imgBox img {
+  width: 100%;
+  height: 96px;
+  object-fit: cover;
+  display: block;
+}
+
+.collector-dump-active .rm {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+  cursor: pointer;
+}
+
+.collector-dump-active .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.collector-dump-active .btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.collector-dump-active .btn.primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.collector-dump-active .btn.success {
+  background: #16a34a;
+  color: #fff;
+}
+
+.collector-dump-active .btn.secondary {
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+
+@media (max-width: 760px) {
+  .collector-dump-active .row {
+    flex-direction: column;
+  }
+}

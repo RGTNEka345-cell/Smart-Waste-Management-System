@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import CitizenRegister from "../pages/auth/CitizenRegister";
 import CollectorRegister from "../pages/auth/CollectorRegister";
@@ -33,60 +34,186 @@ import AdminProfileUpdate from "../pages/admin/Admin_Profile/AdminProfileUpdate"
 import CreateSubAdmin from "../pages/admin/Sub_Admin/CreateSubAdmin";
 import CitizenEcoTips from "../pages/Citizen/Eco_Tips/CitizenEcoTips";
 import CollectorEcoTips from "../pages/Collector/Eco_Tips/CollectorEcoTips";
+import CitizenCreateDumpReport from "../pages/Citizen/Illegal_Dumping/CitizenCreateDumpReport";
+import CitizenMyDumpReports from "../pages/Citizen/Illegal_Dumping/CitizenMyDumpReports";
+import AdminDumpingQueue from "../pages/admin/Illegal_Dumping/AdminDumpingQueue";
+import CollectorDumpingOffers from "../pages/Collector/Illegal_Dumping/CollectorDumpingOffers";
+import CollectorDumpingActive from "../pages/Collector/Illegal_Dumping/CollectorDumpingActive";
+
+const clearRoleSession = (role) => {
+  if (role === "admin") {
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("admin");
+    localStorage.removeItem("adminId");
+    localStorage.removeItem("adminSession");
+  } else if (role === "citizen") {
+    localStorage.removeItem("citizenToken");
+    localStorage.removeItem("citizen");
+    localStorage.removeItem("citizenSession");
+  } else if (role === "collector") {
+    localStorage.removeItem("collectorToken");
+    localStorage.removeItem("collectorData");
+    localStorage.removeItem("collector");
+    localStorage.removeItem("collectorSession");
+  }
+};
+
+const hasValidSession = (role) => {
+  const tokenKey =
+    role === "admin" ? "adminToken" : role === "citizen" ? "citizenToken" : "collectorToken";
+  const dataKey =
+    role === "admin" ? "admin" : role === "citizen" ? "citizen" : "collectorData";
+  const sessionKey =
+    role === "admin" ? "adminSession" : role === "citizen" ? "citizenSession" : "collectorSession";
+
+  const token = localStorage.getItem(tokenKey);
+  const data = localStorage.getItem(dataKey);
+  if (!token || !data) return false;
+
+  const forceKey =
+    role === "admin"
+      ? "adminForceReauth"
+      : role === "citizen"
+      ? "citizenForceReauth"
+      : "collectorForceReauth";
+  if (localStorage.getItem(forceKey) === "1") {
+    clearRoleSession(role);
+    return false;
+  }
+
+  const sessionRaw = localStorage.getItem(sessionKey);
+  // Strict mode: session metadata must exist.
+  if (!sessionRaw) {
+    clearRoleSession(role);
+    return false;
+  }
+
+  try {
+    const session = JSON.parse(sessionRaw);
+    if (session?.expiresAt && Date.now() > Number(session.expiresAt)) {
+      clearRoleSession(role);
+      return false;
+    }
+  } catch {
+    clearRoleSession(role);
+    return false;
+  }
+
+  return true;
+};
+
+const SessionWatcher = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const path = location.pathname;
+    const role = path.startsWith("/admin")
+      ? "admin"
+      : path.startsWith("/citizen")
+      ? "citizen"
+      : path.startsWith("/collector")
+      ? "collector"
+      : null;
+
+    if (!role) return;
+
+    const loginPath =
+      role === "admin"
+        ? "/login/admin"
+        : role === "citizen"
+        ? "/login/citizen"
+        : "/login/collector";
+
+    const check = () => {
+      if (!hasValidSession(role)) {
+        navigate(loginPath, { replace: true, state: { from: path } });
+      }
+    };
+
+    check();
+    window.addEventListener("pageshow", check);
+    document.addEventListener("visibilitychange", check);
+
+    return () => {
+      window.removeEventListener("pageshow", check);
+      document.removeEventListener("visibilitychange", check);
+    };
+  }, [location.pathname, navigate]);
+
+  return null;
+};
+
+const RequireRole = ({ role, children }) => {
+  const location = useLocation();
+  if (!hasValidSession(role)) {
+    const loginPath = role === "admin" ? "/login/admin" : role === "collector" ? "/login/collector" : "/login/citizen";
+    return <Navigate to={loginPath} replace state={{ from: location.pathname }} />;
+  }
+  return children;
+};
 
 
 function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
+    <>
+      <SessionWatcher />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
 
       {/* Citizen - No changes */}
       <Route path="/register/citizen" element={<CitizenRegister />} />
       <Route path="/login/citizen" element={<CitizenLogin />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/citizen/dashboard" element={<CitizenDashboard />} />
-      <Route path="/citizen/profile/update" element={<CitizenProfileUpdate />} />
-      <Route path="/citizen/pickup-request/create" element={<CreatePickupRequest />}/>
-      <Route path="/citizen/pickup/requests" element={<MyPickupRequests />}/>
-      <Route path="/citizen/pickup/:requestId" element={<PickupRequestDetails />}/>
-      <Route path="/citizen/notifications" element={<CitizenNotifications />}/>
-      <Route path="/citizen/eco-tips" element={<CitizenEcoTips />} />
+      <Route path="/citizen/dashboard" element={<RequireRole role="citizen"><CitizenDashboard /></RequireRole>} />
+      <Route path="/citizen/profile/update" element={<RequireRole role="citizen"><CitizenProfileUpdate /></RequireRole>} />
+      <Route path="/citizen/pickup-request/create" element={<RequireRole role="citizen"><CreatePickupRequest /></RequireRole>}/>
+      <Route path="/citizen/pickup/requests" element={<RequireRole role="citizen"><MyPickupRequests /></RequireRole>}/>
+      <Route path="/citizen/pickup/:requestId" element={<RequireRole role="citizen"><PickupRequestDetails /></RequireRole>}/>
+      <Route path="/citizen/notifications" element={<RequireRole role="citizen"><CitizenNotifications /></RequireRole>}/>
+      <Route path="/citizen/eco-tips" element={<RequireRole role="citizen"><CitizenEcoTips /></RequireRole>} />
+      <Route path="/citizen/illegal-dumping/create" element={<RequireRole role="citizen"><CitizenCreateDumpReport /></RequireRole>} />
+      <Route path="/citizen/illegal-dumping/my" element={<RequireRole role="citizen"><CitizenMyDumpReports /></RequireRole>} />
 
 
       {/* Admin - No changes */}
       <Route path="/login/admin" element={<AdminLogin />} />
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      <Route path="/admin/waste-types" element={<WasteType />} />
-      <Route path="/admin/collector-approvals" element={<AdminCollectorApproval />} />
-      <Route path="/admin/approval-history" element={<CollectorApprovalHistory />} />
-      <Route path="/admin/pickup-queue" element={<AdminPickupQueue />} />
-      <Route path="/admin/pickup-requests" element={<AdminPickupRequestDetails />} />
-      <Route path="/admin/pickup-requests/:id" element={<AdminPickupRequestDetails />} />
-      <Route path="/admin/citizens" element={<AdminCitizens />} />
-      <Route path="/admin/notifications" element={<AdminNotifications />} />
-      <Route path="/admin/eco-tips/add" element={<AdminAddEcoTip />} />
-      <Route path="/admin/profile/update" element={<AdminProfileUpdate />} />
-      <Route path="/admin/sub-admins/create" element={<CreateSubAdmin />} />
+      <Route path="/admin/dashboard" element={<RequireRole role="admin"><AdminDashboard /></RequireRole>} />
+      <Route path="/admin/waste-types" element={<RequireRole role="admin"><WasteType /></RequireRole>} />
+      <Route path="/admin/collector-approvals" element={<RequireRole role="admin"><AdminCollectorApproval /></RequireRole>} />
+      <Route path="/admin/approval-history" element={<RequireRole role="admin"><CollectorApprovalHistory /></RequireRole>} />
+      <Route path="/admin/pickup-queue" element={<RequireRole role="admin"><AdminPickupQueue /></RequireRole>} />
+      <Route path="/admin/pickup-requests" element={<RequireRole role="admin"><AdminPickupRequestDetails /></RequireRole>} />
+      <Route path="/admin/pickup-requests/:id" element={<RequireRole role="admin"><AdminPickupRequestDetails /></RequireRole>} />
+      <Route path="/admin/citizens" element={<RequireRole role="admin"><AdminCitizens /></RequireRole>} />
+      <Route path="/admin/notifications" element={<RequireRole role="admin"><AdminNotifications /></RequireRole>} />
+      <Route path="/admin/eco-tips/add" element={<RequireRole role="admin"><AdminAddEcoTip /></RequireRole>} />
+      <Route path="/admin/illegal-dumping" element={<RequireRole role="admin"><AdminDumpingQueue /></RequireRole>} />
+      <Route path="/admin/profile/update" element={<RequireRole role="admin"><AdminProfileUpdate /></RequireRole>} />
+      <Route path="/admin/sub-admins/create" element={<RequireRole role="admin"><CreateSubAdmin /></RequireRole>} />
 
 
       {/* Collector - Updated with new routes */}
       <Route path="/register/collector" element={<CollectorRegister />} />
       <Route path="/login/collector" element={<CollectorLogin />} />
-      <Route path="/collector/offers" element={<CollectorOffersInbox />} />
+      <Route path="/collector/offers" element={<RequireRole role="collector"><CollectorOffersInbox /></RequireRole>} />
       
       {/* New Collector Routes */}
       <Route path="/collector/forgot-password" element={<CollectorForgotPassword />} />
-      <Route path="/collector/dashboard" element={<CollectorDashboard />} />
-      <Route path="/collector/job" element={<CollectorActiveJob />} />
-      <Route path="/collector/job/:requestId/complete" element={<CollectorCompletePickup />} />
-      <Route path="/collector/profile/update" element={<CollectorProfileUpdate />} />
+      <Route path="/collector/dashboard" element={<RequireRole role="collector"><CollectorDashboard /></RequireRole>} />
+      <Route path="/collector/job" element={<RequireRole role="collector"><CollectorActiveJob /></RequireRole>} />
+      <Route path="/collector/job/:requestId/complete" element={<RequireRole role="collector"><CollectorCompletePickup /></RequireRole>} />
+      <Route path="/collector/profile/update" element={<RequireRole role="collector"><CollectorProfileUpdate /></RequireRole>} />
       
-      <Route path="/collector/eco-tips" element={<CollectorEcoTips />} />
+      <Route path="/collector/eco-tips" element={<RequireRole role="collector"><CollectorEcoTips /></RequireRole>} />
+      <Route path="/collector/illegal-dumping/offers" element={<RequireRole role="collector"><CollectorDumpingOffers /></RequireRole>} />
+      <Route path="/collector/illegal-dumping/active" element={<RequireRole role="collector"><CollectorDumpingActive /></RequireRole>} />
 
       {/* About */}
-      <Route path="/about" element={<HomePage />} />
-    </Routes>
+        <Route path="/about" element={<HomePage />} />
+      </Routes>
+    </>
   );
 }
 

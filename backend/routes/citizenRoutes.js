@@ -6,6 +6,8 @@ const multer = require('multer');
 const CitizenController = require("../controllers/CitizenController");
 const { registerValidator } = require("../middlewares/validator");
 const uploadCitizen = require("../middlewares/uploadCitizenPhoto");
+const uploadIllegalDumpingPhotos = require("../middlewares/uploadIllegalDumpingPhotos");
+const IllegalDumpingController = require("../controllers/IllegalDumpingController");
 
 
 // Multer setup for optional photo upload
@@ -62,6 +64,14 @@ router.put(
   CitizenController.updateProfile // ✅ function
 );
 
+
+// Illegal Dumping (Citizen)
+router.post(
+  "/illegal-dumping",
+  uploadIllegalDumpingPhotos.array("before_photos", 3),
+  IllegalDumpingController.createReport
+);
+router.get("/illegal-dumping/my", IllegalDumpingController.getMyReports);
 
 module.exports = router;
 

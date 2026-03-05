@@ -23,6 +23,21 @@ const CollectorLogin = () => {
     otp: ""
   });
 
+  useEffect(() => {
+    const clearCollectorAuth = () => {
+      localStorage.setItem("collectorForceReauth", "1");
+      localStorage.removeItem("collectorToken");
+      localStorage.removeItem("collectorData");
+      localStorage.removeItem("collector");
+      localStorage.removeItem("collectorSession");
+    };
+
+    clearCollectorAuth();
+    window.addEventListener("pageshow", clearCollectorAuth);
+
+    return () => window.removeEventListener("pageshow", clearCollectorAuth);
+  }, []);
+
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -74,16 +89,18 @@ const CollectorLogin = () => {
       // Store session data
       localStorage.setItem("collectorToken", data.token);
       localStorage.setItem("collectorData", JSON.stringify(data.collector));
+      const collectorExpiry = Date.now() + 8 * 60 * 60 * 1000;
       localStorage.setItem("collectorSession", JSON.stringify({
-        expiresAt: data.expiresAt,
+        expiresAt: collectorExpiry,
         loggedInAt: Date.now()
       }));
+      localStorage.removeItem("collectorForceReauth");
       
       setSuccess("Login successful! Redirecting...");
       
       // Redirect to dashboard
       setTimeout(() => {
-        navigate("/collector/dashboard");
+        navigate("/collector/dashboard", { replace: true });
       }, 1500);
       
     } catch (err) {
@@ -176,16 +193,18 @@ const CollectorLogin = () => {
       // Store session data
       localStorage.setItem("collectorToken", data.token);
       localStorage.setItem("collectorData", JSON.stringify(data.collector));
+      const collectorExpiry = Date.now() + 8 * 60 * 60 * 1000;
       localStorage.setItem("collectorSession", JSON.stringify({
-        expiresAt: data.expiresAt,
+        expiresAt: collectorExpiry,
         loggedInAt: Date.now()
       }));
+      localStorage.removeItem("collectorForceReauth");
       
       setSuccess("Login successful! Redirecting...");
       
       // Redirect to dashboard
       setTimeout(() => {
-        navigate("/collector/dashboard");
+        navigate("/collector/dashboard", { replace: true });
       }, 1500);
       
     } catch (err) {

@@ -6,6 +6,7 @@ const WasteTypeController = require("../controllers/WasteTypeController");
 const EcoTipController = require("../controllers/EcoTipController");
 const PickupRequestController = require("../controllers/PickupRequestController");
 const AdminCitizenController = require("../controllers/AdminCitizenController");
+const IllegalDumpingAdminController = require("../controllers/IllegalDumpingAdminController");
 const adminAuth = require("../middlewares/adminAuth");
 const uploadAdminPhoto = require("../middlewares/uploadAdminPhoto");
 const uploadEcoTipImage = require("../middlewares/uploadEcoTipImage");
@@ -79,5 +80,10 @@ router.get(
 // Citizens (Admin only)
 router.get("/admin/citizens", adminAuth, AdminCitizenController.listCitizens);
 router.get("/admin/citizens/:id", adminAuth, AdminCitizenController.getCitizenDetails);
+
+// Illegal Dumping (Admin only)
+router.get("/admin/illegal-dumping", adminAuth, IllegalDumpingAdminController.getQueue);
+router.post("/admin/illegal-dumping/:id/approve", adminAuth, IllegalDumpingAdminController.approve);
+router.post("/admin/illegal-dumping/:id/reject", adminAuth, IllegalDumpingAdminController.reject);
 
 module.exports = router;

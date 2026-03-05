@@ -68,6 +68,18 @@ app.use((err, req, res, next) => {
     });
   }
 
+  if (err?.code === "LIMIT_FILE_COUNT") {
+    return res.status(400).json({
+      message: "You can upload maximum 3 photos"
+    });
+  }
+
+  if (err?.code === "LIMIT_UNEXPECTED_FILE") {
+    return res.status(400).json({
+      message: "Only image files are allowed (max 3)"
+    });
+  }
+
   res.status(500).json({ message: "Server error" });
 });
 

@@ -29,6 +29,20 @@ module.exports = (req, res, next) => {
   }
 
   if (!collectorId) {
+    const queryId = parseInt(req.query?.collector_id, 10);
+    if (Number.isInteger(queryId)) {
+      collectorId = queryId;
+    }
+  }
+
+  if (!collectorId) {
+    const bodyId = parseInt(req.body?.collector_id, 10);
+    if (Number.isInteger(bodyId)) {
+      collectorId = bodyId;
+    }
+  }
+
+  if (!collectorId) {
     return res.status(401).json({ message: "Unauthorized collector access" });
   }
 

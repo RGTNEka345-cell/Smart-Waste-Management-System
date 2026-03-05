@@ -78,6 +78,35 @@
 /* Profile */
 .collector-navbar .profile-section {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.collector-navbar .online-status {
+  display: inline-flex;
+  align-items: center;
+}
+
+.collector-navbar .online-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8);
+  animation: collector-online-pulse 1.4s infinite;
+}
+
+@keyframes collector-online-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
 }
 
 .collector-navbar .profile-trigger {

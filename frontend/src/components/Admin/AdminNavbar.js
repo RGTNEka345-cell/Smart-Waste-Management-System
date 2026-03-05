@@ -11,6 +11,7 @@ import {
   FiUser,
   FiUserPlus,
   FiBookOpen,
+  FiAlertTriangle,
   FiMenu,
   FiX,
   FiChevronDown,
@@ -26,6 +27,7 @@ const AdminNavbar = () => {
   const [collectorsOpen, setCollectorsOpen] = useState(false);
   const [citizensOpen, setCitizensOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [avatarFailed, setAvatarFailed] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("admin");
@@ -46,8 +48,25 @@ const AdminNavbar = () => {
     localStorage.removeItem("admin");
     localStorage.removeItem("adminId");
     localStorage.removeItem("adminSession");
-    navigate("/login/admin");
+    navigate("/login/admin", { replace: true });
   };
+
+  const resolveAdminImage = (photo) => {
+    if (!photo) return "/default-user.png";
+    const value = String(photo).trim();
+    if (!value) return "/default-user.png";
+    if (/^https?:\/\//i.test(value)) return value;
+    if (value.startsWith("/uploads/")) return `http://localhost:5000${value}`;
+    if (value.startsWith("uploads/")) return `http://localhost:5000/${value}`;
+    return `http://localhost:5000/uploads/admins/${value}`;
+  };
+
+  const adminImage = resolveAdminImage(admin?.photo);
+  const adminInitial = (admin?.fullname || "A").trim().charAt(0).toUpperCase();
+
+  useEffect(() => {
+    setAvatarFailed(false);
+  }, [adminImage]);
 
   return (
     <nav className="admin-navbar">
@@ -188,9 +207,20 @@ const AdminNavbar = () => {
             <FiBookOpen /> Eco Tips
           </Link>
         </li>
+
+        <li>
+          <Link className={isActive("/admin/illegal-dumping") ? "active" : ""} to="/admin/illegal-dumping">
+            <FiAlertTriangle /> Illegal Dumping
+          </Link>
+        </li>
       </ul>
 
       <div className="admin-navbar-right">
+        <div className="online-status" title="Online">
+          <span className="online-dot" />
+          <span className="online-text">Online</span>
+        </div>
+
         <Link className="icon-btn" to="/admin/notifications" aria-label="Notifications">
           <FiBell />
         </Link>
@@ -206,7 +236,17 @@ const AdminNavbar = () => {
             }}
             type="button"
           >
-            <span className="admin-name">Admin</span>
+            {avatarFailed ? (
+              <span className="admin-avatar-fallback">{adminInitial}</span>
+            ) : (
+              <img
+                src={adminImage}
+                alt="Admin"
+                className="admin-avatar"
+                onError={() => setAvatarFailed(true)}
+              />
+            )}
+            <span className="admin-name">{admin?.fullname || "Admin"}</span>
             <FiChevronDown className="caret" />
           </button>
 

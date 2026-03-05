@@ -1,0 +1,122 @@
+.citizen-dump-create {
+  max-width: 980px;
+  margin: 86px auto 28px;
+  padding: 0 16px;
+}
+
+.citizen-dump-create .id-top h2 {
+  margin: 0;
+  font-size: 1.55rem;
+  color: #14532d;
+}
+
+.citizen-dump-create .muted {
+  color: #5f6b75;
+}
+
+.citizen-dump-create .card {
+  background: #fff;
+  border: 1px solid #dce8df;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 12px 26px rgba(20, 83, 45, 0.08);
+}
+
+.citizen-dump-create .field label {
+  display: block;
+  margin-bottom: 6px;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.citizen-dump-create .field input,
+.citizen-dump-create .field select,
+.citizen-dump-create .field textarea,
+.citizen-dump-create .actions input {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.citizen-dump-create .field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.citizen-dump-create .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.citizen-dump-create .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.citizen-dump-create .btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.citizen-dump-create .btn.primary {
+  background: #15803d;
+  color: #fff;
+}
+
+.citizen-dump-create .btn.secondary {
+  background: #ecfdf3;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.citizen-dump-create .btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.citizen-dump-create .mapBox {
+  border: 1px solid #c9dfce;
+  background: #f7fcf8;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.citizen-dump-create .previewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.citizen-dump-create .imgBox {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #d7e3da;
+}
+
+.citizen-dump-create .imgBox img {
+  width: 100%;
+  height: 96px;
+  object-fit: cover;
+  display: block;
+}
+
+.citizen-dump-create .rm {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+}

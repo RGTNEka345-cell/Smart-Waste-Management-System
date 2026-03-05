@@ -7,8 +7,10 @@ const CollectorAuthController = require("../controllers/CollectorAuthController"
 const CollectorOffersController = require("../controllers/CollectorOffersController");
 const CollectorJobsController = require("../controllers/CollectorJobsController");
 const CollectorActiveJobController = require("../controllers/CollectorActiveJobController");
+const IllegalDumpingCollectorController = require("../controllers/IllegalDumpingCollectorController");
 const collectorAuth = require("../middlewares/collectorAuth");
 const uploadPickupJobImages = require("../middlewares/uploadPickupJobImages");
+const uploadIllegalDumpingPhotos = require("../middlewares/uploadIllegalDumpingPhotos");
 
 // Registration
 router.post(
@@ -62,6 +64,19 @@ router.post(
   collectorAuth,
   uploadPickupJobImages.array("images", 6),
   CollectorJobsController.completeJob
+);
+
+// Illegal Dumping (Collector)
+router.get("/collector/illegal-dumping/offers", collectorAuth, IllegalDumpingCollectorController.listOffers);
+router.post("/collector/illegal-dumping/offers/:id/accept", collectorAuth, IllegalDumpingCollectorController.acceptOffer);
+router.post("/collector/illegal-dumping/offers/:id/reject", collectorAuth, IllegalDumpingCollectorController.rejectOffer);
+router.get("/collector/illegal-dumping/active", collectorAuth, IllegalDumpingCollectorController.getActiveJob);
+router.post("/collector/illegal-dumping/:id/start", collectorAuth, IllegalDumpingCollectorController.startJob);
+router.post(
+  "/collector/illegal-dumping/:id/complete",
+  collectorAuth,
+  uploadIllegalDumpingPhotos.array("after_photos", 3),
+  IllegalDumpingCollectorController.completeJob
 );
 
 module.exports = router;

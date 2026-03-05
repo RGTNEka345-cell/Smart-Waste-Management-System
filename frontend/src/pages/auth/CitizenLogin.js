@@ -39,6 +39,14 @@ const CitizenLogin = () => {
       "citizenToken",
       res.data.token
     );
+    localStorage.setItem(
+      "citizenSession",
+      JSON.stringify({
+        expiresAt: Date.now() + 8 * 60 * 60 * 1000,
+        loggedInAt: Date.now()
+      })
+    );
+    localStorage.removeItem("citizenForceReauth");
 
     // (optional)
     if (rememberMe) {
@@ -48,7 +56,7 @@ const CitizenLogin = () => {
     }
 
     // 👉 redirect
-    window.location.href = "/citizen/dashboard";
+    window.location.replace("/citizen/dashboard");
 
   } catch (err) {
     alert(err.response?.data?.message || "Login failed");
@@ -60,11 +68,22 @@ const CitizenLogin = () => {
 
   // Load remembered email on component mount
   useEffect(() => {
+    const clearCitizenAuth = () => {
+      localStorage.setItem("citizenForceReauth", "1");
+      localStorage.removeItem("citizenToken");
+      localStorage.removeItem("citizen");
+      localStorage.removeItem("citizenSession");
+    };
+    clearCitizenAuth();
+    window.addEventListener("pageshow", clearCitizenAuth);
+
     const savedEmail = localStorage.getItem("citizenEmail");
     if (savedEmail) {
       setEmail(savedEmail);
       setRememberMe(true);
     }
+
+    return () => window.removeEventListener("pageshow", clearCitizenAuth);
   }, []);
 
   return (

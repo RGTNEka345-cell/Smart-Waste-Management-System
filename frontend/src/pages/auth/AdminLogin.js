@@ -35,11 +35,24 @@ const AdminLogin = () => {
 
   // Load saved email if exists
   useEffect(() => {
+    const clearAdminAuth = () => {
+      localStorage.setItem("adminForceReauth", "1");
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("admin");
+      localStorage.removeItem("adminId");
+      localStorage.removeItem("adminSession");
+    };
+
+    clearAdminAuth();
+    window.addEventListener("pageshow", clearAdminAuth);
+
     const savedEmail = localStorage.getItem("adminEmail");
     if (savedEmail) {
       setEmail(savedEmail);
       setRememberMe(true);
     }
+
+    return () => window.removeEventListener("pageshow", clearAdminAuth);
   }, []);
 
   // Clear messages on step change
@@ -76,11 +89,16 @@ const AdminLogin = () => {
       localStorage.setItem("adminToken", res.data.token);
       localStorage.setItem("admin", JSON.stringify(res.data.admin));
       localStorage.setItem("adminId", res.data.admin.admin_id);
+      localStorage.setItem("adminSession", JSON.stringify({
+        expiresAt: Date.now() + 8 * 60 * 60 * 1000,
+        loggedInAt: Date.now()
+      }));
+      localStorage.removeItem("adminForceReauth");
       
       setSuccess("Login successful! Redirecting...");
       
       setTimeout(() => {
-        navigate("/admin/dashboard");
+        navigate("/admin/dashboard", { replace: true });
       }, 1500);
 
     } catch (err) {
@@ -133,11 +151,16 @@ const AdminLogin = () => {
 
       localStorage.setItem("adminToken", res.data.token);
       localStorage.setItem("admin", JSON.stringify(res.data.admin));
+      localStorage.setItem("adminSession", JSON.stringify({
+        expiresAt: Date.now() + 8 * 60 * 60 * 1000,
+        loggedInAt: Date.now()
+      }));
+      localStorage.removeItem("adminForceReauth");
       
       setSuccess("OTP verified! Redirecting...");
       
       setTimeout(() => {
-        navigate("/admin/dashboard");
+        navigate("/admin/dashboard", { replace: true });
       }, 1500);
 
     } catch (err) {

@@ -10,7 +10,8 @@ import {
   FaInbox,
   FaTruck,
   FaHistory,
-  FaLeaf
+  FaLeaf,
+  FaExclamationTriangle
 } from "react-icons/fa";
 
 const CollectorNavbar = () => {
@@ -36,7 +37,7 @@ const CollectorNavbar = () => {
     localStorage.removeItem("collectorData");
     localStorage.removeItem("collectorToken");
     localStorage.removeItem("collectorSession");
-    navigate("/login/collector");
+    navigate("/login/collector", { replace: true });
   };
 
   const resolveVehicleImage = (photo) => {
@@ -57,6 +58,8 @@ const CollectorNavbar = () => {
     { label: "Dashboard", icon: <FaHome />, path: "/collector/dashboard" },
     { label: "Pickup Offers", icon: <FaInbox />, path: "/collector/offers" },
     { label: "Active Job", icon: <FaTruck />, path: "/collector/job" },
+    { label: "Dumping Offers", icon: <FaExclamationTriangle />, path: "/collector/illegal-dumping/offers" },
+    { label: "Dumping Active", icon: <FaExclamationTriangle />, path: "/collector/illegal-dumping/active" },
     { label: "Eco Tips", icon: <FaLeaf />, path: "/collector/eco-tips" },
     { label: "History", icon: <FaHistory />, path: "/collector/history" }
   ];
@@ -100,6 +103,10 @@ const CollectorNavbar = () => {
 
       {/* Profile Dropdown */}
       <div className="profile-section">
+        <div className="online-status" title="Online">
+          <span className="online-dot" />
+        </div>
+
         <div
           className="profile-trigger"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
