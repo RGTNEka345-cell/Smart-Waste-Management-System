@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import CitizenNavbar from "../../../components/Citizen/CitizenNavbar";
 import "./CitizenMyDumpReports.css";
 
 const API = "http://localhost:5000/api";
@@ -32,41 +33,44 @@ export default function CitizenMyDumpReports() {
   }, [load]);
 
   return (
-    <div className="citizen-dump-list">
-      <div className="cmr-top">
-        <div className="cmr-heading">
-          <h2>My Dumping Reports</h2>
-          <p>Track admin approval and cleanup status.</p>
-        </div>
-        <button className="cmr-btn cmr-btn-secondary" onClick={load} disabled={loading}>
-          {loading ? "Loading..." : "Refresh"}
-        </button>
-      </div>
-
-      <div className="cmr-card">
-        {loading ? (
-          <div className="cmr-muted">Loading...</div>
-        ) : rows.length === 0 ? (
-          <div className="cmr-muted">No reports yet.</div>
-        ) : (
-          <div className="cmr-list">
-            {rows.map((r) => (
-              <div className="cmr-row" key={r.report_id}>
-                <div className="cmr-left">
-                  <div className="cmr-title">Report #{r.report_id} - {r.severity}</div>
-                  <div className="cmr-sub">{r.address || `${r.latitude}, ${r.longitude}`}</div>
-                  <div className="cmr-sub">Status: {r.status} - {new Date(r.created_at).toLocaleString()}</div>
-                </div>
-                <div className="cmr-actions">
-                  <button className="cmr-btn cmr-btn-primary" onClick={() => nav(`/citizen/dumping/${r.report_id}`)}>
-                    View
-                  </button>
-                </div>
-              </div>
-            ))}
+    <>
+      <CitizenNavbar setActiveTab={() => {}} />
+      <div className="citizen-dump-list">
+        <div className="cmr-top">
+          <div className="cmr-heading">
+            <h2>My Dumping Reports</h2>
+            <p>Track admin approval and cleanup status.</p>
           </div>
-        )}
+          <button className="cmr-btn cmr-btn-secondary" onClick={load} disabled={loading}>
+            {loading ? "Loading..." : "Refresh"}
+          </button>
+        </div>
+
+        <div className="cmr-card">
+          {loading ? (
+            <div className="cmr-muted">Loading...</div>
+          ) : rows.length === 0 ? (
+            <div className="cmr-muted">No reports yet.</div>
+          ) : (
+            <div className="cmr-list">
+              {rows.map((r) => (
+                <div className="cmr-row" key={r.report_id}>
+                  <div className="cmr-left">
+                    <div className="cmr-title">Report #{r.report_id} - {r.severity}</div>
+                    <div className="cmr-sub">{r.address || `${r.latitude}, ${r.longitude}`}</div>
+                    <div className="cmr-sub">Status: {r.status} - {new Date(r.created_at).toLocaleString()}</div>
+                  </div>
+                  <div className="cmr-actions">
+                    <button className="cmr-btn cmr-btn-primary" onClick={() => nav(`/citizen/dumping/${r.report_id}`)}>
+                      View
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

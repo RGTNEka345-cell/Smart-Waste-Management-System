@@ -71,6 +71,7 @@ router.get("/collector/illegal-dumping/offers", collectorAuth, IllegalDumpingCol
 router.post("/collector/illegal-dumping/offers/:id/accept", collectorAuth, IllegalDumpingCollectorController.acceptOffer);
 router.post("/collector/illegal-dumping/offers/:id/reject", collectorAuth, IllegalDumpingCollectorController.rejectOffer);
 router.get("/collector/illegal-dumping/active", collectorAuth, IllegalDumpingCollectorController.getActiveJob);
+router.get("/collector/illegal-dumping/history", collectorAuth, IllegalDumpingCollectorController.listHistory);
 router.post("/collector/illegal-dumping/:id/start", collectorAuth, IllegalDumpingCollectorController.startJob);
 router.post(
   "/collector/illegal-dumping/:id/complete",

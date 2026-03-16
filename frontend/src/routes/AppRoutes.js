@@ -39,6 +39,7 @@ import CitizenMyDumpReports from "../pages/Citizen/Illegal_Dumping/CitizenMyDump
 import AdminDumpingQueue from "../pages/admin/Illegal_Dumping/AdminDumpingQueue";
 import CollectorDumpingOffers from "../pages/Collector/Illegal_Dumping/CollectorDumpingOffers";
 import CollectorDumpingActive from "../pages/Collector/Illegal_Dumping/CollectorDumpingActive";
+import DumpingHistory from "../pages/Collector/Illegal_Dumping/DumpingHistory";
 
 const clearRoleSession = (role) => {
   if (role === "admin") {
@@ -209,6 +210,7 @@ function AppRoutes() {
       <Route path="/collector/eco-tips" element={<RequireRole role="collector"><CollectorEcoTips /></RequireRole>} />
       <Route path="/collector/illegal-dumping/offers" element={<RequireRole role="collector"><CollectorDumpingOffers /></RequireRole>} />
       <Route path="/collector/illegal-dumping/active" element={<RequireRole role="collector"><CollectorDumpingActive /></RequireRole>} />
+      <Route path="/collector/illegal-dumping/history" element={<RequireRole role="collector"><DumpingHistory /></RequireRole>} />
 
       {/* About */}
         <Route path="/about" element={<HomePage />} />

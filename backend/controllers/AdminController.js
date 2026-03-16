@@ -139,6 +139,39 @@ exports.getAdminStats = async (req, res) => {
   }
 };
 
+exports.getPublicStats = async (req, res) => {
+  try {
+    const [[citizenCount]] = await db.execute(
+      "SELECT COUNT(*) AS total FROM citizens"
+    );
+
+    const [[collectorCount]] = await db.execute(
+      "SELECT COUNT(*) AS total FROM Collectors"
+    );
+
+    const [[adminCount]] = await db.execute(
+      "SELECT COUNT(*) AS total FROM admins"
+    );
+
+    const [[pickupRequestCount]] = await db.execute(
+      "SELECT COUNT(*) AS total FROM pickup_requests"
+    );
+
+    res.json({
+      activeUsers:
+        (citizenCount?.total || 0) +
+        (collectorCount?.total || 0) +
+        (adminCount?.total || 0),
+      citizens: citizenCount?.total || 0,
+      collectors: collectorCount?.total || 0,
+      requests: pickupRequestCount?.total || 0
+    });
+  } catch (err) {
+    console.error("Public stats error:", err.message);
+    res.status(500).json({ message: "Failed to load public stats" });
+  }
+};
+
 // ================= ADMIN PROFILE =================
 exports.getProfile = async (req, res) => {
   try {

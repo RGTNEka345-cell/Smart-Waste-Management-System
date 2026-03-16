@@ -11,12 +11,14 @@ import {
   FaTruck,
   FaHistory,
   FaLeaf,
-  FaExclamationTriangle
+  FaExclamationTriangle,
+  FaChevronDown
 } from "react-icons/fa";
 
 const CollectorNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDumpingMenuOpen, setIsDumpingMenuOpen] = useState(false);
   const [collector, setCollector] = useState(null);
   const navigate = useNavigate();
 
@@ -58,8 +60,6 @@ const CollectorNavbar = () => {
     { label: "Dashboard", icon: <FaHome />, path: "/collector/dashboard" },
     { label: "Pickup Offers", icon: <FaInbox />, path: "/collector/offers" },
     { label: "Active Job", icon: <FaTruck />, path: "/collector/job" },
-    { label: "Dumping Offers", icon: <FaExclamationTriangle />, path: "/collector/illegal-dumping/offers" },
-    { label: "Dumping Active", icon: <FaExclamationTriangle />, path: "/collector/illegal-dumping/active" },
     { label: "Eco Tips", icon: <FaLeaf />, path: "/collector/eco-tips" },
     { label: "History", icon: <FaHistory />, path: "/collector/history" }
   ];
@@ -92,6 +92,7 @@ const CollectorNavbar = () => {
             className="nav-link"
             onClick={() => {
               navigate(item.path);
+              setIsDumpingMenuOpen(false);
               setIsMenuOpen(false);
             }}
           >
@@ -99,6 +100,50 @@ const CollectorNavbar = () => {
             <span className="nav-label">{item.label}</span>
           </button>
         ))}
+
+        <div className={`nav-submenu ${isDumpingMenuOpen ? "open" : ""}`}>
+          <button
+            className="nav-link nav-submenu-trigger"
+            onClick={() => setIsDumpingMenuOpen((prev) => !prev)}
+          >
+            <span className="nav-icon"><FaExclamationTriangle /></span>
+            <span className="nav-label">Illegal Dumping</span>
+            <FaChevronDown className="nav-submenu-arrow" />
+          </button>
+
+          <div className="nav-submenu-items">
+            <button
+              className="nav-sublink"
+              onClick={() => {
+                navigate("/collector/illegal-dumping/offers");
+                setIsDumpingMenuOpen(false);
+                setIsMenuOpen(false);
+              }}
+            >
+              Dumping Offers
+            </button>
+            <button
+              className="nav-sublink"
+              onClick={() => {
+                navigate("/collector/illegal-dumping/active");
+                setIsDumpingMenuOpen(false);
+                setIsMenuOpen(false);
+              }}
+            >
+              Dumping Active
+            </button>
+            <button
+              className="nav-sublink"
+              onClick={() => {
+                navigate("/collector/illegal-dumping/history");
+                setIsDumpingMenuOpen(false);
+                setIsMenuOpen(false);
+              }}
+            >
+              Dumping History
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Profile Dropdown */}

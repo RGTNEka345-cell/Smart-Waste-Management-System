@@ -21,6 +21,7 @@ const {
 router.post("/admin/login", AdminController.login);
 router.post("/admin/forgot-password", AdminController.forgotPassword);
 router.post("/admin/verify-otp", AdminController.verifyOtp);
+router.get("/public/stats", AdminController.getPublicStats);
 router.get("/admin/stats", adminAuth, AdminController.getAdminStats);
 router.get("/admin/profile", adminAuth, AdminController.getProfile);
 router.post("/admin/profile/request-otp", adminAuth, AdminController.requestProfileOtp);

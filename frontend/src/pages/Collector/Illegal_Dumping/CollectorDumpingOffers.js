@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import CollectorNavbar from "../../../components/Collector/CollectorNavbar";
 import "./CollectorDumpingOffers.css";
 
 const API = "http://localhost:5000/api";
@@ -69,18 +70,21 @@ export default function CollectorDumpingOffers() {
   };
 
   return (
-    <div className="id-wrap collector-dump-offers">
-      <div className="id-top">
-        <div>
-          <h2>Dumping Offers</h2>
-          <p className="muted">Government collectors only</p>
+    <>
+      <CollectorNavbar />
+      <div className="id-wrap collector-dump-offers">
+        <div className="id-top">
+          <div>
+            <h2>Dumping Offers</h2>
+            <p className="muted">Government collectors only</p>
+          </div>
+          <button className="btn secondary" onClick={load} disabled={loading}>
+            {loading ? "Loading..." : "Refresh"}
+          </button>
         </div>
-        <button className="btn secondary" onClick={load} disabled={loading}>
-          {loading ? "Loading..." : "Refresh"}
-        </button>
-      </div>
+ 
 
-      <div className="card">
+        <div className="card">
         {loading ? (
           <div className="muted">Loading...</div>
         ) : offers.length === 0 ? (
@@ -121,7 +125,8 @@ export default function CollectorDumpingOffers() {
             ))}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

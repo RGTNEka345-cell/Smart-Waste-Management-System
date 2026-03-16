@@ -1,11 +1,16 @@
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
+import ThemeToggle from "./components/Theme/ThemeToggle";
+import { ThemeProvider } from "./components/Theme/ThemeProvider";
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+      <ThemeToggle />
+    </ThemeProvider>
   );
 }
 

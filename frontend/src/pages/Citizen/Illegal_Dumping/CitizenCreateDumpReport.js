@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
+import CitizenNavbar from "../../../components/Citizen/CitizenNavbar";
 import "./CitizenCreateDumpReport.css";
 
 const API = "http://localhost:5000/api";
@@ -226,19 +227,21 @@ export default function CitizenCreateDumpReport() {
   };
 
   return (
-    <div className="id-wrap citizen-dump-create">
-      <div className="id-top">
-        <div>
-          <h2>Report Illegal Dumping</h2>
-          <p className="muted">Citizen only. Admin will approve before collectors see it.</p>
+    <>
+      <CitizenNavbar setActiveTab={() => {}} />
+      <div className="id-wrap citizen-dump-create">
+        <div className="id-top">
+          <div>
+            <h2>Report Illegal Dumping</h2>
+            <p className="muted">Citizen only. Admin will approve before collectors see it.</p>
+          </div>
         </div>
-      </div>
 
-      <form className="card" onSubmit={submit}>
-        <div className="field">
-          <label>Title (optional)</label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Short title" />
-        </div>
+        <form className="card" onSubmit={submit}>
+          <div className="field">
+            <label>Title (optional)</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Short title" />
+          </div>
 
         <div className="field" style={{ marginTop: 10 }}>
           <label>Description *</label>
@@ -318,10 +321,11 @@ export default function CitizenCreateDumpReport() {
           </div>
         )}
 
-        <button className="btn primary" style={{ marginTop: 14 }} disabled={loading}>
-          {loading ? "Submitting..." : "Submit Report"}
-        </button>
-      </form>
-    </div>
+          <button className="btn primary" style={{ marginTop: 14 }} disabled={loading}>
+            {loading ? "Submitting..." : "Submit Report"}
+          </button>
+        </form>
+      </div>
+    </>
   );
 }

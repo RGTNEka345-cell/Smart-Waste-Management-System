@@ -455,3 +455,71 @@ exports.completeJob = async (req, res) => {
     conn.release();
   }
 };
+
+exports.listHistory = async (req, res) => {
+  try {
+    const collectorId = req.collectorId;
+    const offersTable = await pickTable(db, ["illegal_dumping_offers"]);
+    const reportTable = await pickTable(db, ["illegal_dumping_reports", "illegal_dumping_report"]);
+    const photosTable = await pickTable(db, ["illegal_dumping_photos", "illegal_dumping_photo"]);
+    const historyTable = await pickTable(db, ["illegal_dumping_status_history"]);
+    if (!offersTable || !reportTable) {
+      return res.status(500).json({ message: "Illegal dumping tables not found" });
+    }
+
+    const withPhotos = photosTable
+      ? `(
+          SELECT COUNT(*)
+          FROM ${photosTable} p
+          WHERE p.report_id = r.report_id
+            AND p.photo_type = 'AFTER'
+        ) AS after_photo_count`
+      : "0 AS after_photo_count";
+
+    const withHistory = historyTable
+      ? `MAX(CASE WHEN h.status = 'IN_PROGRESS' THEN h.changed_at END) AS started_at,
+         MAX(CASE WHEN h.status IN ('CLEANED', 'COMPLETED') THEN h.changed_at END) AS completed_at`
+      : "NULL AS started_at, NULL AS completed_at";
+
+    const historyJoin = historyTable
+      ? `LEFT JOIN ${historyTable} h ON h.report_id = r.report_id`
+      : "";
+
+    const orderCompletedAt = historyTable
+      ? `MAX(CASE WHEN h.status IN ('CLEANED', 'COMPLETED') THEN h.changed_at END)`
+      : "r.updated_at";
+
+    const completedWhere = historyTable
+      ? `(r.status IN ('CLEANED', 'COMPLETED')
+          OR EXISTS (
+            SELECT 1
+            FROM ${historyTable} hx
+            WHERE hx.report_id = r.report_id
+              AND hx.status IN ('CLEANED', 'COMPLETED')
+          ))`
+      : `r.status IN ('CLEANED', 'COMPLETED')`;
+
+    const [rows] = await db.execute(
+      `SELECT r.report_id, r.title, r.description, r.severity, r.status, r.address, r.latitude, r.longitude,
+              r.created_at, r.updated_at, o.distance_km, o.responded_at AS accepted_at,
+              ${withPhotos},
+              ${withHistory}
+       FROM ${offersTable} o
+       JOIN ${reportTable} r ON r.report_id = o.report_id
+       ${historyJoin}
+       WHERE o.collector_id = ?
+         AND o.offer_status = 'ACCEPTED'
+         AND ${completedWhere}
+       GROUP BY r.report_id, r.title, r.description, r.severity, r.status, r.address, r.latitude, r.longitude,
+                r.created_at, r.updated_at, o.distance_km, o.responded_at
+       ORDER BY COALESCE(${orderCompletedAt}, r.updated_at) DESC`
+      ,
+      [collectorId]
+    );
+
+    return res.json(rows);
+  } catch (err) {
+    console.error("Illegal dumping history list error:", err.message);
+    return res.status(500).json({ message: "Failed to load dumping history" });
+  }
+};

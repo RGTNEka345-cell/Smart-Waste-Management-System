@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import CollectorNavbar from "../../../components/Collector/CollectorNavbar";
 import "./CollectorDumpingActive.css";
 
 const API = "http://localhost:5000/api";
@@ -109,34 +110,42 @@ export default function CollectorDumpingActive() {
 
   if (loading) {
     return (
-      <div className="id-wrap collector-dump-active">
-        <div className="card">Loading...</div>
-      </div>
+      <>
+        <CollectorNavbar />
+        <div className="id-wrap collector-dump-active">
+          <div className="card">Loading...</div>
+        </div>
+      </>
     );
   }
 
   if (!job) {
     return (
-      <div className="id-wrap collector-dump-active">
-        <div className="card">
-          <div className="muted">No active dumping job.</div>
+      <>
+        <CollectorNavbar />
+        <div className="id-wrap collector-dump-active">
+          <div className="card">
+            <div className="muted">No active dumping job.</div>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="id-wrap collector-dump-active">
-      <div className="id-top">
-        <div>
-          <h2>Active Dumping Job</h2>
-          <p className="muted">Report #{job.report_id}</p>
+    <>
+      <CollectorNavbar />
+      <div className="id-wrap collector-dump-active">
+        <div className="id-top">
+          <div>
+            <h2>Active Dumping Job</h2>
+            <p className="muted">Report #{job.report_id}</p>
+          </div>
+          <div className="pills">
+            <span className="pill warn">{job.severity}</span>
+            <span className="pill">{job.status}</span>
+          </div>
         </div>
-        <div className="pills">
-          <span className="pill warn">{job.severity}</span>
-          <span className="pill">{job.status}</span>
-        </div>
-      </div>
 
       <div className="card">
         <div className="row" style={{ border: "none", padding: 0 }}>
@@ -188,6 +197,7 @@ export default function CollectorDumpingActive() {
           </>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
