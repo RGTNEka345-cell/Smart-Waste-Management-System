@@ -47,6 +47,16 @@
   animation: citizen-nav-pulse 2s infinite;
 }
 
+.citizen-navbar .logo-image {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 3px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
 @keyframes citizen-nav-pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.1); }

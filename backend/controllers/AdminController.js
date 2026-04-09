@@ -321,6 +321,23 @@ exports.createSubAdmin = async (req, res) => {
       ]
     );
 
+    if (process.env.MAIL_FALLBACK === "true") {
+      console.log("SUB ADMIN ACCOUNT:", {
+        email: email.trim(),
+        password
+      });
+    } else {
+      await transporter.sendMail({
+        from: process.env.MAIL_USER || process.env.EMAIL_USER,
+        to: email.trim(),
+        subject: "Sub Admin Account Created",
+        text:
+          "Your sub admin account has been created.\n" +
+          `Email: ${email.trim()}\n` +
+          `Password: ${password}`
+      });
+    }
+
     return res.status(201).json({
       success: true,
       message: "Sub admin created successfully",

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaRecycle, FaTruck, FaUserPlus } from "react-icons/fa";
 import Navbar from "../components/HomePage/Navbar";
+import Footer from "../components/HomePage/Footer";
 import "./HomePage.css";
 
 const API = "http://localhost:5000/api";
@@ -92,13 +93,9 @@ function HomePage() {
             </div>
           </section>
 
-          <footer className="hero-footer">
-            <p>WasteWise</p>
-            <p>Smart waste operations for citizens, collectors, and cities.</p>
-            <p>(c) {new Date().getFullYear()} Smart Waste Management System</p>
-          </footer>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

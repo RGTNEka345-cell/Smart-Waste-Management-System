@@ -23,6 +23,16 @@
   font-size: 26px;
 }
 
+.collector-navbar .logo-image {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 3px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
 .collector-navbar .logo-text {
   margin: 0;
   font-size: 18px;

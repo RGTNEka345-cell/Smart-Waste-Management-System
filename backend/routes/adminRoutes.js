@@ -7,9 +7,11 @@ const EcoTipController = require("../controllers/EcoTipController");
 const PickupRequestController = require("../controllers/PickupRequestController");
 const AdminCitizenController = require("../controllers/AdminCitizenController");
 const IllegalDumpingAdminController = require("../controllers/IllegalDumpingAdminController");
+const WebsiteSettingsController = require("../controllers/WebsiteSettingsController");
 const adminAuth = require("../middlewares/adminAuth");
 const uploadAdminPhoto = require("../middlewares/uploadAdminPhoto");
 const uploadEcoTipImage = require("../middlewares/uploadEcoTipImage");
+const uploadWebsiteLogo = require("../middlewares/uploadWebsiteLogo");
 const {
   getPendingCollectors,
   approveOrRejectCollector,
@@ -22,6 +24,7 @@ router.post("/admin/login", AdminController.login);
 router.post("/admin/forgot-password", AdminController.forgotPassword);
 router.post("/admin/verify-otp", AdminController.verifyOtp);
 router.get("/public/stats", AdminController.getPublicStats);
+router.get("/site/logo", WebsiteSettingsController.getSiteLogo);
 router.get("/admin/stats", adminAuth, AdminController.getAdminStats);
 router.get("/admin/profile", adminAuth, AdminController.getProfile);
 router.post("/admin/profile/request-otp", adminAuth, AdminController.requestProfileOtp);
@@ -39,6 +42,12 @@ router.post(
   EcoTipController.createEcoTip
 );
 router.get("/eco-tips", EcoTipController.listEcoTips);
+router.post(
+  "/admin/update-logo",
+  adminAuth,
+  uploadWebsiteLogo.single("logo"),
+  WebsiteSettingsController.updateSiteLogo
+);
 
 // Collector Approvals (Admin only)
 router.get("/admin/collectors/pending", adminAuth, getPendingCollectors);

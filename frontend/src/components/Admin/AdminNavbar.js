@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   FiGrid,
   FiUsers,
@@ -7,20 +7,21 @@ import {
   FiTruck,
   FiBarChart2,
   FiBell,
-  FiLogOut,
   FiUser,
   FiUserPlus,
+  FiLogOut,
   FiBookOpen,
   FiAlertTriangle,
   FiMenu,
   FiX,
   FiChevronDown,
+  FiSettings,
 } from "react-icons/fi";
+import useSiteLogo from "../../hooks/useSiteLogo";
 import "./AdminNavbar.css";
 
 const AdminNavbar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [admin, setAdmin] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pickupOpen, setPickupOpen] = useState(false);
@@ -28,10 +29,18 @@ const AdminNavbar = () => {
   const [citizensOpen, setCitizensOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [avatarFailed, setAvatarFailed] = useState(false);
+  const siteLogo = useSiteLogo();
 
   useEffect(() => {
     const stored = localStorage.getItem("admin");
     setAdmin(stored ? JSON.parse(stored) : null);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.add("admin-body");
+    return () => {
+      document.body.classList.remove("admin-body");
+    };
   }, []);
 
   const closeAllDropdowns = () => {
@@ -48,7 +57,7 @@ const AdminNavbar = () => {
     localStorage.removeItem("admin");
     localStorage.removeItem("adminId");
     localStorage.removeItem("adminSession");
-    navigate("/login/admin", { replace: true });
+    window.location.href = "/login/admin";
   };
 
   const resolveAdminImage = (photo) => {
@@ -76,146 +85,17 @@ const AdminNavbar = () => {
         </button>
 
         <Link to="/admin/dashboard" className="admin-logo">
-          WasteWise <span>Admin</span>
+          {siteLogo ? (
+            <img className="admin-logo-image" src={siteLogo} alt="Website Logo" />
+          ) : (
+            <span className="admin-logo-mark">WW</span>
+          )}
+          <span className="admin-logo-text">WasteWise</span>
+          <span className="admin-logo-role">Admin</span>
         </Link>
       </div>
 
-      <ul className={`admin-nav-links ${menuOpen ? "open" : ""}`}>
-        <li>
-          <Link className={isActive("/admin/dashboard") ? "active" : ""} to="/admin/dashboard">
-            <FiGrid /> Dashboard
-          </Link>
-        </li>
-
-        <li className={`citizens-dropdown ${citizensOpen ? "open" : ""}`}>
-          <button
-            className="citizens-trigger"
-            onClick={() => {
-              setCitizensOpen(!citizensOpen);
-              setCollectorsOpen(false);
-              setPickupOpen(false);
-            }}
-            type="button"
-          >
-            <span className="nav-icon"><FiUsers /></span>
-            <span>Citizens</span>
-            <FiChevronDown className="caret" />
-          </button>
-
-          <div className="citizens-menu">
-            <Link
-              to="/admin/citizens"
-              onClick={() => {
-                setCitizensOpen(false);
-                closeAllDropdowns();
-              }}
-            >
-              Citizen Details
-            </Link>
-          </div>
-        </li>
-
-        <li>
-          <Link className={isActive("/admin/waste-types") ? "active" : ""} to="/admin/waste-types">
-            <FiTrash2 /> Waste Types
-          </Link>
-        </li>
-
-        <li className={`collectors-dropdown ${collectorsOpen ? "open" : ""}`}>
-          <button
-            className="collectors-trigger"
-            onClick={() => {
-              setCollectorsOpen(!collectorsOpen);
-              setCitizensOpen(false);
-              setPickupOpen(false);
-            }}
-            type="button"
-          >
-            <span className="nav-icon"><FiTruck /></span>
-            <span>Collectors</span>
-            <FiChevronDown className="caret" />
-          </button>
-
-          <div className="collectors-menu">
-            <Link
-              to="/admin/collector-approvals"
-              onClick={() => {
-                setCollectorsOpen(false);
-                closeAllDropdowns();
-              }}
-            >
-              Collector Approvals
-            </Link>
-            <Link
-              to="/admin/approval-history"
-              onClick={() => {
-                setCollectorsOpen(false);
-                closeAllDropdowns();
-              }}
-            >
-              Approval History
-            </Link>
-          </div>
-        </li>
-
-        <li className={`pickup-dropdown ${pickupOpen ? "open" : ""}`}>
-          <button
-            className="pickup-trigger"
-            onClick={() => {
-              setPickupOpen(!pickupOpen);
-              setCitizensOpen(false);
-              setCollectorsOpen(false);
-            }}
-            type="button"
-          >
-            <span className="nav-icon"><FiTrash2 /></span>
-            <span>Pickup Requests</span>
-            <FiChevronDown className="caret" />
-          </button>
-
-          <div className="pickup-menu">
-            <Link
-              to="/admin/pickup-queue"
-              onClick={() => {
-                setPickupOpen(false);
-                closeAllDropdowns();
-              }}
-            >
-              Pickup Queue
-            </Link>
-            <Link
-              to="/admin/pickup-requests"
-              onClick={() => {
-                setPickupOpen(false);
-                closeAllDropdowns();
-              }}
-            >
-              Pickup Request Details
-            </Link>
-          </div>
-        </li>
-
-
-        <li>
-          <Link className={isActive("/admin/reports") ? "active" : ""} to="/admin/reports">
-            <FiBarChart2 /> Reports
-          </Link>
-        </li>
-
-        <li>
-          <Link className={isActive("/admin/eco-tips") ? "active" : ""} to="/admin/eco-tips/add">
-            <FiBookOpen /> Eco Tips
-          </Link>
-        </li>
-
-        <li>
-          <Link className={isActive("/admin/illegal-dumping") ? "active" : ""} to="/admin/illegal-dumping">
-            <FiAlertTriangle /> Illegal Dumping
-          </Link>
-        </li>
-      </ul>
-
-      <div className="admin-navbar-right">
+      <div className="admin-nav-top">
         <div className="online-status" title="Online">
           <span className="online-dot" />
           <span className="online-text">Online</span>
@@ -279,6 +159,150 @@ const AdminNavbar = () => {
           )}
         </div>
       </div>
+
+      <ul className={`admin-nav-links ${menuOpen ? "open" : ""}`}>
+        <li>
+          <Link className={isActive("/admin/dashboard") ? "active" : ""} to="/admin/dashboard">
+            <FiGrid /> Dashboard
+          </Link>
+        </li>
+
+        <li className={`citizens-dropdown ${citizensOpen ? "open" : ""}`}>
+          <button
+            className="citizens-trigger"
+            onClick={() => {
+              setCitizensOpen(!citizensOpen);
+              setCollectorsOpen(false);
+              setPickupOpen(false);
+              setProfileOpen(false);
+            }}
+            type="button"
+          >
+            <span className="nav-icon"><FiUsers /></span>
+            <span>Citizens</span>
+            <FiChevronDown className="caret" />
+          </button>
+
+          <div className="citizens-menu">
+            <Link
+              to="/admin/citizens"
+              onClick={() => {
+                setCitizensOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Citizen Details
+            </Link>
+          </div>
+        </li>
+
+        <li>
+          <Link className={isActive("/admin/waste-types") ? "active" : ""} to="/admin/waste-types">
+            <FiTrash2 /> Waste Types
+          </Link>
+        </li>
+
+        <li className={`collectors-dropdown ${collectorsOpen ? "open" : ""}`}>
+          <button
+            className="collectors-trigger"
+            onClick={() => {
+              setCollectorsOpen(!collectorsOpen);
+              setCitizensOpen(false);
+              setPickupOpen(false);
+              setProfileOpen(false);
+            }}
+            type="button"
+          >
+            <span className="nav-icon"><FiTruck /></span>
+            <span>Collectors</span>
+            <FiChevronDown className="caret" />
+          </button>
+
+          <div className="collectors-menu">
+            <Link
+              to="/admin/collector-approvals"
+              onClick={() => {
+                setCollectorsOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Collector Approvals
+            </Link>
+            <Link
+              to="/admin/approval-history"
+              onClick={() => {
+                setCollectorsOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Approval History
+            </Link>
+          </div>
+        </li>
+
+        <li className={`pickup-dropdown ${pickupOpen ? "open" : ""}`}>
+          <button
+            className="pickup-trigger"
+            onClick={() => {
+              setPickupOpen(!pickupOpen);
+              setCitizensOpen(false);
+              setCollectorsOpen(false);
+              setProfileOpen(false);
+            }}
+            type="button"
+          >
+            <span className="nav-icon"><FiTrash2 /></span>
+            <span>Pickup Requests</span>
+            <FiChevronDown className="caret" />
+          </button>
+
+          <div className="pickup-menu">
+            <Link
+              to="/admin/pickup-queue"
+              onClick={() => {
+                setPickupOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Pickup Queue
+            </Link>
+            <Link
+              to="/admin/pickup-requests"
+              onClick={() => {
+                setPickupOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Pickup Request Details
+            </Link>
+          </div>
+        </li>
+
+        <li>
+          <Link className={isActive("/admin/reports") ? "active" : ""} to="/admin/reports">
+            <FiBarChart2 /> Reports
+          </Link>
+        </li>
+
+        <li>
+          <Link className={isActive("/admin/eco-tips") ? "active" : ""} to="/admin/eco-tips/add">
+            <FiBookOpen /> Eco Tips
+          </Link>
+        </li>
+
+        <li>
+          <Link className={isActive("/admin/illegal-dumping") ? "active" : ""} to="/admin/illegal-dumping">
+            <FiAlertTriangle /> Illegal Dumping
+          </Link>
+        </li>
+
+        <li>
+          <Link className={isActive("/admin/website-settings") ? "active" : ""} to="/admin/website-settings">
+            <FiSettings /> Website Setting
+          </Link>
+        </li>
+      </ul>
+
     </nav>
   );
 };

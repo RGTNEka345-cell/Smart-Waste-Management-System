@@ -14,6 +14,7 @@ import {
   FiChevronRight,
 } from "react-icons/fi";
 import { FaRecycle } from "react-icons/fa";
+import useSiteLogo from "../../hooks/useSiteLogo";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -22,6 +23,7 @@ const Navbar = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const siteLogo = useSiteLogo();
 
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -103,7 +105,11 @@ const Navbar = () => {
           <div className="logo-section">
             <Link to="/" className="logo-link" onClick={closeAll}>
               <div className="logo-icon-wrapper">
-                <FaRecycle size={28} className="logo-icon" />
+                {siteLogo ? (
+                  <img className="logo-image" src={siteLogo} alt="Website Logo" />
+                ) : (
+                  <FaRecycle size={28} className="logo-icon" />
+                )}
               </div>
               <div className="logo-text">
                 <span className="logo-main">WasteWise</span>
@@ -220,16 +226,7 @@ const Navbar = () => {
           </div>
 
           {/* Call to Action Button */}
-          <div className="cta-section">
-            <Link 
-              to="/register/citizen" 
-              className="btn btn-cta"
-              onClick={closeAll}
-            >
-              <FiUserPlus />
-              <span>Start Recycling</span>
-            </Link>
-          </div>
+          
 
           {/* Mobile Menu Toggle */}
           <button 
@@ -248,7 +245,11 @@ const Navbar = () => {
             {/* Mobile Menu Header */}
             <div className="mobile-menu-header">
               <div className="mobile-logo">
-                <FaRecycle size={24} />
+                {siteLogo ? (
+                  <img className="mobile-logo-image" src={siteLogo} alt="Website Logo" />
+                ) : (
+                  <FaRecycle size={24} />
+                )}
                 <span>WasteWise</span>
               </div>
               <button 

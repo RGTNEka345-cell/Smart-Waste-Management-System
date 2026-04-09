@@ -33,15 +33,14 @@ body {
 
 .home-container {
   min-height: 100vh;
-  height: 100vh;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   color: var(--home-text);
   position: relative;
 }
 
 .hero-shell {
-  min-height: 100vh;
-  height: 100vh;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,7 +51,6 @@ body {
 
 .hero-frame {
   width: min(1480px, 100%);
-  height: calc(100vh - 124px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -244,21 +242,16 @@ body {
 
 @media (max-width: 1080px) {
   .hero-shell {
-    height: auto;
-    min-height: 100vh;
-    overflow-y: auto;
+    min-height: auto;
     padding-top: 108px;
     padding-bottom: 40px;
   }
 
   .home-container {
-    height: auto;
     min-height: 100vh;
-    overflow-y: auto;
   }
 
   .hero-frame {
-    height: auto;
     min-height: auto;
   }
 

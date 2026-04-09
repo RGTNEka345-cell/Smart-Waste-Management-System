@@ -1,0 +1,60 @@
+.logoPage{
+  max-width:700px;
+  margin:40px auto;
+  padding:20px;
+}
+
+.logoPage h2{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.logoCard{
+  background:#fff;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.currentLogo{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.currentLogo img{
+  width:150px;
+  height:auto;
+  margin-top:10px;
+}
+
+.uploadSection{
+  text-align:center;
+}
+
+.uploadSection input{
+  margin-bottom:20px;
+}
+
+.previewBox{
+  margin-top:15px;
+}
+
+.previewBox img{
+  width:150px;
+  margin-top:10px;
+}
+
+.updateBtn{
+  margin-top:20px;
+  padding:12px 25px;
+  background:#2e7d32;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.updateBtn:hover{
+  background:#1b5e20;
+}

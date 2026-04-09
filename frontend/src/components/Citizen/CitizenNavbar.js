@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./CitizenNavbar.css";
+import useSiteLogo from "../../hooks/useSiteLogo";
 import { 
   FaBars,
   FaTimes,
@@ -26,6 +27,7 @@ const CitizenNavbar = ({ setActiveTab }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("citizenToken");
   const API = "http://localhost:5000/api";
+  const siteLogo = useSiteLogo();
 
   useEffect(() => {
     const citizenData = JSON.parse(localStorage.getItem("citizen"));
@@ -100,7 +102,11 @@ const CitizenNavbar = ({ setActiveTab }) => {
     <nav className="citizen-navbar">
       {/* Logo Section */}
       <div className="nav-logo">
-        <div className="logo-icon">🗑️</div>
+        {siteLogo ? (
+          <img className="logo-image" src={siteLogo} alt="Website Logo" />
+        ) : (
+          <div className="logo-icon">WW</div>
+        )}
         <h1 className="logo-text">
           <span className="logo-primary">Waste</span>
           <span className="logo-secondary">Wise</span>
@@ -329,3 +335,4 @@ const CitizenNavbar = ({ setActiveTab }) => {
 };
 
 export default CitizenNavbar;
+

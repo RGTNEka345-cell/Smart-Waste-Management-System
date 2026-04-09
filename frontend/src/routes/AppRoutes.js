@@ -32,6 +32,7 @@ import CollectorProfileUpdate from "../pages/Collector/Collector_Profile/Collect
 import AdminAddEcoTip from "../pages/admin/Eco_Tips/AdminAddEcoTip";
 import AdminProfileUpdate from "../pages/admin/Admin_Profile/AdminProfileUpdate";
 import CreateSubAdmin from "../pages/admin/Sub_Admin/CreateSubAdmin";
+import AdminChangeLogo from "../pages/admin/AdminLogo/AdminChangeLogo";
 import CitizenEcoTips from "../pages/Citizen/Eco_Tips/CitizenEcoTips";
 import CollectorEcoTips from "../pages/Collector/Eco_Tips/CollectorEcoTips";
 import CitizenCreateDumpReport from "../pages/Citizen/Illegal_Dumping/CitizenCreateDumpReport";
@@ -180,6 +181,7 @@ function AppRoutes() {
 
       {/* Admin - No changes */}
       <Route path="/login/admin" element={<AdminLogin />} />
+      <Route path="/admin/logo-settings" element={<RequireRole role="admin"><AdminChangeLogo /></RequireRole>} />
       <Route path="/admin/dashboard" element={<RequireRole role="admin"><AdminDashboard /></RequireRole>} />
       <Route path="/admin/waste-types" element={<RequireRole role="admin"><WasteType /></RequireRole>} />
       <Route path="/admin/collector-approvals" element={<RequireRole role="admin"><AdminCollectorApproval /></RequireRole>} />
@@ -193,6 +195,7 @@ function AppRoutes() {
       <Route path="/admin/illegal-dumping" element={<RequireRole role="admin"><AdminDumpingQueue /></RequireRole>} />
       <Route path="/admin/profile/update" element={<RequireRole role="admin"><AdminProfileUpdate /></RequireRole>} />
       <Route path="/admin/sub-admins/create" element={<RequireRole role="admin"><CreateSubAdmin /></RequireRole>} />
+      <Route path="/admin/website-settings" element={<RequireRole role="admin"><AdminChangeLogo /></RequireRole>} />
 
 
       {/* Collector - Updated with new routes */}

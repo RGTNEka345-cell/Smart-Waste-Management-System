@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./CollectorNavbar.css";
+import useSiteLogo from "../../hooks/useSiteLogo";
 import {
   FaBars,
   FaTimes,
@@ -21,6 +22,7 @@ const CollectorNavbar = () => {
   const [isDumpingMenuOpen, setIsDumpingMenuOpen] = useState(false);
   const [collector, setCollector] = useState(null);
   const navigate = useNavigate();
+  const siteLogo = useSiteLogo();
 
   useEffect(() => {
     try {
@@ -61,14 +63,18 @@ const CollectorNavbar = () => {
     { label: "Pickup Offers", icon: <FaInbox />, path: "/collector/offers" },
     { label: "Active Job", icon: <FaTruck />, path: "/collector/job" },
     { label: "Eco Tips", icon: <FaLeaf />, path: "/collector/eco-tips" },
-    { label: "History", icon: <FaHistory />, path: "/collector/history" }
+    { label: "Pickup History", icon: <FaHistory />, path: "/collector/history" }
   ];
 
   return (
     <nav className="collector-navbar">
       {/* Logo */}
       <div className="nav-logo" onClick={() => navigate("/collector/dashboard")}>
-        <div className="logo-icon">🚛</div>
+        {siteLogo ? (
+          <img className="logo-image" src={siteLogo} alt="Website Logo" />
+        ) : (
+          <div className="logo-icon">WW</div>
+        )}
         <h1 className="logo-text">
           <span className="logo-primary">Waste</span>
           <span className="logo-secondary">Wise</span>
@@ -223,3 +229,4 @@ const CollectorNavbar = () => {
 };
 
 export default CollectorNavbar;
+
