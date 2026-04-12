@@ -251,6 +251,7 @@ const AdminNavbar = () => {
             }}
             type="button"
           >
+            
             <span className="nav-icon"><FiTrash2 /></span>
             <span>Pickup Requests</span>
             <FiChevronDown className="caret" />

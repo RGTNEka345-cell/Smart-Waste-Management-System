@@ -24,13 +24,13 @@ const CitizenLogin = () => {
   try {
     setLoading(true);
 
-    // 👉 මෙතන තමයි API call එක
+    
     const res = await axios.post(
       "http://localhost:5000/api/citizen/login",
       { email, password }
     );
 
-    // ✅ 👉 මෙතන තමයි SAVE කරන්න ඕන
+    
     localStorage.setItem(
       "citizen",
       JSON.stringify(res.data.citizen)
