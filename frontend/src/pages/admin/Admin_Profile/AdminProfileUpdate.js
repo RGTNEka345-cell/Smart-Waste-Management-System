@@ -8,24 +8,20 @@ const HOST = "http://localhost:5000";
 
 const AdminProfileUpdate = () => {
   const token = localStorage.getItem("adminToken");
-
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
   const [admin, setAdmin] = useState(null);
-
   const [form, setForm] = useState({
     fullname: "",
     phone_number: "",
     address: ""
   });
-
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState("");
   const [otpOpen, setOtpOpen] = useState(false);
   const [otpValue, setOtpValue] = useState("");
   const [pendingPayload, setPendingPayload] = useState(null);
-
+ 
   /* ================= LOAD PROFILE ================= */
   const fetchProfile = async () => {
     try {
@@ -33,7 +29,6 @@ const AdminProfileUpdate = () => {
       const res = await axios.get(`${API}/admin/profile`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
-
       const a = res.data || null;
       setAdmin(a);
 
@@ -98,7 +93,7 @@ const AdminProfileUpdate = () => {
       if (devOtp) {
         alert(`DEV MODE OTP: ${devOtp}`);
       }
-
+          
       const fd = new FormData();
       fd.append("fullname", form.fullname);
       fd.append("phone_number", form.phone_number);

@@ -5,7 +5,6 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-
 const app = express();
 
 /* ---------------- BASIC MIDDLEWARE ---------------- */
@@ -48,7 +47,7 @@ try {
 /* ---------------- API ROUTES ---------------- */
 app.use("/api", require("./routes/citizenRoutes"));
 app.use("/api", require("./routes/adminRoutes"));
-app.use("/api", require("./routes/collectorRoutes")); // ✅ NEW
+app.use("/api", require("./routes/collectorRoutes")); // 
 app.use("/api", require("./routes/pickupRequestRoutes"));
 app.use("/api", require("./routes/notificationRoutes"));
 

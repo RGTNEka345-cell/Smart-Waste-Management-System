@@ -12,7 +12,7 @@ const CitizenLogin = () => {
 
 
   // pass user data
-  
+
   const handleLogin = async (e) => {
   e.preventDefault();
 
