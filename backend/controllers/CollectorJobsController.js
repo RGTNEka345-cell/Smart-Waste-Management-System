@@ -1,4 +1,5 @@
 const db = require("../config/database");
+const { addEcoPoints, getEcoPointsSummary } = require("../utils/ecoPoints");
 
 exports.getDashboardStats = async (req, res) => {
   const collectorId = req.collectorId;
@@ -6,12 +7,14 @@ exports.getDashboardStats = async (req, res) => {
   try {
     const [[summary]] = await db.execute(
       `SELECT
-          SUM(CASE WHEN pj.job_status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_jobs,
-          SUM(CASE WHEN pj.job_status IN ('NOT_STARTED','STARTED','ARRIVED') THEN 1 ELSE 0 END) AS active_jobs,
+          SUM(CASE WHEN (pj.job_status = 'COMPLETED' OR pr.status = 'COMPLETED') THEN 1 ELSE 0 END) AS completed_jobs,
+          SUM(CASE WHEN pr.status IN ('ACCEPTED_BY_COLLECTOR', 'IN_PROGRESS') THEN 1 ELSE 0 END) AS active_jobs,
           SUM(CASE WHEN pj.job_status = 'NOT_STARTED' THEN 1 ELSE 0 END) AS pending_jobs
-       FROM pickup_jobs pj
-       JOIN pickup_offers po ON po.offer_id = pj.offer_id
-       WHERE po.collector_id = ?`,
+       FROM pickup_offers po
+       JOIN pickup_requests pr ON pr.request_id = po.request_id
+       LEFT JOIN pickup_jobs pj ON pj.request_id = pr.request_id AND pj.offer_id = po.offer_id
+       WHERE po.collector_id = ?
+         AND po.offer_status = 'ACCEPTED'`,
       [collectorId]
     );
 
@@ -35,26 +38,31 @@ exports.getDashboardStats = async (req, res) => {
           pr.request_id,
           pr.request_type,
           pr.pickup_address,
-          pj.completed_at
-       FROM pickup_jobs pj
-       JOIN pickup_offers po ON po.offer_id = pj.offer_id
-       JOIN pickup_requests pr ON pr.request_id = pj.request_id
+          COALESCE(pj.completed_at, pr.completed_at) AS completed_at
+       FROM pickup_offers po
+       JOIN pickup_requests pr ON pr.request_id = po.request_id
+       LEFT JOIN pickup_jobs pj ON pj.request_id = pr.request_id AND pj.offer_id = po.offer_id
        WHERE po.collector_id = ?
-         AND pj.job_status = 'COMPLETED'
-       ORDER BY pj.completed_at DESC
+         AND po.offer_status = 'ACCEPTED'
+         AND (pj.job_status = 'COMPLETED' OR pr.status = 'COMPLETED')
+       ORDER BY COALESCE(pj.completed_at, pr.completed_at) DESC
        LIMIT 5`,
       [collectorId]
     );
+
+    const eco = await getEcoPointsSummary(db, { collectorId });
 
     return res.json({
       completed_jobs: Number(summary?.completed_jobs || 0),
       active_jobs: Number(summary?.active_jobs || 0),
       pending_jobs: Number(summary?.pending_jobs || 0),
+      eco_points: eco.total_points,
       monthly_completed: monthlyRows.map((r) => ({
         ym: r.ym,
         total: Number(r.total || 0)
       })),
-      recent_completed: recentRows
+      recent_completed: recentRows,
+      recent_eco_points: eco.recent
     });
   } catch (err) {
     console.error("Collector dashboard stats error:", err.message);
@@ -238,6 +246,13 @@ exports.completeJob = async (req, res) => {
       );
     }
 
+    await addEcoPoints(conn, {
+      collectorId,
+      actionType: "PICKUP_COMPLETED",
+      referenceId: job.request_id,
+      description: `Completed pickup request #${job.request_id}`
+    });
+
     await conn.commit();
     return res.json({ success: true });
   } catch (err) {
@@ -301,5 +316,133 @@ exports.arriveJob = async (req, res) => {
     return res.status(500).json({ message: "Failed to mark arrived" });
   } finally {
     conn.release();
+  }
+};
+
+exports.listPickupHistory = async (req, res) => {
+  const collectorId = req.collectorId;
+
+  try {
+    const [rows] = await db.execute(
+      `SELECT
+          pj.job_id,
+          pj.request_id,
+          COALESCE(pj.job_status, pr.status) AS job_status,
+          pr.status AS request_status,
+          pj.started_at,
+          pj.arrived_at,
+          COALESCE(pj.completed_at, pr.completed_at) AS completed_at,
+          pj.collector_notes,
+          pr.request_type,
+          pr.target_collection_type,
+          pr.pickup_address,
+          pr.pickup_latitude,
+          pr.pickup_longitude,
+          pr.note AS request_note,
+          pr.requested_at,
+          pr.accepted_at,
+          pr.started_at AS request_started_at,
+          pr.completed_at AS request_completed_at,
+          c.id AS citizen_id,
+          c.full_name AS citizen_name,
+          c.phone AS citizen_phone,
+          c.email AS citizen_email,
+          po.distance_km,
+          po.offered_at,
+          po.responded_at AS offer_responded_at,
+          (
+            SELECT COALESCE(SUM(eph.points), 0)
+            FROM eco_points_history eph
+            WHERE eph.collector_id = ?
+              AND eph.action_type = 'PICKUP_COMPLETED'
+              AND eph.reference_id = pr.request_id
+          ) AS earned_points,
+          (
+            SELECT COUNT(*)
+            FROM pickup_job_images pji
+            WHERE pji.job_id = pj.job_id
+          ) AS photo_count
+       FROM pickup_offers po
+       JOIN pickup_requests pr ON pr.request_id = po.request_id
+       LEFT JOIN pickup_jobs pj ON pj.request_id = pr.request_id AND pj.offer_id = po.offer_id
+       LEFT JOIN citizens c ON c.id = pr.citizen_id
+       WHERE po.collector_id = ?
+         AND po.offer_status = 'ACCEPTED'
+         AND (pj.job_status = 'COMPLETED' OR pr.status = 'COMPLETED')
+       ORDER BY COALESCE(pj.completed_at, pr.completed_at) DESC, pr.request_id DESC`,
+      [collectorId, collectorId]
+    );
+
+    if (rows.length === 0) {
+      return res.json([]);
+    }
+
+    const requestIds = rows
+      .map((r) => Number(r.request_id))
+      .filter((id) => Number.isInteger(id));
+    const jobIds = rows
+      .map((r) => Number(r.job_id))
+      .filter((id) => Number.isInteger(id));
+
+    const requestPlaceholders = requestIds.map(() => "?").join(",");
+    const jobPlaceholders = jobIds.map(() => "?").join(",");
+
+    const [itemRows] = requestIds.length
+      ? await db.execute(
+          `SELECT
+              pri.request_id,
+              pri.item_id,
+              pri.wastetype_id,
+              wt.name AS wastetype_name,
+              pri.quantity,
+              pri.unit
+           FROM pickup_request_items pri
+           LEFT JOIN wastetypes wt ON wt.id = pri.wastetype_id
+           WHERE pri.request_id IN (${requestPlaceholders})
+           ORDER BY pri.item_id ASC`,
+          requestIds
+        )
+      : [[]];
+
+    const [imageRows] = jobIds.length
+      ? await db.execute(
+          `SELECT
+              pji.job_id,
+              pji.image_id,
+              pji.image_url,
+              pji.image_type,
+              pji.uploaded_at
+           FROM pickup_job_images pji
+           WHERE pji.job_id IN (${jobPlaceholders})
+           ORDER BY pji.uploaded_at ASC`,
+          jobIds
+        )
+      : [[]];
+
+    const itemsByRequest = itemRows.reduce((acc, row) => {
+      if (!acc[row.request_id]) acc[row.request_id] = [];
+      acc[row.request_id].push(row);
+      return acc;
+    }, {});
+
+    const imagesByJob = imageRows.reduce((acc, row) => {
+      if (!acc[row.job_id]) acc[row.job_id] = [];
+      acc[row.job_id].push(row);
+      return acc;
+    }, {});
+
+    return res.json(
+      rows.map((r) => ({
+        ...r,
+        photo_count: Number(r.photo_count || 0),
+        earned_points: Number(r.earned_points || 0),
+        distance_km: r.distance_km == null ? null : Number(r.distance_km),
+        items: itemsByRequest[r.request_id] || [],
+        photos: r.job_id ? imagesByJob[r.job_id] || [] : []
+      }))
+    );
+  } catch (err) {
+    console.error("Collector pickup history error:", err.message);
+    return res.status(500).json({ message: "Failed to load pickup history" });
   }
 };

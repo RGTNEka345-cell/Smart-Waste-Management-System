@@ -1,0 +1,224 @@
+.collector-pickup-history {
+  min-height: calc(100vh - 72px);
+  padding: 24px;
+  background: #f4f7fb;
+}
+
+.collector-pickup-history .cph-card {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #e4e9f0;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.collector-pickup-history .cph-top h2 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.collector-pickup-history .cph-top p {
+  margin: 6px 0 14px;
+  color: #6b7280;
+}
+
+.collector-pickup-history .cph-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 180px 180px;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.collector-pickup-history .cph-input,
+.collector-pickup-history .cph-select {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.collector-pickup-history .cph-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.collector-pickup-history .cph-summary-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fafcff;
+}
+
+.collector-pickup-history .cph-summary-card span {
+  color: #6b7280;
+  font-size: 12px;
+  display: block;
+}
+
+.collector-pickup-history .cph-summary-card strong {
+  color: #111827;
+  font-size: 20px;
+}
+
+.collector-pickup-history .cph-list {
+  display: grid;
+  gap: 12px;
+}
+
+.collector-pickup-history .cph-row {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.collector-pickup-history .cph-row-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.collector-pickup-history .cph-title {
+  font-weight: 700;
+  color: #111827;
+}
+
+.collector-pickup-history .cph-sub {
+  color: #4b5563;
+  margin-top: 4px;
+}
+
+.collector-pickup-history .cph-right {
+  text-align: right;
+  color: #374151;
+  display: grid;
+  gap: 4px;
+}
+
+.collector-pickup-history .cph-row-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.collector-pickup-history .cph-btn {
+  border: 1px solid #0f5fd5;
+  background: #0f5fd5;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.collector-pickup-history .cph-btn.secondary {
+  border-color: #d1d5db;
+  background: #fff;
+  color: #111827;
+}
+
+.collector-pickup-history .cph-pill {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #e8f3ff;
+  color: #0057b8;
+}
+
+.collector-pickup-history .cph-pill.secondary {
+  background: #eafaf0;
+  color: #0a8a4f;
+}
+
+.collector-pickup-history .cph-details {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 10px;
+  display: grid;
+  gap: 10px;
+}
+
+.collector-pickup-history .cph-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.collector-pickup-history .cph-detail-grid h4,
+.collector-pickup-history .cph-detail-block h4 {
+  margin: 0 0 6px;
+  color: #111827;
+}
+
+.collector-pickup-history .cph-detail-grid p {
+  margin: 2px 0;
+  color: #374151;
+}
+
+.collector-pickup-history .cph-detail-block {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.collector-pickup-history .cph-items {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.collector-pickup-history .cph-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.collector-pickup-history .cph-photo-btn {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 0;
+  background: #fff;
+  cursor: pointer;
+}
+
+.collector-pickup-history .cph-photo-btn img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  display: block;
+}
+
+.collector-pickup-history .cph-muted {
+  color: #6b7280;
+}
+
+.collector-pickup-history .cph-error {
+  color: #b91c1c;
+}
+
+@media (max-width: 768px) {
+  .collector-pickup-history .cph-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .collector-pickup-history .cph-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .collector-pickup-history .cph-row-main {
+    flex-direction: column;
+  }
+
+  .collector-pickup-history .cph-right {
+    text-align: left;
+  }
+
+  .collector-pickup-history .cph-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}

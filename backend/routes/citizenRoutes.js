@@ -51,6 +51,9 @@ router.post("/citizen/resend-otp", CitizenController.resendOtp);
 // POST /api/citizen/login
 router.post("/citizen/login", CitizenController.login);
 
+// GET /api/citizen/dashboard/stats?citizen_id=1
+router.get("/citizen/dashboard/stats", CitizenController.getDashboardStats);
+
 // POST /api/citizen/forgot-password
 router.post("/citizen/forgot-password", CitizenController.forgotPassword);
 

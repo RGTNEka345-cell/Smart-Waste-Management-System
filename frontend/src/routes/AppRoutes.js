@@ -28,6 +28,7 @@ import CollectorForgotPassword from "../pages/Collector/Collector_Password/Forgo
 import CollectorDashboard from "../pages/Collector/CollectorDashboard";
 import CollectorActiveJob from "../pages/Collector/Pickup_Request/CollectorActiveJob";
 import CollectorCompletePickup from "../pages/Collector/Pickup_Request/CollectorCompletePickup";
+import CollectorPickupHistory from "../pages/Collector/Pickup_Request/CollectorPickupHistory";
 import CollectorProfileUpdate from "../pages/Collector/Collector_Profile/CollectorProfileUpdate";
 import AdminAddEcoTip from "../pages/admin/Eco_Tips/AdminAddEcoTip";
 import AdminProfileUpdate from "../pages/admin/Admin_Profile/AdminProfileUpdate";
@@ -208,6 +209,7 @@ function AppRoutes() {
       <Route path="/collector/dashboard" element={<RequireRole role="collector"><CollectorDashboard /></RequireRole>} />
       <Route path="/collector/job" element={<RequireRole role="collector"><CollectorActiveJob /></RequireRole>} />
       <Route path="/collector/job/:requestId/complete" element={<RequireRole role="collector"><CollectorCompletePickup /></RequireRole>} />
+      <Route path="/collector/history" element={<RequireRole role="collector"><CollectorPickupHistory /></RequireRole>} />
       <Route path="/collector/profile/update" element={<RequireRole role="collector"><CollectorProfileUpdate /></RequireRole>} />
       
       <Route path="/collector/eco-tips" element={<RequireRole role="collector"><CollectorEcoTips /></RequireRole>} />

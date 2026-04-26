@@ -1,0 +1,4 @@
+-- No ALTER migration needed now.
+-- Use these updated CREATE files directly:
+--   1) create_eco_points_table.sql
+--   2) create_eco_points_history_table.sql

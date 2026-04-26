@@ -4,29 +4,35 @@ CREATE TABLE eco_tips (
   title VARCHAR(200) NOT NULL,
   content TEXT NOT NULL,
 
-  category ENUM('recycle','reduce','reuse','compost','energy','water','plastic','general')
-    DEFAULT 'general',
+  category ENUM(
+    'recycle',
+    'reduce',
+    'reuse',
+    'compost',
+    'energy',
+    'water',
+    'plastic',
+    'general'
+  ) NOT NULL DEFAULT 'general',
 
-  difficulty ENUM('easy','medium','hard') DEFAULT 'easy',
-
-  -- ✅ who should see this tip
-  audience ENUM('CITIZEN','COLLECTOR','BOTH') DEFAULT 'BOTH',
+  difficulty ENUM('easy', 'medium', 'hard') NOT NULL DEFAULT 'easy',
+  audience ENUM('CITIZEN', 'COLLECTOR', 'BOTH') NOT NULL DEFAULT 'BOTH',
 
   image_url VARCHAR(255) NULL,
-  source_url VARCHAR(255) NULL,
+  source_url VARCHAR(500) NULL,
 
-  is_published BOOLEAN DEFAULT TRUE,
+  is_published TINYINT(1) NOT NULL DEFAULT 1,
+  created_by_admin_id INT NULL,
 
-  created_by_admin_id INT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-  CONSTRAINT fk_ecotips_admin
+  CONSTRAINT fk_eco_tips_admin
     FOREIGN KEY (created_by_admin_id)
     REFERENCES admins(admin_id)
-    ON DELETE RESTRICT,
+    ON DELETE SET NULL,
 
-  INDEX idx_ecotips_audience (audience),
-  INDEX idx_ecotips_category (category),
-  INDEX idx_ecotips_publish_time (is_published, created_at)
+  INDEX idx_eco_tips_audience_pub_created (audience, is_published, created_at),
+  INDEX idx_eco_tips_category (category),
+  INDEX idx_eco_tips_difficulty (difficulty)
 ) ENGINE=InnoDB;

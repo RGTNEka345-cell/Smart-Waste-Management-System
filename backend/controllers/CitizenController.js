@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const db = require("../config/database");
 const sendEmail = require("../utils/sendEmail");
+const jwt = require("jsonwebtoken");
+const { getEcoPointsSummary } = require("../utils/ecoPoints");
 
 
 const transporter = nodemailer.createTransport({
@@ -20,6 +22,48 @@ const getExpirationTime = () => {
   const expiresAt = new Date();
   expiresAt.setMinutes(expiresAt.getMinutes() + 10);
   return expiresAt;
+};
+
+const resolveCitizenId = (req) => {
+  const fromParams = parseInt(req.params?.id, 10);
+  if (Number.isInteger(fromParams)) return fromParams;
+
+  const fromQuery = parseInt(req.query?.citizen_id, 10);
+  if (Number.isInteger(fromQuery)) return fromQuery;
+
+  const fromHeader = parseInt(req.headers["x-citizen-id"], 10);
+  if (Number.isInteger(fromHeader)) return fromHeader;
+
+  const auth = req.headers.authorization || "";
+  const bearer = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
+  const numericBearer = parseInt(bearer, 10);
+  if (Number.isInteger(numericBearer)) return numericBearer;
+
+  if (!bearer) return null;
+  try {
+    const payload = jwt.verify(
+      bearer,
+      process.env.JWT_SECRET || "wastewise-secret-key-123"
+    );
+    const tokenId = parseInt(payload?.userId || payload?.id, 10);
+    return Number.isInteger(tokenId) ? tokenId : null;
+  } catch {
+    return null;
+  }
+};
+
+const pickTable = async (conn, candidates) => {
+  const placeholders = candidates.map(() => "?").join(",");
+  const [rows] = await conn.execute(
+    `SELECT table_name
+     FROM information_schema.tables
+     WHERE table_schema = DATABASE()
+       AND table_name IN (${placeholders})
+     ORDER BY FIELD(table_name, ${placeholders})
+     LIMIT 1`,
+    [...candidates, ...candidates]
+  );
+  return rows[0]?.table_name || null;
 };
 
 exports.register = async (req, res) => {
@@ -241,6 +285,8 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    const eco = await getEcoPointsSummary(db, { citizenId: user.id });
+
     // ✅ Send full citizen details
     res.json({
       success: true,
@@ -257,7 +303,7 @@ exports.login = async (req, res) => {
         longitude: user.longitude,
         photo_url: user.photo_url,
         is_verified: user.is_verified,
-        points: user.points || 0,
+        points: eco.total_points,
         next_collection: user.next_collection || null
       },
       token: "token_goes_here_if_you_use_jwt"
@@ -482,6 +528,72 @@ exports.updateProfile = async (req, res) => {
       success: false,
       message: "Server error"
     });
+  }
+};
+
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const citizenId = resolveCitizenId(req);
+    if (!Number.isInteger(citizenId)) {
+      return res.status(400).json({ message: "citizen_id is required" });
+    }
+
+    const [[pickup]] = await db.execute(
+      `SELECT
+          COUNT(*) AS total_requests,
+          SUM(CASE WHEN status IN ('PENDING_ADMIN','APPROVED_ADMIN','OFFERING','ACCEPTED_BY_COLLECTOR') THEN 1 ELSE 0 END) AS pending_requests,
+          SUM(CASE WHEN status = 'IN_PROGRESS' THEN 1 ELSE 0 END) AS in_progress_requests,
+          SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_requests
+       FROM pickup_requests
+       WHERE citizen_id = ?`,
+      [citizenId]
+    );
+
+    const reportTable = await pickTable(db, [
+      "illegal_dumping_reports",
+      "illegal_dumping_report"
+    ]);
+
+    let illegal = {
+      total_reports: 0,
+      open_reports: 0,
+      cleaned_reports: 0
+    };
+
+    if (reportTable) {
+      const [[reportStats]] = await db.execute(
+        `SELECT
+            COUNT(*) AS total_reports,
+            SUM(CASE WHEN status IN ('CLEANED', 'COMPLETED') THEN 0 ELSE 1 END) AS open_reports,
+            SUM(CASE WHEN status IN ('CLEANED', 'COMPLETED') THEN 1 ELSE 0 END) AS cleaned_reports
+         FROM ${reportTable}
+         WHERE reported_by_citizen_id = ?`,
+        [citizenId]
+      );
+
+      illegal = {
+        total_reports: Number(reportStats?.total_reports || 0),
+        open_reports: Number(reportStats?.open_reports || 0),
+        cleaned_reports: Number(reportStats?.cleaned_reports || 0)
+      };
+    }
+
+    const eco = await getEcoPointsSummary(db, { citizenId });
+
+    return res.json({
+      eco_points: eco.total_points,
+      pickup: {
+        total_requests: Number(pickup?.total_requests || 0),
+        pending_requests: Number(pickup?.pending_requests || 0),
+        in_progress_requests: Number(pickup?.in_progress_requests || 0),
+        completed_requests: Number(pickup?.completed_requests || 0)
+      },
+      illegal_dumping: illegal,
+      recent_eco_points: eco.recent
+    });
+  } catch (err) {
+    console.error("Citizen dashboard stats error:", err.message);
+    return res.status(500).json({ message: "Failed to load citizen dashboard stats" });
   }
 };
 

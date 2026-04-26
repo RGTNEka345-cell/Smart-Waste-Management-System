@@ -1,5 +1,6 @@
 const db = require("../config/database");
 const { assignNextCollector } = require("../utils/pickupAssignment");
+const { addEcoPoints } = require("../utils/ecoPoints");
 
 const VALID_REQUEST_TYPES = new Set(["NORMAL", "SPECIAL"]);
 const VALID_TARGET_TYPES = new Set(["government", "factory"]);
@@ -189,6 +190,13 @@ exports.createPickupRequest = async (req, res) => {
         `Your pickup request #${requestId} has been submitted.`
       ]
     );
+
+    await addEcoPoints(conn, {
+      citizenId,
+      actionType: "PICKUP_REQUEST",
+      referenceId: requestId,
+      description: `Pickup request #${requestId} submitted`
+    });
 
     await conn.commit();
 

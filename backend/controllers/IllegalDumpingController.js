@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const db = require("../config/database");
+const { addEcoPoints } = require("../utils/ecoPoints");
 
 const VALID_SEVERITY = new Set(["LOW", "MEDIUM", "HIGH"]);
 const NEARBY_BLOCK_METERS = 120;
@@ -171,6 +172,13 @@ exports.createReport = async (req, res) => {
        VALUES ('CITIZEN', ?, ?, ?)`,
       [citizenId, "Report submitted", `Your illegal dumping report #${reportId} has been submitted.`]
     );
+
+    await addEcoPoints(conn, {
+      citizenId,
+      actionType: "ILLEGAL_DUMP_REPORT",
+      referenceId: reportId,
+      description: `Illegal dumping report #${reportId} submitted`
+    });
 
     await conn.commit();
     return res.status(201).json({

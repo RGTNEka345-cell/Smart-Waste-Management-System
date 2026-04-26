@@ -1,4 +1,5 @@
 const db = require("../config/database");
+const { addEcoPoints } = require("../utils/ecoPoints");
 
 const pickTable = async (conn, candidates) => {
   const placeholders = candidates.map(() => "?").join(",");
@@ -444,6 +445,13 @@ exports.completeJob = async (req, res) => {
         [values]
       );
     }
+
+    await addEcoPoints(conn, {
+      collectorId,
+      actionType: "ILLEGAL_DUMP_CLEANUP_COMPLETED",
+      referenceId: reportId,
+      description: `Completed illegal dumping cleanup #${reportId}`
+    });
 
     await conn.commit();
     return res.json({ success: true });

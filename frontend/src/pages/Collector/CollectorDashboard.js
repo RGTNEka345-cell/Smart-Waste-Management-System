@@ -16,6 +16,7 @@ const CollectorDashboard = () => {
     completed_jobs: 0,
     active_jobs: 0,
     pending_jobs: 0,
+    eco_points: 0,
     monthly_completed: [],
     recent_completed: []
   });
@@ -54,6 +55,7 @@ const CollectorDashboard = () => {
           completed_jobs: Number(res.data?.completed_jobs || 0),
           active_jobs: Number(res.data?.active_jobs || 0),
           pending_jobs: Number(res.data?.pending_jobs || 0),
+          eco_points: Number(res.data?.eco_points || 0),
           monthly_completed: Array.isArray(res.data?.monthly_completed) ? res.data.monthly_completed : [],
           recent_completed: Array.isArray(res.data?.recent_completed) ? res.data.recent_completed : []
         });
@@ -62,6 +64,7 @@ const CollectorDashboard = () => {
           completed_jobs: 0,
           active_jobs: 0,
           pending_jobs: 0,
+          eco_points: 0,
           monthly_completed: [],
           recent_completed: []
         });
@@ -127,6 +130,10 @@ const CollectorDashboard = () => {
             <div className="stat-card">
               <h3>Pending to Start</h3>
               <p className="stat-value">{dashboardStats.pending_jobs}</p>
+            </div>
+            <div className="stat-card">
+              <h3>Eco Points</h3>
+              <p className="stat-value">{dashboardStats.eco_points}</p>
             </div>
           </div>
 
