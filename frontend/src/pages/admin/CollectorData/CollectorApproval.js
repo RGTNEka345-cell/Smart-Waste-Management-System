@@ -8,6 +8,12 @@ const AdminCollectorApproval = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCollector, setSelectedCollector] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const buildVehiclePhotoUrl = (photo) => {
+    if (!photo) return "";
+    if (photo.startsWith("http://") || photo.startsWith("https://")) return photo;
+    if (photo.startsWith("/uploads/")) return `http://localhost:5000${photo}`;
+    return `http://localhost:5000/uploads/collectors/${photo}`;
+  };
 
   useEffect(() => {
     fetchPendingCollectors();
@@ -134,7 +140,7 @@ const AdminCollectorApproval = () => {
 
                 <div className="vehicle-photo">
                   <img
-                    src={`http://localhost:5000/uploads/vehicles/${c.vehicle_photo}`}
+                    src={buildVehiclePhotoUrl(c.vehicle_photo)}
                     alt="Vehicle"
                     onError={(e) => {
                       e.target.src = "https://via.placeholder.com/200?text=No+Image";
@@ -214,7 +220,7 @@ const AdminCollectorApproval = () => {
                 <div className="detail-item full-width">
                   <span className="label">Vehicle Photo:</span>
                   <img
-                    src={`http://localhost:5000/uploads/vehicles/${selectedCollector.vehicle_photo}`}
+                    src={buildVehiclePhotoUrl(selectedCollector.vehicle_photo)}
                     alt="Vehicle"
                     className="modal-vehicle-photo"
                     onError={(e) => {

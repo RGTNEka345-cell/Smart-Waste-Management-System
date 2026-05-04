@@ -141,6 +141,11 @@ exports.approveOrRejectCollector = async (req, res) => {
         console.warn("Email send failed (approval):", emailErr.message);
       }
     } else {
+      await conn.execute(
+        "UPDATE Collectors SET status = 'REJECTED' WHERE collector_id = ?",
+        [collector_id]
+      );
+
       /* send rejection email */
       const rejectionEmail = `
         <!DOCTYPE html>
@@ -225,20 +230,6 @@ exports.approveOrRejectCollector = async (req, res) => {
       } catch (emailErr) {
         console.warn("Email send failed (rejection):", emailErr.message);
       }
-
-      /* delete related data */
-      await conn.execute(
-        "DELETE FROM Factory_Details WHERE collector_id = ?",
-        [collector_id]
-      );
-      await conn.execute(
-        "DELETE FROM Government_Details WHERE collector_id = ?",
-        [collector_id]
-      );
-      await conn.execute(
-        "DELETE FROM Collectors WHERE collector_id = ?",
-        [collector_id]
-      );
     }
 
     await conn.commit();
@@ -312,6 +303,7 @@ exports.getRejectionHistory = async (req, res) => {
         c.home_address,
         c.latitude,
         c.longitude,
+        c.gender,
         a.fullname as admin_name
       FROM Collector_Approvals ca
       JOIN Collectors c ON ca.collector_id = c.collector_id

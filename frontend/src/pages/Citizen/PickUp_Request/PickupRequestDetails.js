@@ -101,7 +101,8 @@ const PickupRequestDetails = () => {
         <CitizenNavbar setActiveTab={() => {}} />
         <div className="prd-wrap">
           <div className="prd-card">
-            Request not found. <Link to="/citizen/pickup/requests">Back</Link>
+            Request not found. 
+            <Link to="/citizen/pickup/requests">Back</Link>
           </div>
         </div>
       </>
@@ -138,7 +139,7 @@ const PickupRequestDetails = () => {
               <div className="label">{s.label}</div>
             </div>
           ))}
-        </div>
+           </div>
 
         <div className="prd-meta">
           <div><strong>Type:</strong> {data.request.request_type}</div>

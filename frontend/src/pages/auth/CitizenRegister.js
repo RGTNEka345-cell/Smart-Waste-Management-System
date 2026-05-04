@@ -16,7 +16,9 @@ import {
   FaCheckCircle,
   FaSpinner,
   FaRedo,
-  FaArrowLeft
+  FaArrowLeft,
+  FaEye,
+  FaEyeSlash
 } from "react-icons/fa";
 
 const CitizenRegister = () => {
@@ -40,6 +42,8 @@ const CitizenRegister = () => {
   const [loading, setLoading] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [locationSearch, setLocationSearch] = useState("");
 
   const mapRef = useRef(null);
   const markerRef = useRef(null);
@@ -67,6 +71,14 @@ const CitizenRegister = () => {
     // Clear error for this field
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleAddressChange = (e) => {
+    const { value } = e.target;
+    setForm((prev) => ({ ...prev, address: value }));
+    if (errors.address) {
+      setErrors((prev) => ({ ...prev, address: "" }));
     }
   };
 
@@ -156,8 +168,7 @@ const CitizenRegister = () => {
         setForm(prev => ({
           ...prev,
           latitude: place.geometry.location.lat(),
-          longitude: place.geometry.location.lng(),
-          address: place.formatted_address || prev.address
+          longitude: place.geometry.location.lng()
         }));
       });
     }
@@ -171,17 +182,6 @@ const CitizenRegister = () => {
         latitude: lat,
         longitude: lng
       }));
-
-      // Reverse geocode to get address
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-        if (status === "OK" && results[0]) {
-          setForm(prev => ({
-            ...prev,
-            address: results[0].formatted_address
-          }));
-        }
-      });
     });
 
     // Update form on map click
@@ -533,15 +533,25 @@ const CitizenRegister = () => {
             
             <div className="form-group">
               <label><FaLock /> Password *</label>
-              <input 
-                className={`form-input ${errors.password ? 'error' : ''}`}
-                type="password" 
-                name="password" 
-                placeholder="Password" 
-                value={form.password}
-                onChange={handleChange}
-                required
-              />
+              <div className="password-input-wrap">
+                <input 
+                  className={`form-input password-input ${errors.password ? 'error' : ''}`}
+                  type={showPassword ? "text" : "password"}
+                  name="password" 
+                  placeholder="Password" 
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
               {errors.password && <span className="error-message">{errors.password}</span>}
             </div>
 
@@ -586,7 +596,8 @@ const CitizenRegister = () => {
               placeholder="Address" 
               rows="3"
               value={form.address}
-              onChange={handleChange}
+              onChange={handleAddressChange}
+              autoComplete="street-address"
               required
             />
             {errors.address && <span className="error-message">{errors.address}</span>}
@@ -599,6 +610,9 @@ const CitizenRegister = () => {
                 id="search-box" 
                 className="form-input" 
                 placeholder="Search your location"
+                value={locationSearch}
+                onChange={(e) => setLocationSearch(e.target.value)}
+                autoComplete="off"
               />
             </div>
             {errors.location && <span className="error-message">{errors.location}</span>}

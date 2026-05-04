@@ -467,8 +467,9 @@ const FactoryDetails = ({
   onWasteTypeChange,
   onMapClick,
   isSubmitting
-}) => (
-  <section className="form-section">
+}) => {
+  return (
+    <section className="form-section">
     <h3 className="section-title">Factory Information</h3>
     
     <div className="input-group">
@@ -491,13 +492,21 @@ const FactoryDetails = ({
     </div>
 
     <div className="input-group">
-      <input 
-        name="operating_hours" 
-        placeholder="Operating Hours" 
-        value={factory.operating_hours}
-        onChange={onFactoryChange}
-        disabled={isSubmitting}
-      />
+      <div>
+        <label style={{ display: "block", marginBottom: 6, fontSize: 13, color: "#555" }}>
+          Operating Hours (Hours)
+        </label>
+        <input
+          type="number"
+          name="operating_hours"
+          min="1"
+          step="1"
+          placeholder="e.g. 8"
+          value={factory.operating_hours}
+          onChange={onFactoryChange}
+          disabled={isSubmitting}
+        />
+      </div>
       <input 
         name="factory_contact" 
         placeholder="Factory Contact" 
@@ -546,7 +555,8 @@ const FactoryDetails = ({
       isSubmitting={isSubmitting}
     />
   </section>
-);
+  );
+};
 
 // Government Details Component
 const GovernmentDetails = ({
