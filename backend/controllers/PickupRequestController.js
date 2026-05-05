@@ -614,6 +614,32 @@ exports.getPickupRequestDetailsAdmin = async (req, res) => {
   }
 };
 
+exports.listPickupRequestsAdmin = async (req, res) => {
+  try {
+    const q = (req.query.q || "").trim();
+    const like = `%${q}%`;
+
+    const sql = q
+      ? `SELECT pr.request_id, pr.request_type, pr.target_collection_type, pr.status, pr.requested_at,
+                c.full_name AS citizen_name, c.email AS citizen_email
+         FROM pickup_requests pr
+         JOIN citizens c ON c.id = pr.citizen_id
+         WHERE c.full_name LIKE ? OR c.email LIKE ?
+         ORDER BY pr.requested_at DESC`
+      : `SELECT pr.request_id, pr.request_type, pr.target_collection_type, pr.status, pr.requested_at,
+                c.full_name AS citizen_name, c.email AS citizen_email
+         FROM pickup_requests pr
+         JOIN citizens c ON c.id = pr.citizen_id
+         ORDER BY pr.requested_at DESC`;
+
+    const [rows] = q ? await db.execute(sql, [like, like]) : await db.execute(sql);
+    return res.json(rows);
+  } catch (err) {
+    console.error("List pickup requests admin error:", err.message);
+    return res.status(500).json({ message: "Failed to load pickup requests" });
+  }
+};
+
 exports.searchPickupRequestByCitizenAdmin = async (req, res) => {
   try {
     const q = (req.query.q || "").trim();

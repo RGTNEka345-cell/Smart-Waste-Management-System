@@ -39,8 +39,10 @@ const AdminPickupRequestDetails = () => {
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
+  const [requestList, setRequestList] = useState([]);
+  const [listLoading, setListLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [searchLoading, setSearchLoading] = useState(false);
+  const [activeRequestId, setActiveRequestId] = useState(id ? Number(id) : null);
   // expected:
   // {
   //   request: {...},
@@ -65,48 +67,47 @@ const AdminPickupRequestDetails = () => {
     }
   };
 
-  useEffect(() => {
-    const load = async () => {
-      if (id) {
-        await fetchDetails(id);
+  const fetchRequestList = async (q = "") => {
+    try {
+      setListLoading(true);
+      const res = await axios.get(`${API}/admin/pickup-requests`, {
+        params: q ? { q: q.trim() } : {},
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      const rows = Array.isArray(res.data) ? res.data : [];
+      setRequestList(rows);
+
+      if (rows.length === 0) {
+        setData(null);
+        setActiveRequestId(null);
         return;
       }
-      try {
-        setLoading(true);
-        const res = await axios.get(`${API}/admin/pickup-requests-latest`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {}
-        });
-        if (res.data?.request_id) {
-          await fetchDetails(res.data.request_id);
-        } else {
-          setData(null);
-        }
-      } catch (e) {
-        setData(null);
-      } finally {
-        setLoading(false);
-      }
+
+      const selectedId = activeRequestId && rows.some((r) => Number(r.request_id) === Number(activeRequestId))
+        ? Number(activeRequestId)
+        : Number(rows[0].request_id);
+
+      setActiveRequestId(selectedId);
+      await fetchDetails(selectedId);
+    } catch (e) {
+      setRequestList([]);
+      setData(null);
+      setActiveRequestId(null);
+    } finally {
+      setListLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const load = async () => {
+      await fetchRequestList();
     };
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleSearch = async () => {
-    if (!search.trim()) return;
-    try {
-      setSearchLoading(true);
-      const res = await axios.get(`${API}/admin/pickup-requests-search`, {
-        params: { q: search.trim() },
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
-      if (res.data?.request_id) {
-        fetchDetails(res.data.request_id);
-      }
-    } catch (e) {
-      alert("No matching request found");
-    } finally {
-      setSearchLoading(false);
-    }
+    await fetchRequestList(search);
   };
 
   const request = data?.request;
@@ -170,12 +171,40 @@ const AdminPickupRequestDetails = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <button className="btn small" onClick={handleSearch} disabled={searchLoading}>
-                {searchLoading ? "Searching..." : "Search"}
+              <button className="btn small" onClick={handleSearch} disabled={listLoading}>
+                {listLoading ? "Searching..." : "Search"}
+              </button>
+              <button className="btn secondary small" onClick={() => { setSearch(""); fetchRequestList(""); }} disabled={listLoading}>
+                Reset
               </button>
             </div>
           </div>
         </div>
+
+      <div className="ard-card">
+        <h3>All Pickup Requests (Latest First)</h3>
+        {requestList.length === 0 ? (
+          <p className="muted">No pickup requests found.</p>
+        ) : (
+          <div className="request-list">
+            {requestList.map((r) => (
+              <button
+                key={r.request_id}
+                type="button"
+                className={`request-row ${Number(activeRequestId) === Number(r.request_id) ? "active" : ""}`}
+                onClick={() => {
+                  setActiveRequestId(Number(r.request_id));
+                  fetchDetails(r.request_id);
+                }}
+              >
+                <div><strong>#{r.request_id}</strong> {r.citizen_name || "-"}</div>
+                <div>{r.citizen_email || "-"}</div>
+                <div>{r.requested_at ? new Date(r.requested_at).toLocaleString() : "-"}</div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Citizen details */}
       <div className="ard-card">

@@ -72,6 +72,11 @@ router.post(
   PickupRequestController.rejectPickupRequestAdmin
 );
 router.get(
+  "/admin/pickup-requests",
+  adminAuth,
+  PickupRequestController.listPickupRequestsAdmin
+);
+router.get(
   "/admin/pickup-requests/:id",
   adminAuth,
   PickupRequestController.getPickupRequestDetailsAdmin

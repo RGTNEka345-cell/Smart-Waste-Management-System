@@ -48,6 +48,26 @@ const addHistory = async (conn, historyTable, reportId, status, note, collectorI
   );
 };
 
+const isGovernmentCollector = async (conn, collectorId, collectionType) => {
+  if (String(collectionType || "").toLowerCase() === "government") return true;
+
+  const [[collector]] = await conn.execute(
+    `SELECT collection_type
+     FROM Collectors
+     WHERE collector_id = ?
+     LIMIT 1`,
+    [collectorId]
+  );
+  return String(collector?.collection_type || "").toLowerCase() === "government";
+};
+
+const rejectIfNotGovernment = async (conn, req, res) => {
+  const allowed = await isGovernmentCollector(conn, req.collectorId, req.collectionType);
+  if (allowed) return false;
+  res.status(403).json({ message: "Illegal dumping is available only for government collectors" });
+  return true;
+};
+
 const offerNextCollector = async (conn, reportTable, offersTable, reportId) => {
   const [reportRows] = await conn.execute(
     `SELECT report_id, latitude, longitude
@@ -97,6 +117,8 @@ const offerNextCollector = async (conn, reportTable, offersTable, reportId) => {
 
 exports.listOffers = async (req, res) => {
   try {
+    if (await rejectIfNotGovernment(db, req, res)) return;
+
     const collectorId = req.collectorId;
     const offersTable = await pickTable(db, ["illegal_dumping_offers"]);
     const reportTable = await pickTable(db, ["illegal_dumping_reports", "illegal_dumping_report"]);
@@ -129,6 +151,8 @@ exports.acceptOffer = async (req, res) => {
   const collectorId = req.collectorId;
   const conn = await db.getConnection();
   try {
+    if (await rejectIfNotGovernment(conn, req, res)) return;
+
     await conn.beginTransaction();
     const offersTable = await pickTable(conn, ["illegal_dumping_offers"]);
     const reportTable = await pickTable(conn, ["illegal_dumping_reports", "illegal_dumping_report"]);
@@ -204,6 +228,8 @@ exports.rejectOffer = async (req, res) => {
   const conn = await db.getConnection();
 
   try {
+    if (await rejectIfNotGovernment(conn, req, res)) return;
+
     await conn.beginTransaction();
     const offersTable = await pickTable(conn, ["illegal_dumping_offers"]);
     const reportTable = await pickTable(conn, ["illegal_dumping_reports", "illegal_dumping_report"]);
@@ -269,6 +295,8 @@ exports.rejectOffer = async (req, res) => {
 
 exports.getActiveJob = async (req, res) => {
   try {
+    if (await rejectIfNotGovernment(db, req, res)) return;
+
     const collectorId = req.collectorId;
     const offersTable = await pickTable(db, ["illegal_dumping_offers"]);
     const reportTable = await pickTable(db, ["illegal_dumping_reports", "illegal_dumping_report"]);
@@ -303,6 +331,8 @@ exports.startJob = async (req, res) => {
   const conn = await db.getConnection();
 
   try {
+    if (await rejectIfNotGovernment(conn, req, res)) return;
+
     await conn.beginTransaction();
     const offersTable = await pickTable(conn, ["illegal_dumping_offers"]);
     const reportTable = await pickTable(conn, ["illegal_dumping_reports", "illegal_dumping_report"]);
@@ -362,6 +392,8 @@ exports.completeJob = async (req, res) => {
 
   const conn = await db.getConnection();
   try {
+    if (await rejectIfNotGovernment(conn, req, res)) return;
+
     await conn.beginTransaction();
     const offersTable = await pickTable(conn, ["illegal_dumping_offers"]);
     const reportTable = await pickTable(conn, ["illegal_dumping_reports", "illegal_dumping_report"]);
@@ -466,6 +498,8 @@ exports.completeJob = async (req, res) => {
 
 exports.listHistory = async (req, res) => {
   try {
+    if (await rejectIfNotGovernment(db, req, res)) return;
+
     const collectorId = req.collectorId;
     const offersTable = await pickTable(db, ["illegal_dumping_offers"]);
     const reportTable = await pickTable(db, ["illegal_dumping_reports", "illegal_dumping_report"]);

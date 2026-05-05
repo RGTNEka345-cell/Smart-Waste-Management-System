@@ -57,6 +57,8 @@ const CollectorNavbar = () => {
   };
 
   const vehicleImage = resolveVehicleImage(collector?.vehicle_photo);
+  const isGovernmentCollector =
+    String(collector?.collection_type || "").toLowerCase() === "government";
 
   const navItems = [
     { label: "Dashboard", icon: <FaHome />, path: "/collector/dashboard" },
@@ -107,6 +109,7 @@ const CollectorNavbar = () => {
           </button>
         ))}
 
+        {isGovernmentCollector && (
         <div className={`nav-submenu ${isDumpingMenuOpen ? "open" : ""}`}>
           <button
             className="nav-link nav-submenu-trigger"
@@ -150,6 +153,7 @@ const CollectorNavbar = () => {
             </button>
           </div>
         </div>
+        )}
       </div>
 
       {/* Profile Dropdown */}
@@ -229,4 +233,3 @@ const CollectorNavbar = () => {
 };
 
 export default CollectorNavbar;
-
