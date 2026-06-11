@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import "./CitizenProfileUpdate.css";
 import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
+import CitizenNavbar from "../../../components/Citizen/CitizenNavbar";
 
 const CitizenProfileUpdate = () => {
   const [form, setForm] = useState({
@@ -398,11 +399,13 @@ const CitizenProfileUpdate = () => {
   };
 
   return (
-    <div className="profile-update-container">
-      <div className="profile-header">
-        <h2>Update Profile</h2>
-        <p className="profile-subtitle">Update your personal information and location</p>
-      </div>
+    <>
+      <CitizenNavbar setActiveTab={() => {}} />
+      <div className="profile-update-container">
+        <div className="profile-header">
+          <h2>Update Profile</h2>
+          <p className="profile-subtitle">Update your personal information and location</p>
+        </div>
 
       {successMessage && (
         <div className="success-message">{successMessage}</div>
@@ -677,8 +680,9 @@ const CitizenProfileUpdate = () => {
             )}
           </button>
         </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 };
 

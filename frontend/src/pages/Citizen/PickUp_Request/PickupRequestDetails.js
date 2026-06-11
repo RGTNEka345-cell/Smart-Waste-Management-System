@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import CitizenNavbar from "../../../components/Citizen/CitizenNavbar";
 import axios from "axios";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import "./PickupRequestDetails.css";
 
 const API = "http://localhost:5000/api";
@@ -23,9 +23,11 @@ const stepIndex = (status) => {
 
 const PickupRequestDetails = () => {
   const { requestId } = useParams();
+  const location = useLocation();
   const token = localStorage.getItem("citizenToken");
   const citizen = JSON.parse(localStorage.getItem("citizen") || "null");
   const citizenId = citizen?.id;
+  const successMessage = location.state?.successMessage;
 
   const [data, setData] = useState(null); // {request, items, photos, collector?}
   const [loading, setLoading] = useState(true);
@@ -121,6 +123,11 @@ const PickupRequestDetails = () => {
     <>
       <CitizenNavbar setActiveTab={() => {}} />
       <div className="prd-wrap">
+        {successMessage && (
+          <div className="prd-success">
+            {successMessage}
+          </div>
+        )}
         <div className="prd-top">
           <h2>Pickup Request #{data.request.request_id}</h2>
           <Link className="prd-back" to="/citizen/pickup/requests">← Back</Link>

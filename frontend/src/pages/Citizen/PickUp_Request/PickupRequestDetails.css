@@ -4,6 +4,16 @@
   padding: 0 16px;
 }
 
+.prd-success {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #b7ebc6;
+  background: #eaf9ef;
+  color: #1f6b36;
+  font-weight: 700;
+}
+
 .prd-top {
   display: flex;
   justify-content: space-between;

@@ -82,7 +82,8 @@ const CitizenNavbar = ({ setActiveTab }) => {
     {
       id: "dashboard",
       label: "Dashboard",
-      icon: <FaHome />
+      icon: <FaHome />,
+      path: "/citizen/dashboard"
     },
     {
       id: "tips",
@@ -132,9 +133,10 @@ const CitizenNavbar = ({ setActiveTab }) => {
       onClick={() => {
         if (item.path) {
           navigate(item.path);
-        } else {
+        } else if (typeof setActiveTab === "function") {
           setActiveTab(item.id);
         }
+        setIsDropdownOpen(false);
         setIsMenuOpen(false);
         setIsPickupOpen(false);
         setIsDumpOpen(false);

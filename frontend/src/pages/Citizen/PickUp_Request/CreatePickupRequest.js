@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import CitizenNavbar from "../../../components/Citizen/CitizenNavbar";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./CreatePickupRequest.css";
 
 const CreatePickupRequest = () => {
   const citizen = JSON.parse(localStorage.getItem("citizen"));
+  const navigate = useNavigate();
 
   const [requestType, setRequestType] = useState("NORMAL");
   const [note, setNote] = useState("");
@@ -119,17 +121,19 @@ const CreatePickupRequest = () => {
     console.log("PHOTOS:", photos);
 
     try {
-      await axios.post("http://localhost:5000/api/pickup-requests", formData, {
+      const res = await axios.post("http://localhost:5000/api/pickup-requests", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
+      const requestId = res?.data?.request_id;
 
-      alert("Pickup request submitted");
+      if (requestId) {
+        navigate(`/citizen/pickup/${requestId}`, {
+          state: { successMessage: `Pickup request #${requestId} submitted successfully.` }
+        });
+        return;
+      }
 
-      setNote("");
-      setPhotos([]);
-      setPhotoError("");
-      setItems([{ wastetype_id: "", quantity: "", unit: "kg" }]);
-      setRequestType("NORMAL");
+      navigate("/citizen/pickup/requests");
     } catch (err) {
       const msg = err?.response?.data?.message || "Error submitting request";
       alert(msg);
