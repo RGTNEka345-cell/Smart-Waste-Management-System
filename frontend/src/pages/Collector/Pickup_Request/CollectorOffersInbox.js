@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import CollectorNavbar from "../../../components/Collector/CollectorNavbar";
 import "./CollectorOffersInbox.css";
 
 const API = "http://localhost:5000/api";
 
 const CollectorOffersInbox = () => {
+  const navigate = useNavigate();
   const token = localStorage.getItem("collectorToken");
 
   const [offers, setOffers] = useState([]);
@@ -50,8 +52,7 @@ const CollectorOffersInbox = () => {
         {},
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
-      alert("Offer accepted");
-      fetchOffers();
+      navigate("/collector/job");
     } catch {
       alert("Accept failed");
     }

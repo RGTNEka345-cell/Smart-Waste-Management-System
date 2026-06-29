@@ -560,7 +560,10 @@ exports.listHistory = async (req, res) => {
     );
 
     return res.json(rows);
-  } catch (err) {
+  
+  } catch (err) 
+  
+  {
     console.error("Illegal dumping history list error:", err.message);
     return res.status(500).json({ message: "Failed to load dumping history" });
   }

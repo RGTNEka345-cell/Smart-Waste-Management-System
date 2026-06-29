@@ -67,7 +67,6 @@ router.put(
   CitizenController.updateProfile // ✅ function
 );
 
-
 // Illegal Dumping (Citizen)
 router.post(
   "/illegal-dumping",
@@ -75,6 +74,5 @@ router.post(
   IllegalDumpingController.createReport
 );
 router.get("/illegal-dumping/my", IllegalDumpingController.getMyReports);
-
 module.exports = router;
 

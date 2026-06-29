@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import CollectorNavbar from "../../../components/Collector/CollectorNavbar";
 import "./CollectorDumpingOffers.css";
 
 const API = "http://localhost:5000/api";
 
 export default function CollectorDumpingOffers() {
+  const navigate = useNavigate();
   const token = localStorage.getItem("collectorToken");
   const collectorData = JSON.parse(localStorage.getItem("collectorData") || "null");
   const collectorId = collectorData?.collector_id;
@@ -46,8 +48,7 @@ export default function CollectorDumpingOffers() {
         params: collectorId ? { collector_id: collectorId } : {},
         headers: authHeaders
       });
-      alert("Accepted ✅");
-      load();
+      navigate("/collector/illegal-dumping/active");
     } catch {
       alert("Accept failed");
     }
@@ -84,16 +85,16 @@ export default function CollectorDumpingOffers() {
         </div>
  
 
-        <div className="card">
+        <div className="dump-offers-card">
         {loading ? (
           <div className="muted">Loading...</div>
         ) : offers.length === 0 ? (
           <div className="muted">No offers.</div>
         ) : (
-          <div className="rowList">
+          <div className="dump-offers-list">
             {offers.map((o) => (
-              <div className="row" key={o.offer_id}>
-                <div className="left">
+              <div className="dump-offer-row" key={o.offer_id}>
+                <div className="dump-offer-left">
                   <div className="title">Offer #{o.offer_id} — Report #{o.report_id}</div>
                   <div className="sub">{o.address || `${o.latitude}, ${o.longitude}`}</div>
                   <div className="pills">
@@ -102,14 +103,13 @@ export default function CollectorDumpingOffers() {
                   </div>
                 </div>
 
-                <div style={{ minWidth: 280 }}>
+                <div className="dump-offer-controls">
                   <input
-                    style={{ width: "100%", padding: 10, borderRadius: 12, border: "1px solid #ddd" }}
                     placeholder="Reject reason (optional)"
                     value={rejectReason[o.offer_id] || ""}
                     onChange={(e) => setRejectReason({ ...rejectReason, [o.offer_id]: e.target.value })}
                   />
-                  <div className="actions" style={{ marginTop: 8 }}>
+                  <div className="dump-offer-actions">
                     <button className="btn success" onClick={() => accept(o.offer_id)}>Accept</button>
                     <button className="btn danger" onClick={() => reject(o.offer_id)}>Reject</button>
                     <button

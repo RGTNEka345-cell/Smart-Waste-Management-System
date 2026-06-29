@@ -228,7 +228,7 @@ export default function CitizenCreateDumpReport() {
 
   return (
     <>
-      <CitizenNavbar setActiveTab={() => {}} />
+      <CitizenNavbar setActiveTab={() => {}} className="citizen-navbar-static" />
       <div className="id-wrap citizen-dump-create">
         <div className="id-top">
           <div>

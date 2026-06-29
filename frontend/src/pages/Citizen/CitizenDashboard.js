@@ -38,7 +38,7 @@ const CitizenDashboard = () => {
 
   return (
     <>
-      {/* ✅ TOP NAVIGATION BAR */}
+      {/*  TOP NAVIGATION BAR */}
       <CitizenNavbar setActiveTab={setActiveTab} />
 
       <div className="citizen-container">

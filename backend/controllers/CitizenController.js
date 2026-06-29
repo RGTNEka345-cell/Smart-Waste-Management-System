@@ -68,7 +68,6 @@ const pickTable = async (conn, candidates) => {
 
 exports.register = async (req, res) => {
   try {
-    // Accept both JSON and multipart/form-data (multer populates req.file and req.body)
     const body = req.body || {};
 
     const { full_name, email, phone, password, address, date_of_birth, gender, latitude, longitude } = body;

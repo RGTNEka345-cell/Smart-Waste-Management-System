@@ -17,7 +17,7 @@ import {
   FaChevronDown
 } from "react-icons/fa";
 
-const CitizenNavbar = ({ setActiveTab }) => {
+const CitizenNavbar = ({ setActiveTab, className = "" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPickupOpen, setIsPickupOpen] = useState(false);
@@ -100,7 +100,7 @@ const CitizenNavbar = ({ setActiveTab }) => {
 
 
   return (
-    <nav className="citizen-navbar">
+    <nav className={`citizen-navbar ${className}`.trim()}>
       {/* Logo Section */}
       <div className="nav-logo">
         {siteLogo ? (

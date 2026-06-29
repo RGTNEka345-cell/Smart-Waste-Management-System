@@ -47,6 +47,11 @@
   animation: citizen-nav-pulse 2s infinite;
 }
 
+.citizen-navbar.citizen-navbar-static {
+  position: relative;
+  top: auto;
+}
+
 .citizen-navbar .logo-image {
   width: 34px;
   height: 34px;

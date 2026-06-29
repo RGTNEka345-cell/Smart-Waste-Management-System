@@ -1,0 +1,129 @@
+.collector-notifications {
+  position: relative;
+}
+
+.collector-notification-trigger {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1f2937;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.collector-notification-trigger:hover {
+  background: #f5f7fa;
+  border-color: #d1d5db;
+}
+
+.collector-notification-badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 18px;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+.collector-notification-menu {
+  position: absolute;
+  right: 0;
+  top: 48px;
+  width: min(360px, calc(100vw - 24px));
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
+  overflow: hidden;
+  z-index: 140;
+}
+
+.collector-notification-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.collector-notification-head strong {
+  font-size: 14px;
+}
+
+.collector-notification-head button {
+  border: none;
+  background: transparent;
+  color: #1976d2;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.collector-notification-list {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.collector-notification-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: none;
+  border-bottom: 1px solid #f1f3f5;
+  background: #ffffff;
+  text-align: left;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+
+.collector-notification-item:hover {
+  background: #f8fafc;
+}
+
+.collector-notification-item.unread {
+  background: #eef7ff;
+}
+
+.collector-notification-title {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.collector-notification-message {
+  color: #4b5563;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.collector-notification-time {
+  color: #6b7280;
+  font-size: 11px;
+}
+
+.collector-notification-empty {
+  padding: 18px 14px;
+  color: #6b7280;
+  text-align: center;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .collector-notification-menu {
+    right: -64px;
+  }
+}

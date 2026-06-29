@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./CollectorNavbar.css";
 import useSiteLogo from "../../hooks/useSiteLogo";
+import CollectorNotifications from "./CollectorNotifications";
 import {
   FaBars,
   FaTimes,
@@ -158,6 +159,8 @@ const CollectorNavbar = () => {
 
       {/* Profile Dropdown */}
       <div className="profile-section">
+        <CollectorNotifications />
+
         <div className="online-status" title="Online">
           <span className="online-dot" />
         </div>
