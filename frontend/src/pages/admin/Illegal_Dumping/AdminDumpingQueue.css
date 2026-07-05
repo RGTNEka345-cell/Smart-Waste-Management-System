@@ -32,6 +32,13 @@
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
 }
 
+.admin-dq .adq-top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .admin-dq .adq-muted {
   color: #6b7280;
 }
@@ -106,6 +113,7 @@
   padding: 9px 13px;
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
@@ -131,6 +139,11 @@
 .admin-dq .adq-btn-secondary {
   background: #ecf2ff;
   color: #1d4ed8;
+}
+
+.admin-dq .adq-btn-primary {
+  background: #2563eb;
+  color: #fff;
 }
 
 .admin-dq .adq-refresh {

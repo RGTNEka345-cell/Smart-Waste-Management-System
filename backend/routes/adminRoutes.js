@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-
 const AdminController = require("../controllers/AdminController");
 const WasteTypeController = require("../controllers/WasteTypeController");
 const EcoTipController = require("../controllers/EcoTipController");
@@ -12,7 +11,8 @@ const adminAuth = require("../middlewares/adminAuth");
 const uploadAdminPhoto = require("../middlewares/uploadAdminPhoto");
 const uploadEcoTipImage = require("../middlewares/uploadEcoTipImage");
 const uploadWebsiteLogo = require("../middlewares/uploadWebsiteLogo");
-const {
+const 
+{
   getPendingCollectors,
   approveOrRejectCollector,
   getApprovalHistory,
@@ -98,6 +98,7 @@ router.get("/admin/citizens/:id", adminAuth, AdminCitizenController.getCitizenDe
 
 // Illegal Dumping (Admin only)
 router.get("/admin/illegal-dumping", adminAuth, IllegalDumpingAdminController.getQueue);
+router.get("/admin/illegal-dumping/history", adminAuth, IllegalDumpingAdminController.getHistory);
 router.post("/admin/illegal-dumping/:id/approve", adminAuth, IllegalDumpingAdminController.approve);
 router.post("/admin/illegal-dumping/:id/reject", adminAuth, IllegalDumpingAdminController.reject);
 

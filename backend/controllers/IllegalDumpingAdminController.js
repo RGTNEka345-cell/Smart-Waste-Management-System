@@ -11,7 +11,7 @@ const pickTable = async (conn, candidates) => {
      LIMIT 1`,
     [...candidates, ...candidates]
   );
-  return rows[0]?.table_name || null;
+return rows[0]?.table_name || null;
 };
 
 const buildDistanceSql = (latCol, lngCol) => {
@@ -95,6 +95,121 @@ exports.getQueue = async (req, res) => {
   } catch (err) {
     console.error("Illegal dumping queue error:", err.message);
     return res.status(500).json({ message: "Failed to load illegal dumping queue" });
+  }
+};
+
+exports.getHistory = async (req, res) => {
+  try {
+    const reportTable = await pickTable(db, [
+      "illegal_dumping_reports",
+      "illegal_dumping_report"
+    ]);
+    const photosTable = await pickTable(db, [
+      "illegal_dumping_photos",
+      "illegal_dumping_photo"
+    ]);
+    const offersTable = await pickTable(db, ["illegal_dumping_offers"]);
+    const historyTable = await pickTable(db, ["illegal_dumping_status_history"]);
+
+    if (!reportTable) {
+      return res.status(500).json({ message: "Illegal dumping report table not found" });
+    }
+
+    const status = String(req.query?.status || "").trim().toUpperCase();
+    const allowedStatuses = new Set([
+      "REJECTED_ADMIN",
+      "APPROVED_ADMIN",
+      "OFFERING",
+      "ACCEPTED_BY_COLLECTOR",
+      "IN_PROGRESS",
+      "CLEANED",
+      "COMPLETED"
+    ]);
+
+    const statusWhere = allowedStatuses.has(status)
+      ? "r.status = ?"
+      : "r.status <> 'PENDING_ADMIN'";
+    const params = allowedStatuses.has(status) ? [status] : [];
+
+    const photoCounts = photosTable
+      ? `(
+          SELECT COUNT(*)
+          FROM ${photosTable} p
+          WHERE p.report_id = r.report_id
+            AND p.photo_type = 'BEFORE'
+        ) AS before_photo_count,
+        (
+          SELECT COUNT(*)
+          FROM ${photosTable} p
+          WHERE p.report_id = r.report_id
+            AND p.photo_type = 'AFTER'
+        ) AS after_photo_count`
+      : "0 AS before_photo_count, 0 AS after_photo_count";
+
+    const offerJoin = offersTable
+      ? `LEFT JOIN ${offersTable} o
+           ON o.report_id = r.report_id
+          AND o.offer_status = 'ACCEPTED'
+         LEFT JOIN Collectors col ON col.collector_id = o.collector_id`
+      : "";
+
+    const offerSelect = offersTable
+      ? `o.collector_id,
+         col.full_name AS collector_name,
+         o.distance_km,
+         o.responded_at AS accepted_at`
+      : `NULL AS collector_id,
+         NULL AS collector_name,
+         NULL AS distance_km,
+         NULL AS accepted_at`;
+
+    const historyJoin = historyTable
+      ? `LEFT JOIN ${historyTable} h ON h.report_id = r.report_id`
+      : "";
+
+    const historySelect = historyTable
+      ? `MAX(CASE WHEN h.status = 'IN_PROGRESS' THEN h.changed_at END) AS started_at,
+         MAX(CASE WHEN h.status IN ('CLEANED', 'COMPLETED') THEN h.changed_at END) AS completed_at`
+      : "NULL AS started_at, NULL AS completed_at";
+
+    const groupByOffer = offersTable
+      ? ", o.collector_id, col.full_name, o.distance_km, o.responded_at"
+      : "";
+
+    const orderDate = historyTable
+      ? `COALESCE(
+          MAX(CASE WHEN h.status IN ('CLEANED', 'COMPLETED') THEN h.changed_at END),
+          r.rejected_at,
+          r.approved_at,
+          r.updated_at
+        )`
+      : "COALESCE(r.rejected_at, r.approved_at, r.updated_at)";
+
+    const [rows] = await db.execute(
+      `SELECT r.report_id, r.reported_by_citizen_id, r.title, r.description, r.severity,
+              r.status, r.latitude, r.longitude, r.address, r.admin_remarks,
+              r.approved_at, r.rejected_at, r.created_at, r.updated_at,
+              c.full_name AS citizen_name, c.phone AS citizen_phone,
+              ${offerSelect},
+              ${photoCounts},
+              ${historySelect}
+       FROM ${reportTable} r
+       JOIN citizens c ON c.id = r.reported_by_citizen_id
+       ${offerJoin}
+       ${historyJoin}
+       WHERE ${statusWhere}
+       GROUP BY r.report_id, r.reported_by_citizen_id, r.title, r.description, r.severity,
+                r.status, r.latitude, r.longitude, r.address, r.admin_remarks,
+                r.approved_at, r.rejected_at, r.created_at, r.updated_at,
+                c.full_name, c.phone${groupByOffer}
+       ORDER BY ${orderDate} DESC`,
+      params
+    );
+
+    return res.json(rows);
+  } catch (err) {
+    console.error("Illegal dumping history error:", err.message);
+    return res.status(500).json({ message: "Failed to load illegal dumping history" });
   }
 };
 

@@ -1,0 +1,203 @@
+.admin-dh {
+  max-width: 1180px;
+  margin: 92px auto 28px;
+  padding: 0 18px;
+}
+
+.admin-dh .adh-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.admin-dh .adh-heading h2 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.1;
+  color: #12233c;
+}
+
+.admin-dh .adh-heading p {
+  margin: 8px 0 0;
+  color: #6b7280;
+}
+
+.admin-dh .adh-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.admin-dh .adh-filter {
+  min-width: 170px;
+  border: 1px solid #d5ddea;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font: inherit;
+  color: #111827;
+  background: #fff;
+}
+
+.admin-dh .adh-card {
+  background: #fff;
+  border: 1px solid #e4ebf6;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+}
+
+.admin-dh .adh-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-dh .adh-row {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  border: 1px solid #e8edf6;
+  border-radius: 12px;
+  background: #fcfdff;
+  padding: 14px;
+}
+
+.admin-dh .adh-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-dh .adh-title {
+  margin-bottom: 6px;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.admin-dh .adh-sub {
+  margin-bottom: 4px;
+  font-size: 0.93rem;
+  color: #4b5563;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.admin-dh .adh-dates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 5px 12px;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+.admin-dh .adh-side {
+  width: 210px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.admin-dh .adh-status,
+.admin-dh .adh-pill {
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.admin-dh .adh-status {
+  background: #e0ebff;
+  color: #1d4ed8;
+}
+
+.admin-dh .adh-status-rejected_admin {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.admin-dh .adh-status-cleaned,
+.admin-dh .adh-status-completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.admin-dh .adh-status-in_progress,
+.admin-dh .adh-status-offering,
+.admin-dh .adh-status-accepted_by_collector {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.admin-dh .adh-pill {
+  background: #eef2ff;
+  color: #334155;
+}
+
+.admin-dh .adh-btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.admin-dh .adh-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.admin-dh .adh-btn:hover {
+  transform: translateY(-1px);
+}
+
+.admin-dh .adh-primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.admin-dh .adh-secondary {
+  background: #ecf2ff;
+  color: #1d4ed8;
+}
+
+.admin-dh .adh-map {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.admin-dh .adh-muted {
+  color: #6b7280;
+}
+
+.admin-dh .adh-error {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .admin-dh .adh-top,
+  .admin-dh .adh-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-dh .adh-actions,
+  .admin-dh .adh-side {
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+  }
+}

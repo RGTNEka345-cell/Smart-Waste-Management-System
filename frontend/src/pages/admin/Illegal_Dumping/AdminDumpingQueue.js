@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import "./AdminDumpingQueue.css";
 
@@ -65,9 +66,14 @@ export default function AdminDumpingQueue() {
             <h2>Illegal Dumping Queue</h2>
             <p>Pending admin approvals</p>
           </div>
-          <button className="adq-btn adq-btn-secondary adq-refresh" onClick={load} disabled={loading}>
-            {loading ? "Loading..." : "Refresh"}
-          </button>
+          <div className="adq-top-actions">
+            <button className="adq-btn adq-btn-secondary adq-refresh" onClick={load} disabled={loading}>
+              {loading ? "Loading..." : "Refresh"}
+            </button>
+            <Link className="adq-btn adq-btn-primary" to="/admin/illegal-dumping/history">
+              History
+            </Link>
+          </div>
         </div>
 
         <div className="adq-card">

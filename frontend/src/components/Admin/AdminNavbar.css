@@ -318,6 +318,65 @@ body.admin-body {
   display: flex;
 }
 
+.dumping-dropdown {
+  position: relative;
+}
+
+.dumping-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #cbd5f5;
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dumping-trigger:hover,
+.dumping-trigger.active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.dumping-trigger.active {
+  background: #2563eb;
+}
+
+.dumping-trigger .caret {
+  font-size: 0.9rem;
+}
+
+.dumping-menu {
+  position: static;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  display: none;
+  flex-direction: column;
+  padding: 4px 0 0 20px;
+}
+
+.dumping-menu a {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #cbd5f5;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.dumping-menu a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.dumping-dropdown.open .dumping-menu {
+  display: flex;
+}
+
 
 .online-status {
   display: inline-flex;
@@ -516,6 +575,10 @@ body.admin-body {
   }
 
   .citizens-menu {
+    padding: 0 0 0 20px;
+  }
+
+  .dumping-menu {
     padding: 0 0 0 20px;
   }
 

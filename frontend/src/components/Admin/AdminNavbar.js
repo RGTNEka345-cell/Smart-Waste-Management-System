@@ -27,6 +27,7 @@ const AdminNavbar = () => {
   const [pickupOpen, setPickupOpen] = useState(false);
   const [collectorsOpen, setCollectorsOpen] = useState(false);
   const [citizensOpen, setCitizensOpen] = useState(false);
+  const [dumpingOpen, setDumpingOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [avatarFailed, setAvatarFailed] = useState(false);
   const siteLogo = useSiteLogo();
@@ -47,6 +48,7 @@ const AdminNavbar = () => {
     setPickupOpen(false);
     setCollectorsOpen(false);
     setCitizensOpen(false);
+    setDumpingOpen(false);
     setProfileOpen(false);
   };
 
@@ -113,6 +115,7 @@ const AdminNavbar = () => {
               setPickupOpen(false);
               setCollectorsOpen(false);
               setCitizensOpen(false);
+              setDumpingOpen(false);
             }}
             type="button"
           >
@@ -174,6 +177,7 @@ const AdminNavbar = () => {
               setCitizensOpen(!citizensOpen);
               setCollectorsOpen(false);
               setPickupOpen(false);
+              setDumpingOpen(false);
               setProfileOpen(false);
             }}
             type="button"
@@ -209,6 +213,7 @@ const AdminNavbar = () => {
               setCollectorsOpen(!collectorsOpen);
               setCitizensOpen(false);
               setPickupOpen(false);
+              setDumpingOpen(false);
               setProfileOpen(false);
             }}
             type="button"
@@ -247,6 +252,7 @@ const AdminNavbar = () => {
               setPickupOpen(!pickupOpen);
               setCitizensOpen(false);
               setCollectorsOpen(false);
+              setDumpingOpen(false);
               setProfileOpen(false);
             }}
             type="button"
@@ -291,10 +297,43 @@ const AdminNavbar = () => {
           </Link>
         </li>
 
-        <li>
-          <Link className={isActive("/admin/illegal-dumping") ? "active" : ""} to="/admin/illegal-dumping">
-            <FiAlertTriangle /> Illegal Dumping
-          </Link>
+        <li className={`dumping-dropdown ${dumpingOpen ? "open" : ""}`}>
+          <button
+            className={`dumping-trigger ${isActive("/admin/illegal-dumping") ? "active" : ""}`}
+            onClick={() => {
+              setDumpingOpen(!dumpingOpen);
+              setCitizensOpen(false);
+              setCollectorsOpen(false);
+              setPickupOpen(false);
+              setProfileOpen(false);
+            }}
+            type="button"
+          >
+            <span className="nav-icon"><FiAlertTriangle /></span>
+            <span>Illegal Dumping</span>
+            <FiChevronDown className="caret" />
+          </button>
+
+          <div className="dumping-menu">
+            <Link
+              to="/admin/illegal-dumping"
+              onClick={() => {
+                setDumpingOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Illegal Dumping
+            </Link>
+            <Link
+              to="/admin/illegal-dumping/history"
+              onClick={() => {
+                setDumpingOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Illegal Dumping History
+            </Link>
+          </div>
         </li>
 
         <li>
