@@ -10,6 +10,7 @@ import {
   FaSignOutAlt,
   FaHome,
   FaInbox,
+  FaEnvelope,
   FaTruck,
   FaHistory,
   FaLeaf,
@@ -65,6 +66,7 @@ const CollectorNavbar = () => {
     { label: "Dashboard", icon: <FaHome />, path: "/collector/dashboard" },
     { label: "Pickup Offers", icon: <FaInbox />, path: "/collector/offers" },
     { label: "Active Job", icon: <FaTruck />, path: "/collector/job" },
+    { label: "Messages", icon: <FaEnvelope />, path: "/collector/messages" },
     { label: "Eco Tips", icon: <FaLeaf />, path: "/collector/eco-tips" },
     { label: "Pickup History", icon: <FaHistory />, path: "/collector/history" }
   ];

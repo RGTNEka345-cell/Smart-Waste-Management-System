@@ -40,7 +40,7 @@ const CollectorDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  }, [navigate, token]);
 
   useEffect(() => {
     const fetchDashboardStats = async () => {

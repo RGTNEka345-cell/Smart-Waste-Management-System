@@ -50,6 +50,7 @@ app.use("/api", require("./routes/adminRoutes"));
 app.use("/api", require("./routes/collectorRoutes")); // 
 app.use("/api", require("./routes/pickupRequestRoutes"));
 app.use("/api", require("./routes/notificationRoutes"));
+app.use("/api", require("./routes/messageRoutes"));
 
 /* ---------------- GLOBAL ERROR HANDLER ---------------- */
 app.use((err, req, res, next) => {

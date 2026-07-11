@@ -14,6 +14,7 @@ import {
   FaHistory,
   FaLeaf,
   FaBell,
+  FaEnvelope,
   FaChevronDown
 } from "react-icons/fa";
 
@@ -90,6 +91,12 @@ const CitizenNavbar = ({ setActiveTab, className = "" }) => {
       label: "Eco Tips",
       icon: <FaLeaf />,
       path: "/citizen/eco-tips"
+    },
+    {
+      id: "messages",
+      label: "Messages",
+      icon: <FaEnvelope />,
+      path: "/citizen/messages"
     },
     {
       id: "history",

@@ -16,6 +16,7 @@ import {
   FiX,
   FiChevronDown,
   FiSettings,
+  FiMessageSquare,
 } from "react-icons/fi";
 import useSiteLogo from "../../hooks/useSiteLogo";
 import "./AdminNavbar.css";
@@ -288,6 +289,12 @@ const AdminNavbar = () => {
         <li>
           <Link className={isActive("/admin/reports") ? "active" : ""} to="/admin/reports">
             <FiBarChart2 /> Reports
+          </Link>
+        </li>
+
+        <li>
+          <Link className={isActive("/admin/messages") ? "active" : ""} to="/admin/messages">
+            <FiMessageSquare /> Messages
           </Link>
         </li>
 
