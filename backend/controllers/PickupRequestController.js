@@ -621,12 +621,14 @@ exports.listPickupRequestsAdmin = async (req, res) => {
 
     const sql = q
       ? `SELECT pr.request_id, pr.request_type, pr.target_collection_type, pr.status, pr.requested_at,
+                pr.pickup_address, pr.pickup_latitude, pr.pickup_longitude,
                 c.full_name AS citizen_name, c.email AS citizen_email
          FROM pickup_requests pr
          JOIN citizens c ON c.id = pr.citizen_id
          WHERE c.full_name LIKE ? OR c.email LIKE ?
          ORDER BY pr.requested_at DESC`
       : `SELECT pr.request_id, pr.request_type, pr.target_collection_type, pr.status, pr.requested_at,
+                pr.pickup_address, pr.pickup_latitude, pr.pickup_longitude,
                 c.full_name AS citizen_name, c.email AS citizen_email
          FROM pickup_requests pr
          JOIN citizens c ON c.id = pr.citizen_id

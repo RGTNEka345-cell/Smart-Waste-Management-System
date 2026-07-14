@@ -44,6 +44,7 @@ import CollectorDumpingOffers from "../pages/Collector/Illegal_Dumping/Collector
 import CollectorDumpingActive from "../pages/Collector/Illegal_Dumping/CollectorDumpingActive";
 import DumpingHistory from "../pages/Collector/Illegal_Dumping/DumpingHistory";
 import RealtimeMessages from "../pages/shared/Messages/RealtimeMessages";
+import AdminReports from "../pages/admin/Reports/AdminReports";
 
 const clearRoleSession = (role) => {
   if (role === "admin") {
@@ -196,6 +197,11 @@ function AppRoutes() {
       <Route path="/admin/citizens" element={<RequireRole role="admin"><AdminCitizens /></RequireRole>} />
       <Route path="/admin/notifications" element={<RequireRole role="admin"><AdminNotifications /></RequireRole>} />
       <Route path="/admin/messages" element={<RequireRole role="admin"><RealtimeMessages role="admin" /></RequireRole>} />
+      <Route path="/admin/reports" element={<RequireRole role="admin"><Navigate to="/admin/reports/summary" replace /></RequireRole>} />
+      <Route path="/admin/reports/summary" element={<RequireRole role="admin"><AdminReports type="summary" /></RequireRole>} />
+      <Route path="/admin/reports/pickups" element={<RequireRole role="admin"><AdminReports type="pickups" /></RequireRole>} />
+      <Route path="/admin/reports/illegal-dumping" element={<RequireRole role="admin"><AdminReports type="illegal-dumping" /></RequireRole>} />
+      <Route path="/admin/reports/collector-performance" element={<RequireRole role="admin"><AdminReports type="collector-performance" /></RequireRole>} />
       <Route path="/admin/eco-tips/add" element={<RequireRole role="admin"><AdminAddEcoTip /></RequireRole>} />
       <Route path="/admin/illegal-dumping" element={<RequireRole role="admin"><AdminDumpingQueue /></RequireRole>} />
       <Route path="/admin/illegal-dumping/history" element={<RequireRole role="admin"><AdminDumpingHistory /></RequireRole>} />

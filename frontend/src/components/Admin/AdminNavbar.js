@@ -29,6 +29,7 @@ const AdminNavbar = () => {
   const [collectorsOpen, setCollectorsOpen] = useState(false);
   const [citizensOpen, setCitizensOpen] = useState(false);
   const [dumpingOpen, setDumpingOpen] = useState(false);
+  const [reportsOpen, setReportsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [avatarFailed, setAvatarFailed] = useState(false);
   const siteLogo = useSiteLogo();
@@ -50,6 +51,7 @@ const AdminNavbar = () => {
     setCollectorsOpen(false);
     setCitizensOpen(false);
     setDumpingOpen(false);
+    setReportsOpen(false);
     setProfileOpen(false);
   };
 
@@ -117,6 +119,7 @@ const AdminNavbar = () => {
               setCollectorsOpen(false);
               setCitizensOpen(false);
               setDumpingOpen(false);
+              setReportsOpen(false);
             }}
             type="button"
           >
@@ -179,6 +182,7 @@ const AdminNavbar = () => {
               setCollectorsOpen(false);
               setPickupOpen(false);
               setDumpingOpen(false);
+              setReportsOpen(false);
               setProfileOpen(false);
             }}
             type="button"
@@ -215,6 +219,7 @@ const AdminNavbar = () => {
               setCitizensOpen(false);
               setPickupOpen(false);
               setDumpingOpen(false);
+              setReportsOpen(false);
               setProfileOpen(false);
             }}
             type="button"
@@ -254,6 +259,7 @@ const AdminNavbar = () => {
               setCitizensOpen(false);
               setCollectorsOpen(false);
               setDumpingOpen(false);
+              setReportsOpen(false);
               setProfileOpen(false);
             }}
             type="button"
@@ -286,10 +292,63 @@ const AdminNavbar = () => {
           </div>
         </li>
 
-        <li>
-          <Link className={isActive("/admin/reports") ? "active" : ""} to="/admin/reports">
-            <FiBarChart2 /> Reports
-          </Link>
+        <li className={`reports-dropdown ${reportsOpen ? "open" : ""}`}>
+          <button
+            className={`reports-trigger ${isActive("/admin/reports") ? "active" : ""}`}
+            onClick={() => {
+              setReportsOpen(!reportsOpen);
+              setCitizensOpen(false);
+              setCollectorsOpen(false);
+              setPickupOpen(false);
+              setDumpingOpen(false);
+              setProfileOpen(false);
+            }}
+            type="button"
+          >
+          
+            <span className="nav-icon"><FiBarChart2 /></span>
+            <span>Reports</span>
+            <FiChevronDown className="caret" />
+          </button>
+
+          <div className="reports-menu">
+            <Link
+              to="/admin/reports/summary"
+              onClick={() => {
+                setReportsOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Summary
+            </Link>
+            <Link
+              to="/admin/reports/pickups"
+              onClick={() => {
+                setReportsOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Pickups
+            </Link>
+            <Link
+              to="/admin/reports/illegal-dumping"
+              onClick={() => {
+                setReportsOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Illegal Dumping
+            </Link>
+            <Link
+              to="/admin/reports/collector-performance"
+              onClick={() => {
+                setReportsOpen(false);
+                closeAllDropdowns();
+              }}
+            >
+              Collector Performance
+            </Link>
+          </div>
         </li>
 
         <li>
@@ -312,6 +371,7 @@ const AdminNavbar = () => {
               setCitizensOpen(false);
               setCollectorsOpen(false);
               setPickupOpen(false);
+              setReportsOpen(false);
               setProfileOpen(false);
             }}
             type="button"
