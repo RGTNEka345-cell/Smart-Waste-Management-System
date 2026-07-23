@@ -2,7 +2,7 @@ const db = require("../config/database");
 
 const Citizen = {
 
-  // 🔹 CREATE
+  // CREATE
   create: async (data) => {
     const sql = `
       INSERT INTO citizens
@@ -24,7 +24,7 @@ const Citizen = {
     ]);
   },
 
-  // 🔹 FIND BY EMAIL (LOGIN / FORGOT PASSWORD)
+  // FIND BY EMAIL (LOGIN / FORGOT PASSWORD)
   findByEmail: async (email) => {
     const [rows] = await db.execute(
       "SELECT * FROM citizens WHERE email = ?",
@@ -33,7 +33,7 @@ const Citizen = {
     return rows[0] || null;
   },
 
-  // 🔹 FIND BY ID
+  // FIND BY ID
   findById: async (id) => {
     const [rows] = await db.execute(
       "SELECT * FROM citizens WHERE id = ?",
@@ -42,7 +42,7 @@ const Citizen = {
     return rows[0] || null;
   },
 
-  // 🔹 OTP FUNCTIONS
+  // OTP FUNCTIONS
   updateOTP: async (email, otpCode, expiresAt) => {
     return db.execute(
       "UPDATE citizens SET otp_code = ?, otp_expires_at = ? WHERE email = ?",
