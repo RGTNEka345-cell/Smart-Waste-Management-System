@@ -513,12 +513,18 @@ exports.updateProfile = async (req, res) => {
       console.error("Email send failed:", mailError.message);
     }
 
+    const eco = await getEcoPointsSummary(db, { citizenId: Number(citizenId) });
+
     res.json({
       success: true,
       message: emailChanged
         ? "Profile updated & email notification sent"
         : "Profile updated successfully",
-      citizen: updatedCitizen
+      citizen: {
+        ...updatedCitizen,
+        points: eco.total_points,
+        next_collection: updatedCitizen.next_collection || null
+      }
     });
 
   } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./CollectorProfileUpdate.css";
+import CollectorNavbar from "../../../components/Collector/CollectorNavbar";
 
 const API = "http://localhost:5000/api";
 const HOST = "http://localhost:5000";
@@ -126,9 +127,12 @@ const CollectorProfileUpdate = () => {
 
   if (loading) {
     return (
-      <div className="cpu-wrap">
-        <div className="cpu-card">Loading...</div>
-      </div>
+      <>
+        <CollectorNavbar />
+        <div className="apu-wrap">
+          <div className="apu-card">Loading profile...</div>
+        </div>
+      </>
     );
   }
 
@@ -137,6 +141,8 @@ const CollectorProfileUpdate = () => {
   const gov = collector?.government_details;
 
   return (
+    <>  
+      <CollectorNavbar />
     <div className="cpu-wrap">
       <div className="cpu-top">
         <div>
@@ -293,6 +299,7 @@ const CollectorProfileUpdate = () => {
         </button>
       </form>
     </div>
+    </>
   );
 };
 
