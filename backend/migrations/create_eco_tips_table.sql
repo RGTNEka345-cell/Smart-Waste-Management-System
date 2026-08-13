@@ -3,7 +3,6 @@ CREATE TABLE eco_tips (
 
   title VARCHAR(200) NOT NULL,
   content TEXT NOT NULL,
-
   category ENUM(
     'recycle',
     'reduce',

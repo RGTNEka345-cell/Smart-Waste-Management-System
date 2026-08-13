@@ -430,13 +430,6 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-
-// GET citizen by ID (optional, for future use)
-
-
-//
-
-
 // UPDATE citizen profile
 exports.updateProfile = async (req, res) => {
   try {
@@ -487,7 +480,7 @@ exports.updateProfile = async (req, res) => {
       email: newEmail
     });
 
-    // 📧 SEND EMAIL AFTER UPDATE
+    // SEND EMAIL AFTER UPDATE
     try {
       await sendEmail({
         to: newEmail,

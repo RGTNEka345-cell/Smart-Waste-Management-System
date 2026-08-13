@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
       try {
         const payload = jwt.verify(token, process.env.JWT_SECRET || "secret123");
         adminId = payload?.admin_id || payload?.id || null;
-      } catch (err) {
+      } catch (err){
         const numeric = parseInt(token, 10);
         if (Number.isInteger(numeric)) {
           adminId = numeric;

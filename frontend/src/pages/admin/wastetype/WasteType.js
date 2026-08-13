@@ -29,6 +29,7 @@ const WasteType = () => {
     fetchWasteTypes();
   }, [fetchWasteTypes]);
 
+  // Add new waste type
   const handleAdd = async (e) => {
     e.preventDefault();
 
@@ -57,6 +58,7 @@ const WasteType = () => {
     }
   };
 
+  // Delete waste type
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this waste type?")) return;
 
@@ -76,6 +78,7 @@ const WasteType = () => {
     }
   };
 
+  // Render
   return (
     <>
       <AdminNavbar />
