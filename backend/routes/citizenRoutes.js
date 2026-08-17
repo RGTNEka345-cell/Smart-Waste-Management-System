@@ -74,5 +74,6 @@ router.post(
   IllegalDumpingController.createReport
 );
 router.get("/illegal-dumping/my", IllegalDumpingController.getMyReports);
+router.get("/illegal-dumping/:id", IllegalDumpingController.getMyReportDetails);
 module.exports = router;
 

@@ -61,7 +61,7 @@ export default function CitizenMyDumpReports() {
                     <div className="cmr-sub">Status: {r.status} - {new Date(r.created_at).toLocaleString()}</div>
                   </div>
                   <div className="cmr-actions">
-                    <button className="cmr-btn cmr-btn-primary" onClick={() => nav(`/citizen/dumping/${r.report_id}`)}>
+                    <button className="cmr-btn cmr-btn-primary" onClick={() => nav(`/citizen/illegal-dumping/${r.report_id}`)}>
                       View
                     </button>
                   </div>

@@ -228,3 +228,108 @@ exports.getMyReports = async (req, res) => {
     return res.status(500).json({ message: "Failed to load reports" });
   }
 };
+
+exports.getMyReportDetails = async (req, res) => {
+  const citizenId = resolveCitizenId(req);
+  const reportId = parseInt(req.params?.id, 10);
+
+  if (!Number.isInteger(citizenId)) {
+    return res.status(400).json({ message: "citizen_id is required" });
+  }
+  if (!Number.isInteger(reportId)) {
+    return res.status(400).json({ message: "Invalid report id" });
+  }
+
+  try {
+    const reportTable = await pickTable(db, [
+      "illegal_dumping_reports",
+      "illegal_dumping_report"
+    ]);
+    if (!reportTable) {
+      throw new Error("illegal_dumping_report(s) table not found");
+    }
+
+    const photosTable = await pickTable(db, [
+      "illegal_dumping_photos",
+      "illegal_dumping_photo"
+    ]);
+    const offersTable = await pickTable(db, ["illegal_dumping_offers"]);
+    const historyTable = await pickTable(db, ["illegal_dumping_status_history"]);
+
+    const [reportRows] = await db.execute(
+      `SELECT report_id, reported_by_citizen_id, title, description, severity,
+              latitude, longitude, address, status, admin_id, admin_remarks,
+              approved_at, rejected_at, created_at, updated_at
+       FROM ${reportTable}
+       WHERE report_id = ? AND reported_by_citizen_id = ?
+       LIMIT 1`,
+      [reportId, citizenId]
+    );
+
+    if (reportRows.length === 0) {
+      return res.status(404).json({ message: "Report not found" });
+    }
+
+    const [photos] = photosTable
+      ? await db.execute(
+          `SELECT photo_id, report_id, photo_url, photo_type, uploaded_by_role,
+                  uploaded_by_id, uploaded_at
+           FROM ${photosTable}
+           WHERE report_id = ?
+           ORDER BY photo_type ASC, uploaded_at ASC`,
+          [reportId]
+        )
+      : [[]];
+
+    const [offers] = offersTable
+      ? await db.execute(
+          `SELECT o.offer_id, o.report_id, o.collector_id, o.offer_status,
+                  o.distance_km, o.offered_at, o.offer_expires_at,
+                  o.responded_at, o.reject_reason,
+                  c.full_name AS collector_name,
+                  c.phone_number AS collector_phone,
+                  c.vehicle_number,
+                  c.collection_type
+           FROM ${offersTable} o
+           LEFT JOIN Collectors c ON c.collector_id = o.collector_id
+           WHERE o.report_id = ?
+           ORDER BY o.offered_at DESC, o.offer_id DESC`,
+          [reportId]
+        )
+      : [[]];
+
+    const [history] = historyTable
+      ? await db.execute(
+          `SELECT history_id, report_id, status, note, changed_by_role,
+                  changed_by_id, changed_at
+           FROM ${historyTable}
+           WHERE report_id = ?
+           ORDER BY changed_at ASC, history_id ASC`,
+          [reportId]
+        )
+      : [[]];
+
+    const acceptedOffer = offers.find((offer) => offer.offer_status === "ACCEPTED") || null;
+
+    return res.json({
+      report: reportRows[0],
+      photos,
+      offers,
+      history,
+      collector: acceptedOffer
+        ? {
+            collector_id: acceptedOffer.collector_id,
+            full_name: acceptedOffer.collector_name,
+            phone_number: acceptedOffer.collector_phone,
+            vehicle_number: acceptedOffer.vehicle_number,
+            collection_type: acceptedOffer.collection_type,
+            distance_km: acceptedOffer.distance_km,
+            accepted_at: acceptedOffer.responded_at
+          }
+        : null
+    });
+  } catch (err) {
+    console.error("Get illegal dumping report details error:", err.message);
+    return res.status(500).json({ message: "Failed to load report details" });
+  }
+};

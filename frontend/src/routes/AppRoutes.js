@@ -38,6 +38,7 @@ import CitizenEcoTips from "../pages/Citizen/Eco_Tips/CitizenEcoTips";
 import CollectorEcoTips from "../pages/Collector/Eco_Tips/CollectorEcoTips";
 import CitizenCreateDumpReport from "../pages/Citizen/Illegal_Dumping/CitizenCreateDumpReport";
 import CitizenMyDumpReports from "../pages/Citizen/Illegal_Dumping/CitizenMyDumpReports";
+import CitizenDumpReportDetails from "../pages/Citizen/Illegal_Dumping/CitizenDumpReportDetails";
 import AdminDumpingQueue from "../pages/admin/Illegal_Dumping/AdminDumpingQueue";
 import AdminDumpingHistory from "../pages/admin/Illegal_Dumping/AdminDumpingHistory";
 import CollectorDumpingOffers from "../pages/Collector/Illegal_Dumping/CollectorDumpingOffers";
@@ -182,6 +183,7 @@ function AppRoutes() {
       <Route path="/citizen/eco-tips" element={<RequireRole role="citizen"><CitizenEcoTips /></RequireRole>} />
       <Route path="/citizen/illegal-dumping/create" element={<RequireRole role="citizen"><CitizenCreateDumpReport /></RequireRole>} />
       <Route path="/citizen/illegal-dumping/my" element={<RequireRole role="citizen"><CitizenMyDumpReports /></RequireRole>} />
+      <Route path="/citizen/illegal-dumping/:reportId" element={<RequireRole role="citizen"><CitizenDumpReportDetails /></RequireRole>} />
 
 
       {/* Admin - No changes */}
