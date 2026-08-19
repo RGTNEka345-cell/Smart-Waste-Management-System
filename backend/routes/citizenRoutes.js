@@ -63,8 +63,8 @@ router.post("/citizen/reset-password", CitizenController.resetPassword);
 // PUT /api/citizen/update-profile/:id
 router.put(
   "/citizen/update-profile/:id",
-  uploadCitizen.single("photo"), // ✅ MUST be .single()
-  CitizenController.updateProfile // ✅ function
+  uploadCitizen.single("photo"), // MUST be .single()
+  CitizenController.updateProfile // function
 );
 
 // Illegal Dumping (Citizen)

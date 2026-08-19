@@ -220,25 +220,7 @@ const CollectorProfileUpdate = () => {
             />
           </div>
 
-          <div className="field">
-            <label>Latitude</label>
-            <input
-              name="latitude"
-              value={form.latitude}
-              onChange={handleChange}
-              placeholder="e.g. 6.9271"
-            />
-          </div>
-
-          <div className="field">
-            <label>Longitude</label>
-            <input
-              name="longitude"
-              value={form.longitude}
-              onChange={handleChange}
-              placeholder="e.g. 79.8612"
-            />
-          </div>
+          
         </div>
 
         {/* Non-editable (Permanent) */}
