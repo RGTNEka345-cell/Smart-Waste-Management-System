@@ -5,7 +5,12 @@ import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
   const [admin, setAdmin] = useState(null);
-  const [stats, setStats] = useState({ citizens: 0, collectors: 0 });
+  const [stats, setStats] = useState({
+    citizens: 0,
+    maleCollectors: 0,
+    femaleCollectors: 0,
+    collectors: 0
+  });
   const [loadingStats, setLoadingStats] = useState(false);
   const navigate = useNavigate();
 
@@ -25,12 +30,21 @@ const AdminDashboard = () => {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         const data = await res.json();
+        const maleCollectors = data?.maleCollectors || 0;
+        const femaleCollectors = data?.femaleCollectors || 0;
         setStats({
           citizens: data?.citizens || 0,
-          collectors: data?.collectors || 0
+          maleCollectors,
+          femaleCollectors,
+          collectors: data?.collectors || maleCollectors + femaleCollectors
         });
       } catch (_) {
-        setStats({ citizens: 0, collectors: 0 });
+        setStats({
+          citizens: 0,
+          maleCollectors: 0,
+          femaleCollectors: 0,
+          collectors: 0
+        });
       } finally {
         setLoadingStats(false);
       }
@@ -116,13 +130,26 @@ const AdminDashboard = () => {
             </div>
 
             <div className="count-card">
-              <span className="count-label">Collectors</span>
-              <span className="count-value">{stats.collectors}</span>
+              <span className="count-label">Male Collectors</span>
+              <span className="count-value">{stats.maleCollectors}</span>
               <div className="mini-bar">
                 <div
                   className="bar-fill green"
                   style={{
-                    width: `${Math.min(100, (stats.collectors / (stats.citizens + stats.collectors || 1)) * 100)}%`
+                    width: `${Math.min(100, (stats.maleCollectors / (stats.citizens + stats.collectors || 1)) * 100)}%`
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="count-card">
+              <span className="count-label">Female Collectors</span>
+              <span className="count-value">{stats.femaleCollectors}</span>
+              <div className="mini-bar">
+                <div
+                  className="bar-fill green"
+                  style={{
+                    width: `${Math.min(100, (stats.femaleCollectors / (stats.citizens + stats.collectors || 1)) * 100)}%`
                   }}
                 />
               </div>

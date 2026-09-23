@@ -11,9 +11,7 @@ import {
   FaHome,
   FaTrashAlt,
   FaMapMarkerAlt,
-  FaHistory,
   FaLeaf,
-  FaBell,
   FaEnvelope,
   FaChevronDown
 } from "react-icons/fa";
@@ -98,11 +96,7 @@ const CitizenNavbar = ({ setActiveTab, className = "" }) => {
       icon: <FaEnvelope />,
       path: "/citizen/messages"
     },
-    {
-      id: "history",
-      label: "History",
-      icon: <FaHistory />
-    }
+    
   ];
 
 
@@ -246,18 +240,7 @@ const CitizenNavbar = ({ setActiveTab, className = "" }) => {
           <span className="online-dot" />
         </div>
 
-        <Link
-          to="/citizen/notifications"
-          className="icon-btn"
-          onClick={() => {
-            setIsMenuOpen(false);
-            setIsPickupOpen(false);
-            setIsDumpOpen(false);
-          }}
-          aria-label="Notifications"
-        >
-          <FaBell />
-        </Link>
+        
         <div 
           className="profile-trigger"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}

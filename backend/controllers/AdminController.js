@@ -125,13 +125,20 @@ exports.getAdminStats = async (req, res) => {
       "SELECT COUNT(*) AS total FROM citizens"
     );
 
-    const [[collectorCount]] = await db.execute(
-      "SELECT COUNT(*) AS total FROM Collectors"
+    const [[maleCollectorCount]] = await db.execute(
+      "SELECT COUNT(*) AS total FROM Collectors WHERE LOWER(gender) = 'male'"
+    );
+
+    const [[femaleCollectorCount]] = await db.execute(
+      "SELECT COUNT(*) AS total FROM Collectors WHERE LOWER(gender) = 'female'"
     );
 
     res.json({
       citizens: citizenCount?.total || 0,
-      collectors: collectorCount?.total || 0
+      maleCollectors: maleCollectorCount?.total || 0,
+      femaleCollectors: femaleCollectorCount?.total || 0,
+      collectors:
+        (maleCollectorCount?.total || 0) + (femaleCollectorCount?.total || 0)
     });
   } catch (err) {
     console.error("Admin stats error:", err.message);
@@ -146,7 +153,11 @@ exports.getPublicStats = async (req, res) => {
     );
 
     const [[collectorCount]] = await db.execute(
-      "SELECT COUNT(*) AS total FROM Collectors"
+      "SELECT COUNT(*) AS total FROM Collectors WHERE LOWER(gender) = 'male'"
+    );
+
+    const [[femaleCollectorCount]] = await db.execute(
+      "SELECT COUNT(*) AS total FROM Collectors WHERE LOWER(gender) = 'female'"
     );
 
     const [[adminCount]] = await db.execute(
@@ -161,9 +172,11 @@ exports.getPublicStats = async (req, res) => {
       activeUsers:
         (citizenCount?.total || 0) +
         (collectorCount?.total || 0) +
+        (femaleCollectorCount?.total || 0) +
         (adminCount?.total || 0),
       citizens: citizenCount?.total || 0,
-      collectors: collectorCount?.total || 0,
+      collectors:
+        (collectorCount?.total || 0) + (femaleCollectorCount?.total || 0),
       requests: pickupRequestCount?.total || 0
     });
   } catch (err) {
